@@ -1,15 +1,17 @@
-import express, {NextFunction, Request, Response} from 'express';
+import express, {Request, Response, Router, NextFunction} from "express";
+import { body,validationResult } from 'express-validator';import {blogRepository, blogs} from "./repositories/blog-repository";
+import bodyParser from "body-parser";
+import {blogRoutes} from "./routes/blog-routes";
+
 const app = express()
+
+const parserMiddleware = bodyParser({})
+app.use(parserMiddleware)
+
 const port = 5000
+app.use("/blogs", blogRoutes)
 
-type blogsType={
-    id: number
-    name: string
-    description: string
-    websiteUrl: string
-}
 
-// const blogs: blogsType = []
 
 // let blablaMiddleware = (req: Request, res: Response, next: NextFunction)=>{
 //     // @ts-ignore
@@ -52,19 +54,6 @@ type blogsType={
 //     res.send({value: blabla +" "+ counter})
 // })
 
-app.get('/', (req, res) => {
-    const id = new Date()
-    const name = req.body.name
-    const description = req.body.description
-    const websiteUrl = req.body.websiteUrl
-
-    res.send('Hello World!')
-})
-
-app.post('/blogs', (req, res) => {
-
-    res.send('Hello World!')
-})
 
 
 app.listen(port, () => {
