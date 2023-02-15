@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {body, validationResult} from "express-validator";
+import {body, param, validationResult} from "express-validator";
 import {blogRepository, blogs} from "../repositories/blog-repository";
 
 export const blogRoutes = Router({})
@@ -13,9 +13,10 @@ const customErrorMessage = {"errorMessages":[
 
 }
 
-const nameValidation = body("name").isString().trim().isLength({max:15}).withMessage("customErrorMessage")
-const description = body("description").isString().trim().isLength({max:500})
-const websiteUrl = body("websiteUrl").isString().trim().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
+const nameValidation = body("name").isString().trim().notEmpty().isLength({max:15}).withMessage("customErrorMessage")
+const description = body("description").isString().trim().notEmpty().isLength({max:500})
+const websiteUrl = body("websiteUrl").isString().trim().notEmpty().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
+const id = param("id").isString()
 
 blogRoutes.use(nameValidation,description,websiteUrl)
 
@@ -48,4 +49,36 @@ blogRoutes.get('/:id', (req:Request, res:Response) => {
    const getBlog = blogRepository.getBlogById(+req.params.id)
 
     res.status(200).send(getBlog)
+})
+
+blogRoutes.put('/:id',
+    (req, res) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({errors: errors.array()});
+        }
+        const name = req.body.name
+        const description = req.body.description;
+        const websiteUrl = req.body.websiteUrl;
+
+        const updateBlog = blogRepository.updateBlog(+req.params.id,name, description, websiteUrl)
+
+        if (updateBlog) {
+            res.send(204)
+        }else{
+            res.send(404)
+        }
+    })
+
+blogRoutes.delete('/:id', (req:Request, res:Response) => {
+
+    const deleteBlog = blogRepository.deleteBlogById(+req.params.id)
+
+    if (deleteBlog){
+        res.send(204)
+    }else{
+        res.send(404)
+    }
+
 })

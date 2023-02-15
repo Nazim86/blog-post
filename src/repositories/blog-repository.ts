@@ -24,5 +24,27 @@ export const blogRepository = {
     getBlogById(id:number){
         const blogById = blogs.find(p=>p.id === id )
         return blogById
+    },
+    updateBlog(id:number,name: string, description:string, websiteUrl:string){
+        const updateById = blogs.find(p=>p.id === id )
+        if (updateById){
+            updateById.name = name
+            updateById.description = description
+            updateById.websiteUrl = websiteUrl
+            return true
+        }
+
+    },
+
+    deleteBlogById(id:number){
+        const deleteById = blogs.find(p=>p.id === id )
+
+        if(deleteById){
+            blogs.splice(blogs.indexOf(deleteById),1)
+            return true
+        }
+
     }
+
+
 }
