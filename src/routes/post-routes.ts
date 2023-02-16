@@ -76,8 +76,3 @@ postRoutes.delete('/:id',baseAuthorizationMiddleware, (req:Request, res:Response
     }
 
 })
-
-postRoutes.delete('/', (req: Request, res: Response) => {
-    posts.length = 0
-    return res.sendStatus(204)
-})

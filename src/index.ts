@@ -1,7 +1,9 @@
-import express from "express";
+import express, {Request, Response} from "express";
 import bodyParser from "body-parser";
 import {blogRoutes} from "./routes/blog-routes";
 import {postRoutes} from "./routes/post-routes";
+import {posts} from "./repositories/post-repository";
+import {blogs} from "./repositories/blog-repository";
 // import {deleteRoute} from "./routes/delete-routes";
 
 const app = express()
@@ -13,9 +15,12 @@ const port = process.env.PORT || 5000
 
 app.use("/blogs", blogRoutes)
 app.use("/posts", postRoutes)
-app.use("testing/all-data", blogRoutes)
-app.use("testing/all-data", postRoutes)
 
+app.delete('/testing/all-data', (req: Request, res: Response) => {
+    posts.length = 0
+    blogs.length = 0
+    return res.sendStatus(204)
+})
 
 
 
