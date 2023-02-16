@@ -34,7 +34,7 @@ blogRoutes.post('/',baseAuthorizationMiddleware,nameValidation,description,websi
 
 blogRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
 
-   const getBlog = blogRepository.getBlogById(+req.params.id)
+   const getBlog = blogRepository.getBlogById(req.params.id)
 
     if(getBlog){
         res.status(200).send(getBlog)
@@ -52,7 +52,7 @@ blogRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,de
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
 
-        const updateBlog = blogRepository.updateBlog(+req.params.id,name, description, websiteUrl)
+        const updateBlog = blogRepository.updateBlog(req.params.id,name, description, websiteUrl)
 
         if (updateBlog) {
             res.send(204)
@@ -63,7 +63,7 @@ blogRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,de
 
 blogRoutes.delete('/:id',baseAuthorizationMiddleware, (req:Request, res:Response) => {
 
-    const deleteBlog = blogRepository.deleteBlogById(+req.params.id)
+    const deleteBlog = blogRepository.deleteBlogById(req.params.id)
 
     if (deleteBlog){
         res.send(204)

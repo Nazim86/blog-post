@@ -1,5 +1,5 @@
 type postsType={
-    id:number
+    id:string
     title: string
     shortDescription : string
     content : string
@@ -12,7 +12,7 @@ export const postRepository = {
     createPost(title: string, shortDescription:string, content: string, blogId:string) {
         const newId = new Date();
         const creatingPost: postsType ={
-            id: +newId,
+            id: newId.toISOString(),
             title: title,
             shortDescription: shortDescription,
             content: content,
@@ -22,10 +22,10 @@ export const postRepository = {
         return creatingPost
     },
 
-    getPostById(id:number){
+    getPostById(id:string){
         return posts.find(p => p.id === id)
     },
-    updatePost(id:number,title: string, shortDescription:string, content: string, blogId:string){
+    updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string){
         const updateById = posts.find(p=>p.id === id )
         if (updateById){
             updateById.title = title
@@ -37,7 +37,7 @@ export const postRepository = {
 
     },
 
-    deletePostById(id:number){
+    deletePostById(id:string){
         const deleteById = posts.find(p=>p.id === id )
 
         if(deleteById){
