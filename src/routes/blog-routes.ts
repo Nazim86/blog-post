@@ -14,9 +14,9 @@ const customErrorMessage = {"errorMessages":[
 
 }
 
-const nameValidation = body("name").isString().trim().notEmpty().isLength({max:15}).withMessage("customErrorMessage")
-const description = body("description").isString().trim().notEmpty().isLength({max:500})
-const websiteUrl = body("websiteUrl").isString().trim().notEmpty().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
+const nameValidation = body("name").isString().trim().isLength({max:15}).withMessage("customErrorMessage")
+const description = body("description").isString().trim().isLength({max:500})
+const websiteUrl = body("websiteUrl").isString().trim().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
 const id = param("id").isString()
 
 //blogRoutes.use(nameValidation,description,websiteUrl, blogInputMiddleware)
@@ -30,6 +30,7 @@ blogRoutes.get('/', (req:Request, res:Response) => {
 blogRoutes.post('/',nameValidation,description,websiteUrl, blogInputMiddleware,
     (req, res) => {
 
+    // const username = req.headers.username
         const name = req.body.name
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
