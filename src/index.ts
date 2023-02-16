@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000
 
 app.use("/blogs", blogRoutes)
 app.use("/posts", postRoutes)
-app.use("/all-data", deleteRoute)
+app.use("testing/all-data", deleteRoute)
 
 
 
