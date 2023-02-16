@@ -4,6 +4,7 @@ type postsType={
     shortDescription : string
     content : string
     blogId: string
+    blogName: string
 }
 
 export const posts: Array<postsType> = []
@@ -16,7 +17,8 @@ export const postRepository = {
             title: title,
             shortDescription: shortDescription,
             content: content,
-            blogId: blogId
+            blogId: blogId,
+            blogName: newId.toString()
         }
         posts.push(creatingPost)
         return creatingPost
