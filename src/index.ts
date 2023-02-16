@@ -9,7 +9,8 @@ const app = express()
 const parserMiddleware = bodyParser({})
 app.use(parserMiddleware)
 
-const port = 5000
+const port = process.env.PORT || 5000
+
 app.use("/blogs", blogRoutes)
 app.use("/posts", postRoutes)
 app.use("/all-data", deleteRoute)
