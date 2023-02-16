@@ -13,49 +13,6 @@ app.use("/blogs", blogRoutes)
 
 
 
-// let blablaMiddleware = (req: Request, res: Response, next: NextFunction)=>{
-//     // @ts-ignore
-//     req.blabla = "Nazimito";
-//     next();
-// }
-//
-// let authGuard = (req: Request, res: Response, next: NextFunction)=>{
-//     if (req.query.token === "123"){
-//         next();
-//     }
-//     else {
-//         res.send(401)
-//     }
-// }
-//
-// let counter = 0;
-//
-// let countRequest = (req: Request, res: Response, next: NextFunction)=>{
-//     counter++;
-//     next()
-// }
-//
-// app.use(authGuard)
-// app.use(blablaMiddleware)
-// app.use(countRequest)
-//
-//
-// app.get('/products', (req, res) => {
-//
-//     // @ts-ignore
-//     const  blabla = req.blabla;
-//     res.send({value: blabla +" "+ counter})
-// })
-//
-// app.get('/users', (req, res) => {
-//
-//     // @ts-ignore
-//     const  blabla = req.blabla;
-//     res.send({value: blabla +" "+ counter})
-// })
-
-
-
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })

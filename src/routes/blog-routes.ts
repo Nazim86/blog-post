@@ -1,6 +1,7 @@
 import {Request, Response, Router} from "express";
 import {body, param, validationResult} from "express-validator";
 import {blogRepository, blogs} from "../repositories/blog-repository";
+import {blogInputMiddleware} from "../middlewares/blog-input-middleware";
 
 export const blogRoutes = Router({})
 
@@ -18,7 +19,7 @@ const description = body("description").isString().trim().notEmpty().isLength({m
 const websiteUrl = body("websiteUrl").isString().trim().notEmpty().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
 const id = param("id").isString()
 
-blogRoutes.use(nameValidation,description,websiteUrl)
+//blogRoutes.use(nameValidation,description,websiteUrl, blogInputMiddleware)
 
 
 blogRoutes.get('/', (req:Request, res:Response) => {
@@ -26,13 +27,9 @@ blogRoutes.get('/', (req:Request, res:Response) => {
     res.status(200).send(blogs)
 })
 
-blogRoutes.post('/',
+blogRoutes.post('/',nameValidation,description,websiteUrl, blogInputMiddleware,
     (req, res) => {
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({errors: errors.array()});
-        }
         const name = req.body.name
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
@@ -51,13 +48,10 @@ blogRoutes.get('/:id', (req:Request, res:Response) => {
     res.status(200).send(getBlog)
 })
 
-blogRoutes.put('/:id',
+blogRoutes.put('/:id',nameValidation,description,websiteUrl, blogInputMiddleware,
     (req, res) => {
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({errors: errors.array()});
-        }
+
         const name = req.body.name
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
