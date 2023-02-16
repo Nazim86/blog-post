@@ -9,7 +9,7 @@ export const postRoutes = Router({})
 const nameValidation = body("title").isString().trim().notEmpty().isLength({max:30})
 const descriptionValidation = body("shortDescription").isString().trim().notEmpty().isLength({max:100})
 const contentValidation = body("content").isString().trim().notEmpty().isLength({max:1000})
-const blogIdValidation = body("blogId").isString()
+const blogIdValidation = body("blogId").isString().exists()
 const idValidation = param("id").exists()
 
 postRoutes.get('/', (req:Request, res:Response) => {
