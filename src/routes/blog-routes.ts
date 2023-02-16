@@ -3,6 +3,7 @@ import {body, param} from "express-validator";
 import {blogRepository, blogs} from "../repositories/blog-repository";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {posts} from "../repositories/post-repository";
 
 export const blogRoutes = Router({})
 
@@ -71,4 +72,9 @@ blogRoutes.delete('/:id',baseAuthorizationMiddleware, (req:Request, res:Response
         res.send(404)
     }
 
+})
+
+blogRoutes.delete('/', (req: Request, res: Response) => {
+    posts.length = 0
+    return res.sendStatus(204)
 })
