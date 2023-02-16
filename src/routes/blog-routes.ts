@@ -17,7 +17,7 @@ const customErrorMessage = {"errorMessages":[
 const nameValidation = body("name").isString().trim().isLength({max:15}).withMessage("customErrorMessage")
 const description = body("description").isString().trim().isLength({max:500})
 const websiteUrl = body("websiteUrl").isString().trim().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
-const id = param("id").isString()
+const idValidation = param("id").exists()
 
 //blogRoutes.use(nameValidation,description,websiteUrl, blogInputMiddleware)
 
@@ -42,14 +42,14 @@ blogRoutes.post('/',nameValidation,description,websiteUrl, blogInputMiddleware,
         }
     })
 
-blogRoutes.get('/:id', (req:Request, res:Response) => {
+blogRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
 
    const getBlog = blogRepository.getBlogById(+req.params.id)
 
     res.status(200).send(getBlog)
 })
 
-blogRoutes.put('/:id',nameValidation,description,websiteUrl, blogInputMiddleware,
+blogRoutes.put('/:id',idValidation,nameValidation,description,websiteUrl, blogInputMiddleware,
     (req, res) => {
 
 

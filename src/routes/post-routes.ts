@@ -3,6 +3,7 @@ import {body, param, validationResult} from "express-validator";
 import {blogRepository, blogs} from "../repositories/blog-repository";
 import {blogInputMiddleware} from "../middlewares/blog-input-middleware";
 import {postInputMiddleware} from "../middlewares/post-input-middlewares";
+import {postRepository, posts} from "../repositories/post-repository";
 
 export const postRoutes = Router({})
 
@@ -19,7 +20,7 @@ const nameValidation = body("title").isString().trim().isLength({max:30})
 const descriptionValidation = body("shortDescription").isString().trim().isLength({max:100})
 const contentValidation = body("content").isString().trim().isLength({max:1000})
 const blogIdValidation = body("blogId").isString()
-const id = param("id").isString()
+const idValidation = param("id").exists()
 
 //blogRoutes.use(nameValidation,description,websiteUrl, blogInputMiddleware)
 
@@ -45,14 +46,14 @@ postRoutes.post('/',nameValidation,descriptionValidation,contentValidation,blogI
         }
     })
 
-postRoutes.get('/:id', (req:Request, res:Response) => {
+postRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
 
     const getPost = postRepository.getPostById(+req.params.id)
 
     res.status(200).send(getPost)
 })
 
-postRoutes.put('/:id',nameValidation,descriptionValidation,contentValidation,blogIdValidation,postInputMiddleware,
+postRoutes.put('/:id',idValidation,nameValidation,descriptionValidation,contentValidation,blogIdValidation,postInputMiddleware,
     (req, res) => {
 
 
@@ -72,7 +73,7 @@ postRoutes.put('/:id',nameValidation,descriptionValidation,contentValidation,blo
 
 postRoutes.delete('/:id', (req:Request, res:Response) => {
 
-    const deletePost = blogRepository.deletePostById(+req.params.id)
+    const deletePost = postRepository.deletePostById(+req.params.id)
 
     if (deletePost){
         res.send(204)
