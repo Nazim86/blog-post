@@ -7,9 +7,9 @@ import {inputValidationMiddleware} from "../middlewares/input-validation-middlew
 export const blogRoutes = Router({})
 
 
-const nameValidation = body("name").isString().trim().isLength({max:15})
-const description = body("description").isString().trim().isLength({max:500})
-const websiteUrl = body("websiteUrl").isString().trim().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
+const nameValidation = body("name").isString().trim().notEmpty().isLength({max:15})
+const description = body("description").isString().trim().notEmpty().isLength({max:500})
+const websiteUrl = body("websiteUrl").isString().trim().notEmpty().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
 const idValidation = param("id").exists()
 
 blogRoutes.get('/', (req:Request, res:Response) => {

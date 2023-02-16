@@ -6,9 +6,9 @@ import {inputValidationMiddleware} from "../middlewares/input-validation-middlew
 
 export const postRoutes = Router({})
 
-const nameValidation = body("title").isString().trim().isLength({max:30})
-const descriptionValidation = body("shortDescription").isString().trim().isLength({max:100})
-const contentValidation = body("content").isString().trim().isLength({max:1000})
+const nameValidation = body("title").isString().trim().notEmpty().isLength({max:30})
+const descriptionValidation = body("shortDescription").isString().trim().notEmpty().isLength({max:100})
+const contentValidation = body("content").isString().trim().notEmpty().isLength({max:1000})
 const blogIdValidation = body("blogId").isString()
 const idValidation = param("id").exists()
 
