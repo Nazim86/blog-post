@@ -11,7 +11,7 @@ export const inputValidationMiddleware = (req:Request, res:Response, next: NextF
                 field: err.param
             }))
 
-        return res.status(400).json({errors: errorsResponse});
+        return res.status(400).json({errors: errorsResponse.reverse()});
     } else{
         next()
     }
