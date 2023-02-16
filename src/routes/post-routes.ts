@@ -37,8 +37,15 @@ postRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
 
     const getPost = postRepository.getPostById(+req.params.id)
 
+    if(getPost){
+        res.status(200).send(getPost)
+    }else{
+        res.send(404)
+    }
+
     res.status(200).send(getPost)
 })
+
 
 postRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,descriptionValidation,contentValidation,blogIdValidation,inputValidationMiddleware,
     (req, res) => {

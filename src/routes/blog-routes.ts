@@ -36,7 +36,12 @@ blogRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
 
    const getBlog = blogRepository.getBlogById(+req.params.id)
 
-    res.status(200).send(getBlog)
+    if(getBlog){
+        res.status(200).send(getBlog)
+    }else{
+        res.send(404)
+    }
+
 })
 
 blogRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,description,websiteUrl, inputValidationMiddleware,
