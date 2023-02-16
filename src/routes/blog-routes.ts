@@ -1,33 +1,23 @@
 import {Request, Response, Router} from "express";
-import {body, param, validationResult} from "express-validator";
+import {body, param} from "express-validator";
 import {blogRepository, blogs} from "../repositories/blog-repository";
-import {blogInputMiddleware} from "../middlewares/blog-input-middleware";
+import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
+import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 
 export const blogRoutes = Router({})
 
-const customErrorMessage = {"errorMessages":[
-        {
-            "message": "heyo",
-            "field": "pis"
-        }
-    ]
 
-}
-
-const nameValidation = body("name").isString().trim().isLength({max:15}).withMessage("customErrorMessage")
+const nameValidation = body("name").isString().trim().isLength({max:15})
 const description = body("description").isString().trim().isLength({max:500})
 const websiteUrl = body("websiteUrl").isString().trim().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
 const idValidation = param("id").exists()
-
-//blogRoutes.use(nameValidation,description,websiteUrl, blogInputMiddleware)
-
 
 blogRoutes.get('/', (req:Request, res:Response) => {
 
     res.status(200).send(blogs)
 })
 
-blogRoutes.post('/',nameValidation,description,websiteUrl, blogInputMiddleware,
+blogRoutes.post('/',baseAuthorizationMiddleware,nameValidation,description,websiteUrl, inputValidationMiddleware,
     (req, res) => {
 
     // const username = req.headers.username
@@ -49,7 +39,7 @@ blogRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
     res.status(200).send(getBlog)
 })
 
-blogRoutes.put('/:id',idValidation,nameValidation,description,websiteUrl, blogInputMiddleware,
+blogRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,description,websiteUrl, inputValidationMiddleware,
     (req, res) => {
 
 
@@ -66,7 +56,7 @@ blogRoutes.put('/:id',idValidation,nameValidation,description,websiteUrl, blogIn
         }
     })
 
-blogRoutes.delete('/:id', (req:Request, res:Response) => {
+blogRoutes.delete('/:id',baseAuthorizationMiddleware, (req:Request, res:Response) => {
 
     const deleteBlog = blogRepository.deleteBlogById(+req.params.id)
 

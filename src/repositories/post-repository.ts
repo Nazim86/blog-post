@@ -23,8 +23,7 @@ export const postRepository = {
     },
 
     getPostById(id:number){
-        const postById = posts.find(p=>p.id === id )
-        return postById
+        return posts.find(p => p.id === id)
     },
     updatePost(id:number,title: string, shortDescription:string, content: string, blogId:string){
         const updateById = posts.find(p=>p.id === id )

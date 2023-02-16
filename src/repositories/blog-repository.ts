@@ -22,8 +22,7 @@ export const blogRepository = {
     },
 
     getBlogById(id:number){
-        const blogById = blogs.find(p=>p.id === id )
-        return blogById
+        return blogs.find(p => p.id === id)
     },
     updateBlog(id:number,name: string, description:string, websiteUrl:string){
         const updateById = blogs.find(p=>p.id === id )

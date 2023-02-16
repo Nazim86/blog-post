@@ -1,20 +1,10 @@
 import {Request, Response, Router} from "express";
-import {body, param, validationResult} from "express-validator";
-import {blogRepository, blogs} from "../repositories/blog-repository";
-import {blogInputMiddleware} from "../middlewares/blog-input-middleware";
-import {postInputMiddleware} from "../middlewares/post-input-middlewares";
+import {body, param} from "express-validator";
 import {postRepository, posts} from "../repositories/post-repository";
+import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
+import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 
 export const postRoutes = Router({})
-
-const customErrorMessage = {"errorMessages":[
-        {
-            "message": "heyo",
-            "field": "pis"
-        }
-    ]
-
-}
 
 const nameValidation = body("title").isString().trim().isLength({max:30})
 const descriptionValidation = body("shortDescription").isString().trim().isLength({max:100})
@@ -22,15 +12,12 @@ const contentValidation = body("content").isString().trim().isLength({max:1000})
 const blogIdValidation = body("blogId").isString()
 const idValidation = param("id").exists()
 
-//blogRoutes.use(nameValidation,description,websiteUrl, blogInputMiddleware)
-
-
 postRoutes.get('/', (req:Request, res:Response) => {
 
     res.status(200).send(posts)
 })
 
-postRoutes.post('/',nameValidation,descriptionValidation,contentValidation,blogIdValidation,postInputMiddleware,
+postRoutes.post('/',baseAuthorizationMiddleware,nameValidation,descriptionValidation,contentValidation,blogIdValidation,inputValidationMiddleware,
     (req, res) => {
 
         // const username = req.headers.username
@@ -53,7 +40,7 @@ postRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
     res.status(200).send(getPost)
 })
 
-postRoutes.put('/:id',idValidation,nameValidation,descriptionValidation,contentValidation,blogIdValidation,postInputMiddleware,
+postRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,descriptionValidation,contentValidation,blogIdValidation,inputValidationMiddleware,
     (req, res) => {
 
 
@@ -71,7 +58,7 @@ postRoutes.put('/:id',idValidation,nameValidation,descriptionValidation,contentV
         }
     })
 
-postRoutes.delete('/:id', (req:Request, res:Response) => {
+postRoutes.delete('/:id',baseAuthorizationMiddleware, (req:Request, res:Response) => {
 
     const deletePost = postRepository.deletePostById(+req.params.id)
 
