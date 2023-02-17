@@ -39,7 +39,7 @@ postRoutes.post('/',baseAuthorizationMiddleware,blogIdValidation,nameValidation,
         const content = req.body.content;
         const blogId = req.body.blogId;
 
-        const findBlogId = blogs.find(p=>p.id == blogId)
+        const findBlogId = blogs.find(p=>p.id === blogId)
 
         if(findBlogId){
             const newPost = postRepository.createPost(title, shortDescription, content, blogId)
