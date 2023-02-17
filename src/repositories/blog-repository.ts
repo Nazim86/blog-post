@@ -8,14 +8,14 @@ type blogsType={
 
 export const blogs: Array<blogsType> = []
 
-export function checkBlogsId (blogId:any){
-
-    for (let i=0; i<blogs.length; i++){
-
-        return blogs[i].id === blogId;
-    }
-
-}
+// export function checkBlogsId (blogId:any){
+//
+//     for (let i=0; i<blogs.length; i++){
+//
+//         return blogs[i].id === blogId;
+//     }
+//
+// }
 
 export const blogRepository = {
     createBlog(name: string, description:string, websiteUrl:string) {

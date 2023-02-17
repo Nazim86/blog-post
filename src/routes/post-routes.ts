@@ -3,7 +3,7 @@ import {body, param} from "express-validator";
 import {postRepository, posts} from "../repositories/post-repository";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
-import {checkBlogsId} from "../repositories/blog-repository";
+import {blogs} from "../repositories/blog-repository";
 
 export const postRoutes = Router({})
 
@@ -11,16 +11,18 @@ const nameValidation = body("title").isString().trim().notEmpty().isLength({max:
 const descriptionValidation = body("shortDescription").isString().trim().notEmpty().isLength({max:100})
 const contentValidation = body("content").isString().trim().notEmpty().isLength({max:1000})
 const idValidation = param("id").exists()
-const blogIdValidation = body("blogId").isString().trim().notEmpty().custom((blogs, { req }) => {
+export const blogIdValidation = body("blogId").isString().trim().notEmpty()
 
-       if (checkBlogsId(req.body.blogId)){
-           return true;
-       }else{
-           throw new Error("Invalid ID")
-       }
-    // Indicates the success of this synchronous custom validator
-
-})
+// custom((blogs, { req }) => {
+//
+//        if (checkBlogsId(req.body.blogId)){
+//            return true;
+//        }else{
+//            throw new Error("Invalid ID")
+//        }
+//     // Indicates the success of this synchronous custom validator
+//
+// })
 
 
 
@@ -37,12 +39,15 @@ postRoutes.post('/',baseAuthorizationMiddleware,blogIdValidation,nameValidation,
         const content = req.body.content;
         const blogId = req.body.blogId;
 
+        const findBlogId = blogs.find(p=>p.id == blogId)
 
-        const newPost = postRepository.createPost(title, shortDescription, content, blogId)
-
-        if (newPost) {
-            res.status(201).send(newPost)
+        if(findBlogId){
+            const newPost = postRepository.createPost(title, shortDescription, content, blogId)
+            if (newPost) {
+                res.status(201).send(newPost)
+            }
         }
+
     })
 
 postRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
