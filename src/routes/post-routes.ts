@@ -3,21 +3,32 @@ import {body, param} from "express-validator";
 import {postRepository, posts} from "../repositories/post-repository";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {checkBlogsId} from "../repositories/blog-repository";
 
 export const postRoutes = Router({})
 
 const nameValidation = body("title").isString().trim().notEmpty().isLength({max:30})
 const descriptionValidation = body("shortDescription").isString().trim().notEmpty().isLength({max:100})
 const contentValidation = body("content").isString().trim().notEmpty().isLength({max:1000})
-const blogIdValidation = body("blogId").isString().trim().notEmpty().isLength({max:15})
 const idValidation = param("id").exists()
+const blogIdValidation = body("blogId").isString().trim().notEmpty().custom((blogs, { req }) => {
+
+       if (checkBlogsId(req.body.blogId)){
+           return true;
+       }else{
+           throw new Error("Invalid ID")
+       }
+    // Indicates the success of this synchronous custom validator
+
+})
+
+
 
 postRoutes.get('/', (req:Request, res:Response) => {
-
     res.status(200).send(posts)
 })
 
-postRoutes.post('/',baseAuthorizationMiddleware,nameValidation,descriptionValidation,contentValidation,blogIdValidation,inputValidationMiddleware,
+postRoutes.post('/',baseAuthorizationMiddleware,blogIdValidation,nameValidation,descriptionValidation,contentValidation,inputValidationMiddleware,
     (req, res) => {
 
         // const username = req.headers.username
@@ -25,6 +36,7 @@ postRoutes.post('/',baseAuthorizationMiddleware,nameValidation,descriptionValida
         const shortDescription = req.body.shortDescription;
         const content = req.body.content;
         const blogId = req.body.blogId;
+
 
         const newPost = postRepository.createPost(title, shortDescription, content, blogId)
 
@@ -47,7 +59,7 @@ postRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
 })
 
 
-postRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,descriptionValidation,contentValidation,blogIdValidation,inputValidationMiddleware,
+postRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,blogIdValidation,nameValidation,descriptionValidation,contentValidation,inputValidationMiddleware,
     (req, res) => {
 
 
