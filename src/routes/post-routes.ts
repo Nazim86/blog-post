@@ -46,13 +46,28 @@ postRoutes.post('/',baseAuthorizationMiddleware,blogIdValidation,nameValidation,
         const content = req.body.content;
         const blogId = req.body.blogId;
 
-        const findBlogId = blogs.filter(p=>p.id === blogId)
+        const findBlogId = blogs.find(p=>p.id === blogId)
+
+        console.log(findBlogId)
+        const errMessage =
+        {
+            "errorsMessages": [
+            {
+                "message": "Blog Id not foung",
+                "field": "blogId"
+            }
+        ]
+        }
+
+
 
         if(findBlogId){
             const newPost = postRepository.createPost(title, shortDescription, content, blogId)
             if (newPost) {
                 res.status(201).send(newPost)
             }
+        } else{
+            res.send(errMessage)
         }
 
     })
