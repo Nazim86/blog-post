@@ -11,15 +11,15 @@ const nameValidation = body("title").isString().trim().notEmpty().isLength({max:
 const descriptionValidation = body("shortDescription").isString().trim().notEmpty().isLength({max:100})
 const contentValidation = body("content").isString().trim().notEmpty().isLength({max:1000})
 const idValidation = param("id").exists()
-export const blogIdValidation = body("blogId").isString().trim().notEmpty()
-// custom((value, { req }) => {
-//     if (value !== req.body.blogId) {
-//         throw new Error('Password confirmation does not match password');
-//     }
-//
-//     // Indicates the success of this synchronous custom validator
-//     return true;
-// })
+export const blogIdValidation = body("blogId").isString().trim().notEmpty().
+custom((findBlogId, { req }) => {
+    if (blogs.find(p=>p.id!= req.body.blogId) ) {
+        throw new Error('Password confirmation does not match password');
+    }
+
+    // Indicates the success of this synchronous custom validator
+    return true;
+})
 
 // custom((blogs, { req }) => {
 //
@@ -46,29 +46,27 @@ postRoutes.post('/',baseAuthorizationMiddleware,blogIdValidation,nameValidation,
         const content = req.body.content;
         const blogId = req.body.blogId;
 
-        const findBlogId = blogs.find(p=>p.id === blogId)
+        // const findBlogId = blogs.find(p=>p.id === blogId)
+        // //
+        // // console.log(findBlogId)
+        // // const errMessage =
+        // // {
+        // //     "errorsMessages": [
+        // //     {
+        // //         "message": "Blog Id not foung",
+        // //         "field": "blogId"
+        // //     }
+        // // ]
+        // // }
 
-        console.log(findBlogId)
-        const errMessage =
-        {
-            "errorsMessages": [
-            {
-                "message": "Blog Id not foung",
-                "field": "blogId"
-            }
-        ]
-        }
 
 
 
-        if(findBlogId){
             const newPost = postRepository.createPost(title, shortDescription, content, blogId)
             if (newPost) {
                 res.status(201).send(newPost)
             }
-        } else{
-            res.send(errMessage)
-        }
+
 
     })
 
