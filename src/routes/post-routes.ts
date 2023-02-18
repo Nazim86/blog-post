@@ -38,7 +38,7 @@ postRoutes.get('/', (req:Request, res:Response) => {
     res.status(200).send(posts)
 })
 
-postRoutes.post('/',baseAuthorizationMiddleware,blogIdValidation,nameValidation,descriptionValidation,contentValidation,inputValidationMiddleware,
+postRoutes.post('/',baseAuthorizationMiddleware,nameValidation,descriptionValidation,contentValidation,blogIdValidation,inputValidationMiddleware,
     (req, res) => {
 
         const title = req.body.title
@@ -84,7 +84,7 @@ postRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
 })
 
 
-postRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,blogIdValidation,nameValidation,descriptionValidation,contentValidation,inputValidationMiddleware,
+postRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,descriptionValidation,contentValidation,blogIdValidation,inputValidationMiddleware,
     (req, res) => {
 
 
