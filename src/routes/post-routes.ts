@@ -1,23 +1,19 @@
 import {Request, Response, Router} from "express";
-import {body, param} from "express-validator";
 import {postRepository, posts} from "../repositories/post-repository";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
-import {blogs} from "../repositories/blog-repository";
+import {
+    blogIdValidation,
+    contentValidation,
+    descriptionValidation,
+    postNameValidation
+} from "../validations/post-validations";
+
 
 export const postRoutes = Router({})
 
-const nameValidation = body("title").isString().trim().notEmpty().isLength({max: 30})
-const descriptionValidation = body("shortDescription").isString().trim().notEmpty().isLength({max: 100})
-const contentValidation = body("content").isString().trim().notEmpty().isLength({max: 1000})
-const idValidation = param("id").exists()
-export const blogIdValidation = body("blogId").isString().trim().notEmpty().custom(value => {
-    const blog = blogs.find(b => b.id === value)
-    if (!blog) throw new Error()
-    return true;
-})
 
-const createPostValidation = [ nameValidation, descriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware,]
+const createPostValidation = [ postNameValidation, descriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware] //
 
 postRoutes.get('/', (req: Request, res: Response) => {
     res.status(200).send(posts)
@@ -54,7 +50,7 @@ postRoutes.get('/:id',  (req: Request, res: Response) => {
 })
 
 
-postRoutes.put('/:id', baseAuthorizationMiddleware, idValidation, nameValidation, descriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware,
+postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
     (req: Request, res: Response) => {
 
 

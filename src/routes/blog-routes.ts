@@ -1,24 +1,20 @@
 import {Request, Response, Router} from "express";
-import {body, param} from "express-validator";
 import {blogRepository, blogs} from "../repositories/blog-repository";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {description, nameValidation, websiteUrl} from "../validations/blog-validations";
 
 export const blogRoutes = Router({})
 
-
-const nameValidation = body("name").isString().trim().notEmpty().isLength({max:15})
-const description = body("description").isString().trim().notEmpty().isLength({max:500})
-const websiteUrl = body("websiteUrl").isString().trim().notEmpty().isLength({max:100}).matches("^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$")
-const idValidation = param("id").exists()
+const createPostValidations= [nameValidation,description,websiteUrl, inputValidationMiddleware]
 
 blogRoutes.get('/', (req:Request, res:Response) => {
 
     res.status(200).send(blogs)
 })
 
-blogRoutes.post('/',baseAuthorizationMiddleware,nameValidation,description,websiteUrl, inputValidationMiddleware,
-    (req, res) => {
+blogRoutes.post('/',baseAuthorizationMiddleware,createPostValidations,
+    (req:Request, res:Response) => {
 
     // const username = req.headers.username
         const name = req.body.name
@@ -32,7 +28,7 @@ blogRoutes.post('/',baseAuthorizationMiddleware,nameValidation,description,websi
         }
     })
 
-blogRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
+blogRoutes.get('/:id', (req:Request, res:Response) => {
 
    const getBlog = blogRepository.getBlogById(req.params.id)
 
@@ -44,8 +40,8 @@ blogRoutes.get('/:id',idValidation, (req:Request, res:Response) => {
 
 })
 
-blogRoutes.put('/:id',baseAuthorizationMiddleware,idValidation,nameValidation,description,websiteUrl, inputValidationMiddleware,
-    (req, res) => {
+blogRoutes.put('/:id',baseAuthorizationMiddleware,createPostValidations,
+    (req:Request, res:Response) => {
 
 
         const name = req.body.name
