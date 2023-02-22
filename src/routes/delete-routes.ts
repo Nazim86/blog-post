@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
-import {posts} from "../repositories/post-repository";
-import {blogs} from "../repositories/blog-repository";
+import {posts} from "../repositories/post-in-memory-repository";
+import {blogs} from "../repositories/blog-in-memory-repository";
 
 export const deleteRoute = Router({})
 

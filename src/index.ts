@@ -2,8 +2,8 @@ import express, {Request, Response} from "express";
 import bodyParser from "body-parser";
 import {blogRoutes} from "./routes/blog-routes";
 import {postRoutes} from "./routes/post-routes";
-import {posts} from "./repositories/post-repository";
-import {blogs} from "./repositories/blog-repository";
+import {posts} from "./repositories/post-in-memory-repository";
+import {blogs} from "./repositories/blog-in-memory-repository";
 import {runDb} from "./repositories/db";
 // import {deleteRoute} from "./routes/delete-routes";
 

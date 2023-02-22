@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {blogs} from "../repositories/blog-repository";
+import {blogs} from "../repositories/blog-in-memory-repository";
 
 export const postNameValidation = body("title").isString().trim().notEmpty().isLength({max: 30})
 export const descriptionValidation = body("shortDescription").isString().trim().notEmpty().isLength({max: 100})
