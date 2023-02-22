@@ -24,7 +24,7 @@ app.delete('/testing/all-data', (req: Request, res: Response) => {
 })
 
 
-const startApp = async ()
+const startApp = async ()=>
 {
     await runDb()
 
