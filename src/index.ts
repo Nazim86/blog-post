@@ -4,6 +4,7 @@ import {blogRoutes} from "./routes/blog-routes";
 import {postRoutes} from "./routes/post-routes";
 import {posts} from "./repositories/post-repository";
 import {blogs} from "./repositories/blog-repository";
+import {runDb} from "./repositories/db";
 // import {deleteRoute} from "./routes/delete-routes";
 
 const app = express()
@@ -23,8 +24,13 @@ app.delete('/testing/all-data', (req: Request, res: Response) => {
 })
 
 
+const startApp = async ()
+{
+    await runDb()
 
+    app.listen(port, () => {
+        console.log(`Example app listening on port ${port}`)
+    })
+}
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-})
+startApp()
