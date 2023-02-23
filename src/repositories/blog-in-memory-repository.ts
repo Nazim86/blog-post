@@ -9,7 +9,7 @@ type blogsType={
 export const blogs: Array<blogsType> = []
 
 export const blogRepository = {
-    createBlog(name: string, description:string, websiteUrl:string) {
+   async createBlog(name: string, description:string, websiteUrl:string) {
         const newId = new Date();
         const creatingBlog: blogsType ={
             id: newId.toISOString(),
@@ -21,10 +21,10 @@ export const blogRepository = {
         return creatingBlog
     },
 
-    getBlogById(id:string){
+    async getBlogById(id:string){
         return blogs.find(p => p.id === id)
     },
-    updateBlog(id:string,name: string, description:string, websiteUrl:string){
+    async updateBlog(id:string,name: string, description:string, websiteUrl:string){
         const updateById = blogs.find(p=>p.id === id )
         if (updateById){
             updateById.name = name
@@ -35,7 +35,7 @@ export const blogRepository = {
 
     },
 
-    deleteBlogById(id:string){
+    async deleteBlogById(id:string){
         const deleteById = blogs.find(p=>p.id === id )
 
         if(deleteById){

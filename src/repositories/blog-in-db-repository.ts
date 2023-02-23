@@ -1,6 +1,7 @@
 import {client} from "./db";
 
-type blogsType={
+
+export type blogsType={
 
     id:string
     name: string
@@ -14,15 +15,19 @@ export const blogRepository = {
 
     async createBlog( name: string, description:string, websiteUrl:string): Promise<blogsType> {
 
-        const newId = new Date();
+        const newId = new Date().getTime();
+        const createdAt = new Date();
 
         const newBlog = {
-            id: newId.toISOString(),
+            id: newId.toString(),
             name: name,
             description: description,
-            websiteUrl: websiteUrl
+            websiteUrl: websiteUrl,
+            createdAt: createdAt.toString(),
+            isMembership: true
+
         }
-        const result = await client.db('blogPost').collection('blogs').insertOne(newBlog)
+        await client.db('blogPost').collection('blogs').insertOne(newBlog)
         return newBlog
 
     },
@@ -37,27 +42,19 @@ export const blogRepository = {
         return client.db('blogPost').collection<blogsType>("blogs").find({id:id}).toArray()
         //blogs.find(p => p.id === id)
     },
-   async updateBlog(id:string,name: string, description:string, websiteUrl:string){
-        const updateById = await client.db('blogPost').collection<blogsType>("blogs").find({id:id}).toArray()
-
-       console.log(updateById)
-        // if (updateById){
-        //     updateById.name = name
-        //     updateById.description = description
-        //     updateById.websiteUrl = websiteUrl
-        //     return true
-        // }
+   async updateBlog(id:string,name: string, description:string, websiteUrl:string): Promise<boolean>{
+      await client.db('blogPost').collection<blogsType>("blogs").updateOne({id:id},
+            {$set:{name:name, description: description, websiteUrl: websiteUrl }}
+        )
+       return true
 
     },
 
-    deleteBlogById(id:string){
-        const deleteById = blogs.find(p=>p.id === id )
+   async deleteBlogById(id:string):Promise<boolean>{
+        const deleteById = await client.db("blogPost").collection("blogs").deleteOne({id:id},)
 
-        if(deleteById){
-            blogs.splice(blogs.indexOf(deleteById),1)
-            return true
-        }
-
+        console.log(deleteById)
+        return true
     }
 
 

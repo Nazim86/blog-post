@@ -1,3 +1,7 @@
+import {client} from "./db";
+import {blogsType} from "./blog-in-db-repository";
+import {promises} from "dns";
+
 type postsType={
     id:string
     title: string
@@ -10,9 +14,10 @@ type postsType={
 export const posts: Array<postsType> = []
 
 export const postRepository = {
-    createPost(title: string, shortDescription:string, content: string, blogId:string) {
+    async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<postsType> {
         const newId = new Date();
-        const creatingPost: postsType ={
+
+        const newPost: postsType ={
             id: newId.toISOString(),
             title: title,
             shortDescription: shortDescription,
@@ -20,32 +25,38 @@ export const postRepository = {
             blogId: blogId,
             blogName: newId.toString()
         }
-        posts.push(creatingPost)
-        return creatingPost
+
+        await client.db("blogPost").collection("posts").insertOne(newPost)
+        return newPost
     },
 
-    getPostById(id:string){
-        return posts.find(p => p.id === id)
+    async getPost():Promise<postsType[]>{
+        return client.db("blogPost").collection<postsType>("posts").find({}).toArray()
     },
-    updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string){
-        const updateById = posts.find(p=>p.id === id )
-        if (updateById){
-            updateById.title = title
-            updateById.shortDescription = shortDescription
-            updateById.content = content
-            updateById.blogId = blogId
-            return true
+
+    async getPostById(id:string): Promise<postsType[]>{
+        return await client.db("blogPost").collection<postsType>("posts").find({id:id}).toArray()
+    },
+
+    async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
+        const updateById = {
+            title: title,
+            shortDescription: shortDescription,
+            content: content,
+            blogId:blogId
+
         }
+        await client.db("blogPost").collection<postsType>("posts").updateOne({id:id},{$set:{title: title,
+                shortDescription: shortDescription,
+                content: content,
+                blogId:blogId}})
 
+        return true
     },
 
-    deletePostById(id:string){
-        const deleteById = posts.find(p=>p.id === id )
-
-        if(deleteById){
-            posts.splice(posts.indexOf(deleteById),1)
-            return true
-        }
+    async deletePostById(id:string):Promise <boolean>{
+        await client.db("blogPost").collection("posts").deleteOne({id:id})
+        return true
 
     }
 

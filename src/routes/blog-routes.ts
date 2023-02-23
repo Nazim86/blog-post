@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {blogRepository, blogs} from "../repositories/blog-in-db-repository";
+import {blogRepository, blogsType} from "../repositories/blog-in-db-repository";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {description, nameValidation, websiteUrl} from "../validations/blog-validations";
@@ -10,7 +10,7 @@ const createPostValidations= [nameValidation,description,websiteUrl, inputValida
 
 blogRoutes.get('/', async (req: Request, res: Response) => {
 
-    const getBlog = await blogRepository.getBlog()
+    const getBlog: blogsType[] = await blogRepository.getBlog()
 
     res.status(200).send(getBlog)
 })
@@ -23,7 +23,7 @@ blogRoutes.post('/',baseAuthorizationMiddleware,createPostValidations,
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
 
-        const newBlog = await blogRepository.createBlog(name, description, websiteUrl)
+        const newBlog: blogsType= await blogRepository.createBlog(name, description, websiteUrl)
 
         if (newBlog) {
             res.status(201).send(newBlog)
@@ -32,7 +32,7 @@ blogRoutes.post('/',baseAuthorizationMiddleware,createPostValidations,
 
 blogRoutes.get('/:id', async (req: Request, res: Response) => {
 
-    const getBlog = await blogRepository.getBlogById(req.params.id)
+    const getBlog : blogsType[]= await blogRepository.getBlogById(req.params.id)
 
     if (getBlog) {
         res.status(200).send(getBlog)
@@ -50,7 +50,7 @@ blogRoutes.put('/:id',baseAuthorizationMiddleware,createPostValidations,
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
 
-        const updateBlog = await blogRepository.updateBlog(req.params.id, name, description, websiteUrl)
+        const updateBlog: boolean = await blogRepository.updateBlog(req.params.id, name, description, websiteUrl)
 
         if (updateBlog) {
             res.send(204)
@@ -61,7 +61,7 @@ blogRoutes.put('/:id',baseAuthorizationMiddleware,createPostValidations,
 
 blogRoutes.delete('/:id',baseAuthorizationMiddleware, async (req: Request, res: Response) => {
 
-    const deleteBlog = await blogRepository.deleteBlogById(req.params.id)
+    const deleteBlog: boolean = await blogRepository.deleteBlogById(req.params.id)
 
     if (deleteBlog) {
         res.send(204)

@@ -10,7 +10,7 @@ type postsType={
 export const posts: Array<postsType> = []
 
 export const postRepository = {
-    createPost(title: string, shortDescription:string, content: string, blogId:string) {
+    async createPost(title: string, shortDescription:string, content: string, blogId:string) {
         const newId = new Date();
         const creatingPost: postsType ={
             id: newId.toISOString(),
@@ -24,10 +24,10 @@ export const postRepository = {
         return creatingPost
     },
 
-    getPostById(id:string){
+    async getPostById(id:string){
         return posts.find(p => p.id === id)
     },
-    updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string){
+    async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string){
         const updateById = posts.find(p=>p.id === id )
         if (updateById){
             updateById.title = title
@@ -39,7 +39,7 @@ export const postRepository = {
 
     },
 
-    deletePostById(id:string){
+    async deletePostById(id:string){
         const deleteById = posts.find(p=>p.id === id )
 
         if(deleteById){

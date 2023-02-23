@@ -15,14 +15,17 @@ exports.blogs = [];
 exports.blogRepository = {
     createBlog(name, description, websiteUrl) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newId = new Date();
+            const newId = new Date().getTime();
+            const createdAt = new Date();
             const newBlog = {
-                id: newId.toISOString(),
+                id: newId.toString(),
                 name: name,
                 description: description,
-                websiteUrl: websiteUrl
+                websiteUrl: websiteUrl,
+                createdAt: createdAt.toString(),
+                isMembership: true
             };
-            const result = yield db_1.client.db('blogPost').collection('blogs').insertOne(newBlog);
+            yield db_1.client.db('blogPost').collection('blogs').insertOne(newBlog);
             return newBlog;
         });
     },
@@ -39,21 +42,15 @@ exports.blogRepository = {
     },
     updateBlog(id, name, description, websiteUrl) {
         return __awaiter(this, void 0, void 0, function* () {
-            const updateById = yield db_1.client.db('blogPost').collection("blogs").find({ id: id }).toArray();
-            console.log(updateById);
-            // if (updateById){
-            //     updateById.name = name
-            //     updateById.description = description
-            //     updateById.websiteUrl = websiteUrl
-            //     return true
-            // }
+            yield db_1.client.db('blogPost').collection("blogs").updateOne({ id: id }, { $set: { name: name, description: description, websiteUrl: websiteUrl } });
+            return true;
         });
     },
     deleteBlogById(id) {
-        const deleteById = exports.blogs.find(p => p.id === id);
-        if (deleteById) {
-            exports.blogs.splice(exports.blogs.indexOf(deleteById), 1);
+        return __awaiter(this, void 0, void 0, function* () {
+            const deleteById = yield db_1.client.db("blogPost").collection("blogs").deleteOne({ id: id });
+            console.log(deleteById);
             return true;
-        }
+        });
     }
 };
