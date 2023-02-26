@@ -1,4 +1,3 @@
-import {ObjectId} from "mongodb";
 
 export type PostsViewType={
     id:string
@@ -7,4 +6,5 @@ export type PostsViewType={
     content : string
     blogId: string
     blogName: string
+    createdAt: string
 }

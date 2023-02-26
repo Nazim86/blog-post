@@ -16,7 +16,8 @@ export const postRepository = {
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: newId.toString()
+            blogName: newId.toString(),
+            createdAt: new Date().toISOString()
         }
 
         const result =  await postsCollection.insertOne(newPost)
@@ -26,7 +27,8 @@ export const postRepository = {
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: newId.toString()
+            blogName: newId.toString(),
+            createdAt: new Date().toISOString()
         }
     },
 
@@ -44,7 +46,8 @@ export const postRepository = {
                 shortDescription: postById.shortDescription,
                 content: postById.content,
                 blogId: postById.blogId,
-                blogName: postById.blogName
+                blogName: postById.blogName,
+                createdAt: postById.createdAt
             }
         }else{
             return false
