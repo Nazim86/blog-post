@@ -1,10 +1,18 @@
 import {MongoClient} from 'mongodb'
 import {BlogsDbType} from "../types/blogs-db-type";
 import {PostsDbType} from "../types/posts-db-type";
+import * as Process from "process";
 
-const mongoUri = "mongodb+srv://nazim86:12345@cluster0.2p7d5fb.mongodb.net/?retryWrites=true&w=majority";
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config()
 
-export const client = new MongoClient(mongoUri)
+
+const url = Process.env.MONGO_URL
+
+if (!url){
+    throw new Error("Url does not found")
+}
+export const client = new MongoClient(url)
 // process.env.mongoURI ||
 const db = client.db('blogPost')
 
