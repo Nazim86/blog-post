@@ -1,25 +1,23 @@
 import express, {Request, Response} from "express";
-import bodyParser from "body-parser";
 import {blogRoutes} from "./routes/blog-routes";
 import {postRoutes} from "./routes/post-routes";
-import {posts} from "./repositories/post-in-memory-repository";
-import {blogs} from "./repositories/blog-in-memory-repository";
-import {runDb} from "./repositories/db";
-// import {deleteRoute} from "./routes/delete-routes";
+import {blogsCollection, postsCollection, runDb} from "./db/db";
 
-const app = express()
+export const app = express()
 
-const parserMiddleware = bodyParser({})
-app.use(parserMiddleware)
+// const parserMiddleware = bodyParser({})
+// app.use(parserMiddleware)
+
+app.use(express.json());
 
 const port = process.env.PORT || 5000
 
-app.use("/blogs", blogRoutes)
-app.use("/posts", postRoutes)
+app.use("/blogs", blogRoutes);
+app.use("/posts", postRoutes);
 
 app.delete('/testing/all-data', (req: Request, res: Response) => {
-    posts.length = 0
-    blogs.length = 0
+blogsCollection.deleteMany({})
+    postsCollection.deleteMany({})
     return res.sendStatus(204)
 })
 

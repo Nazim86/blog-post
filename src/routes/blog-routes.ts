@@ -1,8 +1,10 @@
 import {Request, Response, Router} from "express";
-import {blogRepository, blogsType} from "../repositories/blog-in-db-repository";
+import {blogRepository} from "../repositories/blog-in-db-repository";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {description, nameValidation, websiteUrl} from "../validations/blog-validations";
+import {ObjectId} from "mongodb";
+import {BlogsViewType} from "../types/blogs-view-type";
 
 export const blogRoutes = Router({})
 
@@ -10,7 +12,7 @@ const createPostValidations= [nameValidation,description,websiteUrl, inputValida
 
 blogRoutes.get('/', async (req: Request, res: Response) => {
 
-    const getBlog: blogsType[] = await blogRepository.getBlog()
+    const getBlog: BlogsViewType[] = await blogRepository.getBlog()
 
     res.status(200).send(getBlog)
 })
@@ -23,7 +25,7 @@ blogRoutes.post('/',baseAuthorizationMiddleware,createPostValidations,
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
 
-        const newBlog: blogsType= await blogRepository.createBlog(name, description, websiteUrl)
+        const newBlog: BlogsViewType = await blogRepository.createBlog(name, description, websiteUrl)
 
         if (newBlog) {
             res.status(201).send(newBlog)
@@ -32,7 +34,7 @@ blogRoutes.post('/',baseAuthorizationMiddleware,createPostValidations,
 
 blogRoutes.get('/:id', async (req: Request, res: Response) => {
 
-    const getBlog : blogsType[]= await blogRepository.getBlogById(req.params.id)
+    const getBlog : BlogsViewType |boolean= await blogRepository.getBlogById(new ObjectId(req.params.id))
 
     if (getBlog) {
         res.status(200).send(getBlog)

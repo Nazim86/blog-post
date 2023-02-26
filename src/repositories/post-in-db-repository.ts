@@ -1,24 +1,17 @@
-import {client} from "./db";
-import {blogsType} from "./blog-in-db-repository";
-import {promises} from "dns";
+import {postsCollection} from "../db/db";
+import {ObjectId} from "mongodb";
+import {PostsViewType} from "../types/posts-view-type";
+import {PostsDbType} from "../types/posts-db-type";
+import {postMapping} from "../mapping/post-mapping";
 
-type postsType={
-    id:string
-    title: string
-    shortDescription : string
-    content : string
-    blogId: string
-    blogName: string
-}
 
-export const posts: Array<postsType> = []
 
 export const postRepository = {
-    async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<postsType> {
+    async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<PostsViewType> {
         const newId = new Date();
 
-        const newPost: postsType ={
-            id: newId.toISOString(),
+        const newPost: PostsDbType ={
+            _id: new ObjectId(),
             title: title,
             shortDescription: shortDescription,
             content: content,
@@ -26,37 +19,53 @@ export const postRepository = {
             blogName: newId.toString()
         }
 
-        await client.db("blogPost").collection("posts").insertOne(newPost)
-        return newPost
-    },
-
-    async getPost():Promise<postsType[]>{
-        return client.db("blogPost").collection<postsType>("posts").find({}).toArray()
-    },
-
-    async getPostById(id:string): Promise<postsType[]>{
-        return await client.db("blogPost").collection<postsType>("posts").find({id:id}).toArray()
-    },
-
-    async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
-        const updateById = {
+        const result =  await postsCollection.insertOne(newPost)
+        return {
+            id: result.insertedId.toString(),
             title: title,
             shortDescription: shortDescription,
             content: content,
-            blogId:blogId
-
+            blogId: blogId,
+            blogName: newId.toString()
         }
-        await client.db("blogPost").collection<postsType>("posts").updateOne({id:id},{$set:{title: title,
+    },
+
+    async getPost():Promise<PostsViewType[]>{
+        const getposts = await postsCollection.find({}).toArray()
+        return postMapping(getposts)
+    },
+
+    async getPostById(id:ObjectId): Promise<PostsViewType |boolean>{
+        const postById = await postsCollection.findOne({_id:id})
+        if (postById) {
+            return {
+                id: postById._id.toString(),
+                title: postById.title,
+                shortDescription: postById.shortDescription,
+                content: postById.content,
+                blogId: postById.blogId,
+                blogName: postById.blogName
+            }
+        }else{
+            return false
+        }
+    },
+
+    async updatePost(id:ObjectId,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
+
+        const result = await postsCollection.updateOne({id:id},{$set:
+                {title: title,
                 shortDescription: shortDescription,
                 content: content,
                 blogId:blogId}})
 
-        return true
+
+        return result.matchedCount===1
     },
 
     async deletePostById(id:string):Promise <boolean>{
-        await client.db("blogPost").collection("posts").deleteOne({id:id})
-        return true
+        const result = await postsCollection.deleteOne({id:id})
+         return result.deletedCount===1
 
     }
 

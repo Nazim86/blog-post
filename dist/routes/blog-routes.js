@@ -15,6 +15,7 @@ const blog_in_db_repository_1 = require("../repositories/blog-in-db-repository")
 const base_auth_middlewares_1 = require("../middlewares/base-auth-middlewares");
 const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 const blog_validations_1 = require("../validations/blog-validations");
+const mongodb_1 = require("mongodb");
 exports.blogRoutes = (0, express_1.Router)({});
 const createPostValidations = [blog_validations_1.nameValidation, blog_validations_1.description, blog_validations_1.websiteUrl, input_validation_middleware_1.inputValidationMiddleware];
 exports.blogRoutes.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,7 +33,7 @@ exports.blogRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware
     }
 }));
 exports.blogRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getBlog = yield blog_in_db_repository_1.blogRepository.getBlogById(req.params.id);
+    const getBlog = yield blog_in_db_repository_1.blogRepository.getBlogById(new mongodb_1.ObjectId(req.params.id));
     if (getBlog) {
         res.status(200).send(getBlog);
     }

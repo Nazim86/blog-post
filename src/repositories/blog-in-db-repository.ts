@@ -1,60 +1,76 @@
-import {client} from "./db";
+import {blogsCollection} from "../db/db";
+import {ObjectId} from "mongodb";
+import {blogMapping} from "../mapping/blog-mapping";
+import {BlogsViewType} from "../types/blogs-view-type";
+import {BlogsDbType} from "../types/blogs-db-type";
 
 
-export type blogsType={
-
-    id:string
-    name: string
-    description: string
-    websiteUrl: string
-}
-
-export const blogs: Array<blogsType> = []
 
 export const blogRepository = {
 
-    async createBlog( name: string, description:string, websiteUrl:string): Promise<blogsType> {
+    async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogsViewType> {
 
-        const newId = new Date().getTime();
-        const createdAt = new Date();
-
-        const newBlog = {
-            id: newId.toString(),
+        const newBlog: BlogsDbType = {
+            _id: new ObjectId(),
             name: name,
             description: description,
             websiteUrl: websiteUrl,
-            createdAt: createdAt.toString(),
-            isMembership: true
+            createdAt: new Date().toString(),
+            isMembership: false
+
 
         }
-        await client.db('blogPost').collection('blogs').insertOne(newBlog)
-        return newBlog
+
+        const result = await blogsCollection.insertOne(newBlog)
+
+
+        return {
+            id: result.insertedId.toString(),
+            name: newBlog.name,
+            description: newBlog.description,
+            websiteUrl: newBlog.websiteUrl,
+            createdAt: newBlog.createdAt,
+            isMembership: newBlog.isMembership
+        }
 
     },
 
-    async getBlog(): Promise<blogsType[]>{
+    async getBlog(): Promise<BlogsViewType[]> {
 
-        return await client.db('blogPost').collection<blogsType>('blogs').find({}).toArray()
+        const array = await blogsCollection.find({}).toArray()
 
+        return blogMapping(array)
     },
 
-    async getBlogById(id:string): Promise<blogsType[]>{
-        return client.db('blogPost').collection<blogsType>("blogs").find({id:id}).toArray()
-        //blogs.find(p => p.id === id)
+    async getBlogById(_id: ObjectId): Promise<BlogsViewType | boolean> {
+
+        const foundBlog = await blogsCollection.findOne({_id: _id})
+        if (foundBlog) {
+            return {
+                id: foundBlog._id.toString(),
+                name: foundBlog.name,
+                description: foundBlog.description,
+                websiteUrl: foundBlog.websiteUrl,
+                createdAt: foundBlog.createdAt,
+                isMembership: foundBlog.isMembership
+            }
+        } else {
+            return false
+        }
     },
-   async updateBlog(id:string,name: string, description:string, websiteUrl:string): Promise<boolean>{
-      await client.db('blogPost').collection<blogsType>("blogs").updateOne({id:id},
-            {$set:{name:name, description: description, websiteUrl: websiteUrl }}
+    async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
+        const result = await blogsCollection.updateOne({_id: new ObjectId(id)},
+            {$set: {name: name, description: description, websiteUrl: websiteUrl}}
         )
-       return true
+        return result.matchedCount === 1
 
     },
 
-   async deleteBlogById(id:string):Promise<boolean>{
-        const deleteById = await client.db("blogPost").collection("blogs").deleteOne({id:id},)
+    async deleteBlogById(id: string): Promise<boolean> {
+        const result = await blogsCollection.deleteOne({_id: new ObjectId(id)},)
 
-        console.log(deleteById)
-        return true
+
+        return result.deletedCount === 1
     }
 
 
