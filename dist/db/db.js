@@ -11,8 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runDb = exports.postsCollection = exports.blogsCollection = exports.client = void 0;
 const mongodb_1 = require("mongodb");
-const mongoUri = process.env.mongoURI || "mongodb://0.0.0.0:27017";
+const mongoUri = "mongodb+srv://nazim86:12345@cluster0.2p7d5fb.mongodb.net/?retryWrites=true&w=majority";
 exports.client = new mongodb_1.MongoClient(mongoUri);
+// process.env.mongoURI ||
 const db = exports.client.db('blogPost');
 exports.blogsCollection = db.collection("blogs");
 exports.postsCollection = db.collection("posts");

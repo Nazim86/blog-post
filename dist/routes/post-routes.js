@@ -58,11 +58,11 @@ exports.postRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     }
 }));
 exports.postRoutes.delete('/:id', base_auth_middlewares_1.baseAuthorizationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const deletePost = yield post_in_db_repository_1.postRepository.deletePostById(req.params.id);
+    const deletePost = yield post_in_db_repository_1.postRepository.deletePostById(new mongodb_1.ObjectId(req.params.id));
     if (deletePost) {
-        res.send(204);
+        res.sendStatus(204);
     }
     else {
-        res.send(404);
+        res.sendStatus(404);
     }
 }));

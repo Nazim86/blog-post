@@ -2,10 +2,10 @@ import {MongoClient} from 'mongodb'
 import {BlogsDbType} from "../types/blogs-db-type";
 import {PostsDbType} from "../types/posts-db-type";
 
-const mongoUri = process.env.mongoURI || "mongodb://0.0.0.0:27017";
+const mongoUri = "mongodb+srv://nazim86:12345@cluster0.2p7d5fb.mongodb.net/?retryWrites=true&w=majority";
 
 export const client = new MongoClient(mongoUri)
-
+// process.env.mongoURI ||
 const db = client.db('blogPost')
 
 export const blogsCollection = db.collection<BlogsDbType>("blogs")

@@ -1,7 +1,8 @@
-import express, {Request, Response} from "express";
+import express from "express";
 import {blogRoutes} from "./routes/blog-routes";
 import {postRoutes} from "./routes/post-routes";
-import {blogsCollection, postsCollection, runDb} from "./db/db";
+import { runDb} from "./db/db";
+import {deleteRoute} from "./routes/delete-routes";
 
 export const app = express()
 
@@ -14,12 +15,8 @@ const port = process.env.PORT || 5000
 
 app.use("/blogs", blogRoutes);
 app.use("/posts", postRoutes);
+app.use("/testing/all-data", deleteRoute)
 
-app.delete('/testing/all-data', (req: Request, res: Response) => {
-blogsCollection.deleteMany({})
-    postsCollection.deleteMany({})
-    return res.sendStatus(204)
-})
 
 
 const startApp = async ()=>

@@ -74,12 +74,12 @@ postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
 
 postRoutes.delete('/:id', baseAuthorizationMiddleware, async (req: Request, res: Response) => {
 
-    const deletePost:boolean = await postRepository.deletePostById(req.params.id)
+    const deletePost:boolean = await postRepository.deletePostById(new ObjectId(req.params.id))
 
     if (deletePost) {
-        res.send(204)
+        res.sendStatus(204)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 
 })

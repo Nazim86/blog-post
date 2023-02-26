@@ -53,7 +53,7 @@ export const postRepository = {
 
     async updatePost(id:ObjectId,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
-        const result = await postsCollection.updateOne({id:id},{$set:
+        const result = await postsCollection.updateOne({_id:id},{$set:
                 {title: title,
                 shortDescription: shortDescription,
                 content: content,
@@ -63,8 +63,8 @@ export const postRepository = {
         return result.matchedCount===1
     },
 
-    async deletePostById(id:string):Promise <boolean>{
-        const result = await postsCollection.deleteOne({id:id})
+    async deletePostById(id:ObjectId):Promise <boolean>{
+        const result = await postsCollection.deleteOne({_id:id})
          return result.deletedCount===1
 
     }

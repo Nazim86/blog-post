@@ -62,7 +62,7 @@ exports.postRepository = {
     },
     updatePost(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.postsCollection.updateOne({ id: id }, { $set: { title: title,
+            const result = yield db_1.postsCollection.updateOne({ _id: id }, { $set: { title: title,
                     shortDescription: shortDescription,
                     content: content,
                     blogId: blogId } });
@@ -71,7 +71,7 @@ exports.postRepository = {
     },
     deletePostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.postsCollection.deleteOne({ id: id });
+            const result = yield db_1.postsCollection.deleteOne({ _id: id });
             return result.deletedCount === 1;
         });
     }
