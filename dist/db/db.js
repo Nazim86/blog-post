@@ -39,7 +39,7 @@ const dotenv = __importStar(require("dotenv")); // see https://github.com/motdot
 dotenv.config();
 const url = Process.env.MONGO_URL;
 if (!url) {
-    throw new Error("Url does not found");
+    throw new Error("Url does not found!");
 }
 exports.client = new mongodb_1.MongoClient(url);
 // process.env.mongoURI ||
