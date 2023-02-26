@@ -10,7 +10,8 @@ export const postMapping = (array:PostsDbType[])=>{
             shortDescription: post.shortDescription,
             content: post.content,
             blogId: post.blogId,
-            blogName: post.blogName
+            blogName: post.blogName,
+            createdAt: post.createdAt
         }
     })
 }
