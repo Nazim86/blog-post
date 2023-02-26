@@ -32,7 +32,8 @@ exports.postRepository = {
                 shortDescription: shortDescription,
                 content: content,
                 blogId: blogId,
-                blogName: newId.toString()
+                blogName: newId.toString(),
+                createdAt: new Date().toISOString()
             };
         });
     },
@@ -52,7 +53,8 @@ exports.postRepository = {
                     shortDescription: postById.shortDescription,
                     content: postById.content,
                     blogId: postById.blogId,
-                    blogName: postById.blogName
+                    blogName: postById.blogName,
+                    createdAt: postById.createdAt
                 };
             }
             else {
