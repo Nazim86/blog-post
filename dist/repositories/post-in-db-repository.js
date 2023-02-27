@@ -23,7 +23,8 @@ exports.postRepository = {
                 shortDescription: shortDescription,
                 content: content,
                 blogId: blogId,
-                blogName: newId.toString()
+                blogName: newId.toString(),
+                createdAt: new Date().toISOString()
             };
             const result = yield db_1.postsCollection.insertOne(newPost);
             return {
@@ -33,7 +34,7 @@ exports.postRepository = {
                 content: content,
                 blogId: blogId,
                 blogName: newId.toString(),
-                createdAt: new Date().toISOString()
+                createdAt: newPost.createdAt
             };
         });
     },
