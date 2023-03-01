@@ -16,10 +16,16 @@ const input_validation_middleware_1 = require("../middlewares/input-validation-m
 const blog_validations_1 = require("../validations/blog-validations");
 const mongodb_1 = require("mongodb");
 const blogs_service_1 = require("../domain/blogs-service");
+const blog_query_repo_1 = require("../query-repositories/blog-query-repo");
 exports.blogRoutes = (0, express_1.Router)({});
 const createPostValidations = [blog_validations_1.nameValidation, blog_validations_1.description, blog_validations_1.websiteUrl, input_validation_middleware_1.inputValidationMiddleware];
 exports.blogRoutes.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getBlog = yield blogs_service_1.blogsService.getBlog();
+    const searchName = req.query.searchName;
+    const sortBy = req.query.sortBy;
+    const sortDirection = req.query.sortDirection;
+    const pageNumber = req.query.pageNumber;
+    const pageSize = req.query.pageSize;
+    const getBlog = yield blog_query_repo_1.blogQueryRepo.getBlog(searchName, sortBy ?  : , sortDirection ?  : , pageNumber ?  : , pageSize ?  : );
     res.status(200).send(getBlog);
 }));
 exports.blogRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware, createPostValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

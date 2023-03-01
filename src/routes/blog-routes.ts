@@ -6,6 +6,8 @@ import {description, nameValidation, websiteUrl} from "../validations/blog-valid
 import {ObjectId} from "mongodb";
 import {BlogsViewType} from "../types/blogs-view-type";
 import {blogsService} from "../domain/blogs-service";
+import {blogQueryRepo} from "../query-repositories/blog-query-repo";
+import {BlogQueryType} from "../types/blog-query-type";
 
 export const blogRoutes = Router({})
 
@@ -13,7 +15,14 @@ const createPostValidations= [nameValidation,description,websiteUrl, inputValida
 
 blogRoutes.get('/', async (req: Request, res: Response) => {
 
-    const getBlog: BlogsViewType[] = await blogsService.getBlog()
+    const searchName = req.query.searchName
+    const sortBy  = req.query.sortBy
+    const sortDirection = req.query.sortDirection
+    const pageNumber = req.query.pageNumber
+    const pageSize = req.query.pageSize
+
+    const getBlog: BlogQueryType = await blogQueryRepo.getBlog(searchName,sortBy?,
+        sortDirection?,pageNumber?,pageSize?)
 
     res.status(200).send(getBlog)
 })
