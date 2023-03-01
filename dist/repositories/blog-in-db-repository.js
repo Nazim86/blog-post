@@ -11,19 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogRepository = void 0;
 const db_1 = require("../db/db");
-const mongodb_1 = require("mongodb");
 const blog_mapping_1 = require("../mapping/blog-mapping");
 exports.blogRepository = {
-    createBlog(name, description, websiteUrl) {
+    createBlog(newBlog) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newBlog = {
-                _id: new mongodb_1.ObjectId(),
-                name: name,
-                description: description,
-                websiteUrl: websiteUrl,
-                createdAt: new Date().toISOString(),
-                isMembership: false
-            };
             const result = yield db_1.blogsCollection.insertOne(newBlog);
             return {
                 id: result.insertedId.toString(),
@@ -61,13 +52,13 @@ exports.blogRepository = {
     },
     updateBlog(id, name, description, websiteUrl) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.blogsCollection.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { name: name, description: description, websiteUrl: websiteUrl } });
+            const result = yield db_1.blogsCollection.updateOne({ _id: id }, { $set: { name: name, description: description, websiteUrl: websiteUrl } });
             return result.matchedCount === 1;
         });
     },
     deleteBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.blogsCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
+            const result = yield db_1.blogsCollection.deleteOne({ _id: id });
             return result.deletedCount === 1;
         });
     }

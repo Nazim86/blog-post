@@ -8,18 +8,8 @@ import {BlogsDbType} from "../types/blogs-db-type";
 
 export const blogRepository = {
 
-    async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogsViewType> {
+    async createBlog(newBlog: BlogsDbType): Promise<BlogsViewType> {
 
-        const newBlog: BlogsDbType = {
-            _id: new ObjectId(),
-            name: name,
-            description: description,
-            websiteUrl: websiteUrl,
-            createdAt: new Date().toISOString(),
-            isMembership: false
-
-
-        }
 
         const result = await blogsCollection.insertOne(newBlog)
 
@@ -58,17 +48,16 @@ export const blogRepository = {
             return false
         }
     },
-    async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
-        const result = await blogsCollection.updateOne({_id: new ObjectId(id)},
+    async updateBlog(id: ObjectId, name: string, description: string, websiteUrl: string): Promise<boolean> {
+        const result = await blogsCollection.updateOne({_id: id},
             {$set: {name: name, description: description, websiteUrl: websiteUrl}}
         )
         return result.matchedCount === 1
 
     },
 
-    async deleteBlogById(id: string): Promise<boolean> {
-        const result = await blogsCollection.deleteOne({_id: new ObjectId(id)},)
-
+    async deleteBlogById(id: ObjectId): Promise<boolean> {
+        const result = await blogsCollection.deleteOne({_id: id},)
 
         return result.deletedCount === 1
     }
