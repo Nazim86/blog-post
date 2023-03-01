@@ -1,23 +1,33 @@
-import {blogsCollection} from "../db/db";
+import {blogsCollection, postsCollection} from "../db/db";
 import {BlogsViewType} from "../types/blogs-view-type";
 import {blogMapping} from "../mapping/blog-mapping";
 import {ObjectId} from "mongodb";
 import {BlogQueryType} from "../types/blog-query-type";
 
-
+// type SortedBy = {
+//     fieldname: keyof TemplateStringsArray
+//     direction: 'asc' | 'desc'
+// }
 export const blogQueryRepo = {
 
     async getBlog(
-        searchNameTerm?:string,sortBy?:string,sortDirection?:string,
-        pageNumber:number = 1, pageSize:number = 10): Promise<BlogQueryType> {
-
-        const blogsPagination = (pageNumber-1)*pageSize
-        const totalCount = await blogsCollection.countDocuments({})
-        const pagesCount = Math.ceil(totalCount/pageSize)
+        searchNameTerm: string , sortBy: string = "createdAt", sortDirection: string = 'desc',
+        pageNumber: number = 1, pageSize: number = 10): Promise<BlogQueryType> {
 
 
-        const getBlog = await blogsCollection.find({name:{$regex:searchNameTerm}}).skip(blogsPagination).toArray()
-        const mappedBlog =  blogMapping(getBlog)
+        const filter = {name: {$regex: searchNameTerm ?? ''}}
+
+        const skipSize = (pageNumber - 1) * pageSize
+        const totalCount = await blogsCollection.countDocuments(filter)
+        const pagesCount = Math.ceil(totalCount / pageSize)
+
+        const getBlog = await blogsCollection.find(filter)
+            .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1}) // did not understand well
+            .skip(skipSize)
+            .limit(pageSize)
+            .toArray()
+
+        const mappedBlog = blogMapping(getBlog)
         return {
             pagesCount: pagesCount,
             page: pageNumber,
@@ -28,23 +38,25 @@ export const blogQueryRepo = {
 
     },
 
-    async getBlogById(_id: ObjectId): Promise<BlogsViewType | boolean> {
 
-        const foundBlog = await blogsCollection.findOne({_id: _id})
-        if (foundBlog) {
-            return {
-                id: foundBlog._id.toString(),
-                name: foundBlog.name,
-                description: foundBlog.description,
-                websiteUrl: foundBlog.websiteUrl,
-                createdAt: foundBlog.createdAt,
-                isMembership: foundBlog.isMembership
-            }
-        } else {
-            return false
-        }
-    },
-}
+
+//----------------------------------------------------------------------------------
+//
+//         const foundBlog = await blogsCollection.findOne({_id: _id})
+//         if (foundBlog) {
+//             return {
+//                 id: foundBlog._id.toString(),
+//                 name: foundBlog.name,
+//                 description: foundBlog.description,
+//                 websiteUrl: foundBlog.websiteUrl,
+//                 createdAt: foundBlog.createdAt,
+//                 isMembership: foundBlog.isMembership
+//             }
+//         } else {
+//             return false
+//         }
+//     },
+// }
 
 // let users = [
 // {id:'dsdf2-sdfs-23', name:'dimych', age:34},
