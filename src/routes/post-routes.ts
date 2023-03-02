@@ -10,6 +10,10 @@ import {
 } from "../validations/post-validations";
 import {ObjectId} from "mongodb";
 import {PostsViewType} from "../types/posts-view-type";
+import {postService} from "../domain/posts-service";
+import {getPaginationValues} from "../functions/pagination-values";
+import {postQueryRepo} from "../query-repositories/posts-query-repo";
+import {PostQueryType} from "../types/post-query-type";
 
 
 export const postRoutes = Router({})
@@ -18,7 +22,11 @@ export const postRoutes = Router({})
 const createPostValidation = [ postNameValidation, descriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware] //
 
 postRoutes.get('/', async (req: Request, res: Response) => {
-    const getPost: PostsViewType[] = await postRepository.getPost();
+
+    const {pageNumber,pageSize,sortBy,sortDirection} = getPaginationValues(req.query)
+
+    const getPost: PostQueryType[] = await postQueryRepo.getPost(pageNumber,pageSize,sortBy,sortDirection);
+
     res.status(200).send(getPost)
 })
 
@@ -31,7 +39,7 @@ postRoutes.post('/', baseAuthorizationMiddleware, createPostValidation,
         const blogId = req.body.blogId;
 
 
-        const newPost:PostsViewType = await postRepository.createPost(title, shortDescription, content, blogId)
+        const newPost:PostsViewType = await postService.createPost(title, shortDescription, content, blogId)
         if (newPost) {
             res.status(201).send(newPost)
         }
@@ -41,9 +49,10 @@ postRoutes.post('/', baseAuthorizationMiddleware, createPostValidation,
 
     })
 
+
 postRoutes.get('/:id',  async (req: Request, res: Response) => {
 
-    const getPost:PostsViewType|boolean = await postRepository.getPostById(new ObjectId(req.params.id))
+    const getPost:PostsViewType|boolean = await postService.getPostById(new ObjectId(req.params.id))
 
     if (getPost) {
         res.status(200).send(getPost)
@@ -52,6 +61,11 @@ postRoutes.get('/:id',  async (req: Request, res: Response) => {
     }
 
 })
+
+
+
+
+
 
 
 postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
@@ -63,7 +77,7 @@ postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
         const content = req.body.content;
         const blogId = req.body.blogId;
 
-        const updatePost:boolean = await postRepository.updatePost(new ObjectId(req.params.id), title, shortDescription, content, blogId)
+        const updatePost:boolean = await postService.updatePost(new ObjectId(req.params.id), title, shortDescription, content, blogId)
 
         if (updatePost) {
             res.send(204)
@@ -74,7 +88,7 @@ postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
 
 postRoutes.delete('/:id', baseAuthorizationMiddleware, async (req: Request, res: Response) => {
 
-    const deletePost:boolean = await postRepository.deletePostById(new ObjectId(req.params.id))
+    const deletePost:boolean = await postService.deletePostById(new ObjectId(req.params.id))
 
     if (deletePost) {
         res.sendStatus(204)

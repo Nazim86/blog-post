@@ -10,4 +10,11 @@ export const sortDirectionValidation = query('sortDirection').isString()
 export const pageNumberValidation = query('pageNumber').isNumeric()
 export const pageSizeValidation = query('pageSize').isNumeric()
 
+export const queryValidations = [searchNameValidation, sortByValidation, sortDirectionValidation, pageSizeValidation, pageNumberValidation]
+
+export const titleValidation = body('title').isString().trim().notEmpty().isLength({max:30})
+export const shortDescriptionValidation = body('shortDescription').isString().trim().notEmpty().isLength({max:100})
+export const contentValidation = body('content').isString().trim().notEmpty().isLength({max:1000})
+
+export const postForBlogValidations = [titleValidation,shortDescriptionValidation,contentValidation]
 

@@ -3,35 +3,48 @@ import {ObjectId} from "mongodb";
 import {PostsViewType} from "../types/posts-view-type";
 import {PostsDbType} from "../types/posts-db-type";
 import {postMapping} from "../mapping/post-mapping";
+import {PostForBlogDbType} from "../types/post-for-blog-db-type";
+import {blogRepository} from "./blog-in-db-repository";
 
 
 
 export const postRepository = {
-    async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<PostsViewType> {
-        const newId = new Date();
 
-        const newPost: PostsDbType ={
-            _id: new ObjectId(),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: newId.toString(),
-            createdAt: new Date().toISOString()
+    async createPost(newPost: PostsDbType):Promise<PostsViewType> {
 
-        }
 
         const result =  await postsCollection.insertOne(newPost)
+
         return {
             id: result.insertedId.toString(),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: newId.toString(),
+            title: newPost.title,
+            shortDescription: newPost.shortDescription,
+            content: newPost.content,
+            blogId: newPost.blogId,
+            blogName: newPost.blogName,
             createdAt: newPost.createdAt
         }
+
     },
+
+    async createPostForBlog (createPostForBlog:PostsDbType): Promise<PostsViewType> {
+
+
+        const result = await postsCollection.insertOne(createPostForBlog)
+
+
+        return {
+            id: result.insertedId.toString(),
+            title: createPostForBlog.title,
+            shortDescription: createPostForBlog.shortDescription,
+            content: createPostForBlog.content,
+            blogId: createPostForBlog.blogId,
+            blogName: createPostForBlog.blogName,
+            createdAt: createPostForBlog.createdAt
+        }
+
+    },
+
 
     async getPost():Promise<PostsViewType[]>{
         const getposts = await postsCollection.find({}).toArray()

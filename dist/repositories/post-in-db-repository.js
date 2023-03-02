@@ -11,30 +11,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRepository = void 0;
 const db_1 = require("../db/db");
-const mongodb_1 = require("mongodb");
 const post_mapping_1 = require("../mapping/post-mapping");
 exports.postRepository = {
-    createPost(title, shortDescription, content, blogId) {
+    createPost(newPost) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newId = new Date();
-            const newPost = {
-                _id: new mongodb_1.ObjectId(),
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: blogId,
-                blogName: newId.toString(),
-                createdAt: new Date().toISOString()
-            };
             const result = yield db_1.postsCollection.insertOne(newPost);
             return {
                 id: result.insertedId.toString(),
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: blogId,
-                blogName: newId.toString(),
+                title: newPost.title,
+                shortDescription: newPost.shortDescription,
+                content: newPost.content,
+                blogId: newPost.blogId,
+                blogName: newPost.blogName,
                 createdAt: newPost.createdAt
+            };
+        });
+    },
+    createPostForBlog(createPostForBlog) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield db_1.postsCollection.insertOne(createPostForBlog);
+            return {
+                id: result.insertedId.toString(),
+                title: createPostForBlog.title,
+                shortDescription: createPostForBlog.shortDescription,
+                content: createPostForBlog.content,
+                blogId: createPostForBlog.blogId,
+                blogName: createPostForBlog.blogName,
+                createdAt: createPostForBlog.createdAt
             };
         });
     },

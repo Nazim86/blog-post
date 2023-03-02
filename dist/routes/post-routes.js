@@ -11,15 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRoutes = void 0;
 const express_1 = require("express");
-const post_in_db_repository_1 = require("../repositories/post-in-db-repository");
 const base_auth_middlewares_1 = require("../middlewares/base-auth-middlewares");
 const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 const post_validations_1 = require("../validations/post-validations");
 const mongodb_1 = require("mongodb");
+const posts_service_1 = require("../domain/posts-service");
+const pagination_values_1 = require("../functions/pagination-values");
+const posts_query_repo_1 = require("../query-repositories/posts-query-repo");
 exports.postRoutes = (0, express_1.Router)({});
 const createPostValidation = [post_validations_1.postNameValidation, post_validations_1.descriptionValidation, post_validations_1.contentValidation, post_validations_1.blogIdValidation, input_validation_middleware_1.inputValidationMiddleware]; //
 exports.postRoutes.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getPost = yield post_in_db_repository_1.postRepository.getPost();
+    const { pageNumber, pageSize, sortBy, sortDirection } = (0, pagination_values_1.getPaginationValues)(req.query);
+    const getPost = yield posts_query_repo_1.postQueryRepo.getPost(pageNumber, pageSize, sortBy, sortDirection);
     res.status(200).send(getPost);
 }));
 exports.postRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware, createPostValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,7 +30,7 @@ exports.postRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
     const blogId = req.body.blogId;
-    const newPost = yield post_in_db_repository_1.postRepository.createPost(title, shortDescription, content, blogId);
+    const newPost = yield posts_service_1.postService.createPost(title, shortDescription, content, blogId);
     if (newPost) {
         res.status(201).send(newPost);
     }
@@ -36,7 +39,7 @@ exports.postRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware
     }
 }));
 exports.postRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getPost = yield post_in_db_repository_1.postRepository.getPostById(new mongodb_1.ObjectId(req.params.id));
+    const getPost = yield posts_service_1.postService.getPostById(new mongodb_1.ObjectId(req.params.id));
     if (getPost) {
         res.status(200).send(getPost);
     }
@@ -49,7 +52,7 @@ exports.postRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
     const blogId = req.body.blogId;
-    const updatePost = yield post_in_db_repository_1.postRepository.updatePost(new mongodb_1.ObjectId(req.params.id), title, shortDescription, content, blogId);
+    const updatePost = yield posts_service_1.postService.updatePost(new mongodb_1.ObjectId(req.params.id), title, shortDescription, content, blogId);
     if (updatePost) {
         res.send(204);
     }
@@ -58,7 +61,7 @@ exports.postRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     }
 }));
 exports.postRoutes.delete('/:id', base_auth_middlewares_1.baseAuthorizationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const deletePost = yield post_in_db_repository_1.postRepository.deletePostById(new mongodb_1.ObjectId(req.params.id));
+    const deletePost = yield posts_service_1.postService.deletePostById(new mongodb_1.ObjectId(req.params.id));
     if (deletePost) {
         res.sendStatus(204);
     }

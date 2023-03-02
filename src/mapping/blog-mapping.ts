@@ -1,7 +1,7 @@
 import {BlogsDbType} from "../types/blogs-db-type";
 import {BlogsViewType} from "../types/blogs-view-type";
 
-export const blogMapping = (array: BlogsDbType[]) => {
+export const blogMapping = (array: BlogsDbType[]):BlogsViewType[] => {
     return array.map((blog: BlogsDbType): BlogsViewType => {
         return {
             id: blog._id.toString(),

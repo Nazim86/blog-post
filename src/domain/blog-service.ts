@@ -4,10 +4,13 @@ import {blogMapping} from "../mapping/blog-mapping";
 import {BlogsViewType} from "../types/blogs-view-type";
 import {BlogsDbType} from "../types/blogs-db-type";
 import {blogRepository} from "../repositories/blog-in-db-repository";
+import {PostsDbType} from "../types/posts-db-type";
+import {PostsViewType} from "../types/posts-view-type";
+import {PostForBlogDbType} from "../types/post-for-blog-db-type";
 
 
 
-export const blogsService = {
+export const blogService = {
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogsViewType> {
 
@@ -28,6 +31,9 @@ export const blogsService = {
         return result
 
     },
+
+
+
 
     async getBlog(): Promise<BlogsViewType[]> {
 
@@ -50,10 +56,9 @@ export const blogsService = {
     },
 
     async deleteBlogById(id: ObjectId): Promise<boolean> {
-        const result = await blogsCollection.deleteOne({_id: new ObjectId(id)},)
+        const result = await blogRepository.deleteBlogById(id)
 
-
-        return result.deletedCount === 1
+        return result
     }
 
 

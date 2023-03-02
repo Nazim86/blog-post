@@ -1,7 +1,7 @@
 import {PostsDbType} from "../types/posts-db-type";
 import {PostsViewType} from "../types/posts-view-type";
 
-export const postMapping = (array:PostsDbType[])=>{
+export const postMapping = (array:PostsDbType[]):PostsViewType[]=>{
     return array.map((post:PostsDbType): PostsViewType=> {
 
         return {

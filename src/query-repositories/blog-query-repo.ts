@@ -11,7 +11,7 @@ import {BlogQueryType} from "../types/blog-query-type";
 export const blogQueryRepo = {
 
     async getBlog(
-        searchNameTerm: string , sortBy: string = "createdAt", sortDirection: string = 'desc',
+        searchNameTerm: string, sortBy: string = "createdAt", sortDirection: string = 'desc',
         pageNumber: number = 1, pageSize: number = 10): Promise<BlogQueryType> {
 
 
@@ -36,7 +36,8 @@ export const blogQueryRepo = {
             items: mappedBlog
         }
 
-    },
+    }
+}
 
 
 

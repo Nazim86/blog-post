@@ -9,11 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogsService = void 0;
-const db_1 = require("../db/db");
+exports.blogService = void 0;
 const mongodb_1 = require("mongodb");
 const blog_in_db_repository_1 = require("../repositories/blog-in-db-repository");
-exports.blogsService = {
+exports.blogService = {
     createBlog(name, description, websiteUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             const newBlog = {
@@ -25,21 +24,6 @@ exports.blogsService = {
                 isMembership: false
             };
             const result = yield blog_in_db_repository_1.blogRepository.createBlog(newBlog);
-            return result;
-        });
-    },
-    createPostForBlog(title, shortDescription, content, blogId, blogName) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const createPostForBlog = {
-                _id: new mongodb_1.ObjectId(),
-                title: title,
-                shortDescription: shortDescription,
-                content: content,
-                blogId: blogId,
-                blogName: blogName,
-                createdAt: new Date().toISOString()
-            };
-            const result = yield blog_in_db_repository_1.blogRepository.createPostForBlog(createPostForBlog);
             return result;
         });
     },
@@ -63,8 +47,8 @@ exports.blogsService = {
     },
     deleteBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.blogsCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
-            return result.deletedCount === 1;
+            const result = yield blog_in_db_repository_1.blogRepository.deleteBlogById(id);
+            return result;
         });
     }
 };

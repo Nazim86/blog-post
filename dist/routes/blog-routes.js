@@ -15,58 +15,63 @@ const base_auth_middlewares_1 = require("../middlewares/base-auth-middlewares");
 const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 const blog_validations_1 = require("../validations/blog-validations");
 const mongodb_1 = require("mongodb");
-const blogs_service_1 = require("../domain/blogs-service");
+const blog_service_1 = require("../domain/blog-service");
 const blog_query_repo_1 = require("../query-repositories/blog-query-repo");
-const posts_query_repository_1 = require("../query-repositories/posts-query-repository");
+const pagination_values_1 = require("../functions/pagination-values");
+const posts_query_repo_1 = require("../query-repositories/posts-query-repo");
+const db_1 = require("../db/db");
+const posts_service_1 = require("../domain/posts-service");
 exports.blogRoutes = (0, express_1.Router)({});
 const createPostValidations = [blog_validations_1.nameValidation, blog_validations_1.description, blog_validations_1.websiteUrl, input_validation_middleware_1.inputValidationMiddleware];
-const blogQueryValidations = [blog_validations_1.searchNameValidation, blog_validations_1.sortByValidation, blog_validations_1.sortDirectionValidation, blog_validations_1.pageSizeValidation, blog_validations_1.pageNumberValidation];
-const getPaginationValues = (query) => {
-    var _a, _b, _c;
-    return {
-        searchName: (_a = query.searchName) !== null && _a !== void 0 ? _a : '',
-        sortBy: (_b = query.sortBy) !== null && _b !== void 0 ? _b : 'createdAt',
-        sortDirection: (_c = query.sortDirection) !== null && _c !== void 0 ? _c : 'desc',
-        pageNumber: isNaN(+query.pageNumber) ? 1 : +query.pageNumber,
-        pageSize: isNaN(+query.pageSize) ? 10 : +query.pageSize,
-    };
-}; // need more explanation
-exports.blogRoutes.get('/', blogQueryValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogRoutes.get('/', blog_validations_1.queryValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // const searchName = req.query.searchName | undefined | null
     // const sortBy = req.query.sortBy
     // const sortDirection = req.query.sortDirection
     // const pageNumber = req.query.pageNumber
     // const pageSize = req.query.pageSize
-    const { searchName, sortBy, sortDirection, pageNumber, pageSize } = getPaginationValues(req.query);
+    const { searchName, sortBy, sortDirection, pageNumber, pageSize } = (0, pagination_values_1.getPaginationValues)(req.query);
     console.log(pageSize);
     const getBlog = yield blog_query_repo_1.blogQueryRepo.getBlog(searchName, sortBy, sortDirection, pageNumber, pageSize);
     res.status(200).send(getBlog);
 }));
-exports.blogRoutes.get('/:id/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { pageNumber, pageSize, sortBy, sortDirection } = getPaginationValues(req.query);
-    const blogId = req.body.blogId;
-    const getBlogByBlogId = yield posts_query_repository_1.postQueryRepo.getPostsByBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
+exports.blogRoutes.get('/:blogId/posts', blog_validations_1.queryValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pageNumber, pageSize, sortBy, sortDirection } = (0, pagination_values_1.getPaginationValues)(req.query);
+    const blogId = req.params.blogId;
+    const getBlogByBlogId = yield posts_query_repo_1.postQueryRepo.getPostsByBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
     //----------------------------------------------------------------------------------
-    const getBlog = yield blogs_service_1.blogsService.getBlogById(new mongodb_1.ObjectId(req.params.id));
-    if (getBlog) {
-        res.status(200).send(getBlog);
+    if (getBlogByBlogId) {
+        res.status(200).send(getBlogByBlogId);
     }
     else {
         res.send(404);
     }
-}));
+})); //TODO: is this right blogroutes to be here because request for posts
 exports.blogRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware, createPostValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const username = req.headers.username
     const name = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    const newBlog = yield blogs_service_1.blogsService.createBlog(name, description, websiteUrl);
+    const newBlog = yield blog_service_1.blogService.createBlog(name, description, websiteUrl);
     if (newBlog) {
         res.status(201).send(newBlog);
     }
 }));
+exports.blogRoutes.post('/:blogId/posts', base_auth_middlewares_1.baseAuthorizationMiddleware, blog_validations_1.postForBlogValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const title = req.body.title;
+    const shortDescription = req.body.shortDescription;
+    const content = req.body.content;
+    const blogId = req.params.blogId;
+    let blogName;
+    const blogById = yield db_1.blogsCollection.findOne({ _id: new mongodb_1.ObjectId(blogId) });
+    if (blogById) {
+        blogName = blogById.name;
+    }
+    const newPostForBlog = yield posts_service_1.postService.createPostForBlog(title, shortDescription, content, blogId, blogName);
+    if (newPostForBlog) {
+        res.status(201).send(newPostForBlog);
+    }
+}));
 exports.blogRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getBlog = yield blogs_service_1.blogsService.getBlogById(new mongodb_1.ObjectId(req.params.id));
+    const getBlog = yield blog_service_1.blogService.getBlogById(new mongodb_1.ObjectId(req.params.id));
     if (getBlog) {
         res.status(200).send(getBlog);
     }
@@ -78,7 +83,7 @@ exports.blogRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     const name = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    const updateBlog = yield blogs_service_1.blogsService.updateBlog(new mongodb_1.ObjectId(req.params.id), name, description, websiteUrl);
+    const updateBlog = yield blog_service_1.blogService.updateBlog(new mongodb_1.ObjectId(req.params.id), name, description, websiteUrl);
     if (updateBlog) {
         res.send(204);
     }
@@ -87,7 +92,7 @@ exports.blogRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     }
 }));
 exports.blogRoutes.delete('/:id', base_auth_middlewares_1.baseAuthorizationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const deleteBlog = yield blogs_service_1.blogsService.deleteBlogById(new mongodb_1.ObjectId(req.params.id));
+    const deleteBlog = yield blog_service_1.blogService.deleteBlogById(new mongodb_1.ObjectId(req.params.id));
     if (deleteBlog) {
         res.send(204);
     }
