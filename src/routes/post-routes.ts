@@ -7,7 +7,6 @@ import {
     descriptionValidation,
     postNameValidation
 } from "../validations/post-validations";
-import {ObjectId} from "mongodb";
 import {PostsViewType} from "../types/posts-view-type";
 import {postService} from "../domain/posts-service";
 import {getPaginationValues} from "../functions/pagination-values";
@@ -51,7 +50,7 @@ postRoutes.post('/', baseAuthorizationMiddleware, createPostValidation,
 
 postRoutes.get('/:id',  async (req: Request, res: Response) => {
 
-    const getPost:PostsViewType|boolean = await postQueryRepo.getPostById(new ObjectId(req.params.id))
+    const getPost:PostsViewType|boolean = await postQueryRepo.getPostById(req.params.id)
 
     if (getPost) {
         res.status(200).send(getPost)
@@ -71,7 +70,7 @@ postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
         const content = req.body.content;
         const blogId = req.body.blogId;
 
-        const updatePost:boolean = await postService.updatePost(new ObjectId(req.params.id), title, shortDescription, content, blogId)
+        const updatePost:boolean = await postService.updatePost(req.params.id, title, shortDescription, content, blogId)
 
         if (updatePost) {
             res.send(204)
@@ -82,7 +81,7 @@ postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
 
 postRoutes.delete('/:id', baseAuthorizationMiddleware, async (req: Request, res: Response) => {
 
-    const deletePost:boolean = await postService.deletePostById(new ObjectId(req.params.id))
+    const deletePost:boolean = await postService.deletePostById(req.params.id)
 
     if (deletePost) {
         res.sendStatus(204)

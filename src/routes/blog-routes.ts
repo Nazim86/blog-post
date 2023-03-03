@@ -6,7 +6,6 @@ import {
     nameValidation,  postForBlogValidations, queryValidations,
     websiteUrl
 } from "../validations/blog-validations";
-import {ObjectId} from "mongodb";
 import {BlogsViewType} from "../types/blogs-view-type";
 import {blogService} from "../domain/blog-service";
 import {blogQueryRepo} from "../query-repositories/blog-query-repo";
@@ -16,7 +15,6 @@ import {PostQueryType} from "../types/post-query-type";
 import {postQueryRepo} from "../query-repositories/posts-query-repo";
 import {PostsViewType} from "../types/posts-view-type";
 import {postService} from "../domain/posts-service";
-import {blogIdValidation} from "../validations/post-validations";
 
 
 export const blogRoutes = Router({})
@@ -55,8 +53,7 @@ blogRoutes.get('/:blogId/posts', queryValidations, async (req: Request, res: Res
         res.send(404)
     }
 
-}) //TODO: is this right blogroutes to be here because request for posts
-
+})
 
 
 blogRoutes.post('/', baseAuthorizationMiddleware, createPostValidations,
@@ -94,7 +91,7 @@ blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware, postForBlogValida
 
 blogRoutes.get('/:id', async (req: Request, res: Response) => {
 
-    const getBlog: BlogsViewType | boolean = await blogQueryRepo.getBlogById(new ObjectId(req.params.id))
+    const getBlog: BlogsViewType | boolean = await blogQueryRepo.getBlogById(req.params.id)
 
     if (getBlog) {
         res.status(200).send(getBlog)
@@ -112,7 +109,7 @@ blogRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidations,
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
 
-        const updateBlog: boolean = await blogService.updateBlog(new ObjectId(req.params.id), name, description, websiteUrl)
+        const updateBlog: boolean = await blogService.updateBlog(req.params.id, name, description, websiteUrl)
 
         if (updateBlog) {
             res.send(204)
@@ -123,7 +120,7 @@ blogRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidations,
 
 blogRoutes.delete('/:id', baseAuthorizationMiddleware, async (req: Request, res: Response) => {
 
-    const deleteBlog: boolean = await blogService.deleteBlogById(new ObjectId(req.params.id))
+    const deleteBlog: boolean = await blogService.deleteBlogById(req.params.id)
 
     if (deleteBlog) {
         res.send(204)

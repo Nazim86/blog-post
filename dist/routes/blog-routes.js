@@ -14,7 +14,6 @@ const express_1 = require("express");
 const base_auth_middlewares_1 = require("../middlewares/base-auth-middlewares");
 const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 const blog_validations_1 = require("../validations/blog-validations");
-const mongodb_1 = require("mongodb");
 const blog_service_1 = require("../domain/blog-service");
 const blog_query_repo_1 = require("../query-repositories/blog-query-repo");
 const pagination_values_1 = require("../functions/pagination-values");
@@ -42,7 +41,7 @@ exports.blogRoutes.get('/:blogId/posts', blog_validations_1.queryValidations, (r
     else {
         res.send(404);
     }
-})); //TODO: is this right blogroutes to be here because request for posts
+}));
 exports.blogRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware, createPostValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const name = req.body.name;
     const description = req.body.description;
@@ -66,7 +65,7 @@ exports.blogRoutes.post('/:blogId/posts', base_auth_middlewares_1.baseAuthorizat
     }
 }));
 exports.blogRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getBlog = yield blog_query_repo_1.blogQueryRepo.getBlogById(new mongodb_1.ObjectId(req.params.id));
+    const getBlog = yield blog_query_repo_1.blogQueryRepo.getBlogById(req.params.id);
     if (getBlog) {
         res.status(200).send(getBlog);
     }
@@ -78,7 +77,7 @@ exports.blogRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     const name = req.body.name;
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
-    const updateBlog = yield blog_service_1.blogService.updateBlog(new mongodb_1.ObjectId(req.params.id), name, description, websiteUrl);
+    const updateBlog = yield blog_service_1.blogService.updateBlog(req.params.id, name, description, websiteUrl);
     if (updateBlog) {
         res.send(204);
     }
@@ -87,7 +86,7 @@ exports.blogRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     }
 }));
 exports.blogRoutes.delete('/:id', base_auth_middlewares_1.baseAuthorizationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const deleteBlog = yield blog_service_1.blogService.deleteBlogById(new mongodb_1.ObjectId(req.params.id));
+    const deleteBlog = yield blog_service_1.blogService.deleteBlogById(req.params.id);
     if (deleteBlog) {
         res.send(204);
     }

@@ -11,9 +11,9 @@ import {BlogsDbType} from "../types/blogs-db-type";
 // }
 export const blogQueryRepo = {
 
-    async getBlogById(_id: ObjectId): Promise<BlogsViewType | boolean> {
+    async getBlogById(id: string): Promise<BlogsViewType | boolean> {
 
-        const foundBlog = await blogsCollection.findOne({_id: _id})
+        const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)})
         if (foundBlog) {
             return {
                 id: foundBlog._id.toString(),

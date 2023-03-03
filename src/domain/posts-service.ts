@@ -65,7 +65,7 @@ export const postService = {
     }
     ,
 
-    async updatePost(id:ObjectId,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
+    async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
         const result = await postRepository.updatePost(id,title,shortDescription,content,blogId)
 
@@ -73,7 +73,7 @@ export const postService = {
         return result
     },
 
-    async deletePostById(id:ObjectId):Promise <boolean>{
+    async deletePostById(id:string):Promise <boolean>{
         const result = postRepository.deletePostById(id)
         return result
 

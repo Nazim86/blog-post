@@ -9,8 +9,8 @@ import {ObjectId} from "mongodb";
 export const postQueryRepo =
 
     {
-        async getPostById(id:ObjectId): Promise<PostsViewType |boolean>{
-            const postById = await postsCollection.findOne({_id:id})
+        async getPostById(id:string): Promise<PostsViewType |boolean>{
+            const postById = await postsCollection.findOne({_id: new ObjectId(id)})
             if (postById) {
                 return {
                     id: postById._id.toString(),
