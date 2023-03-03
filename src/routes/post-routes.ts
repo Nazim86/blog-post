@@ -38,7 +38,7 @@ postRoutes.post('/', baseAuthorizationMiddleware, createPostValidation,
         const blogId = req.body.blogId;
 
 
-        const newPost:PostsViewType = await postService.createPost(title, shortDescription, content, blogId)
+        const newPost:PostsViewType|null = await postService.createPost(title, shortDescription, content, blogId)
         if (newPost) {
             res.status(201).send(newPost)
         }
