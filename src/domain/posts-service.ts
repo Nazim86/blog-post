@@ -2,7 +2,6 @@ import {ObjectId} from "mongodb";
 import {PostsViewType} from "../types/posts-view-type";
 import {PostsDbType} from "../types/posts-db-type";
 import {postRepository} from "../repositories/post-in-db-repository";
-import {blogsCollection} from "../db/db";
 import {blogRepository} from "../repositories/blog-in-db-repository";
 
 
@@ -10,8 +9,10 @@ import {blogRepository} from "../repositories/blog-in-db-repository";
 
 export const postService = {
 
-    async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<PostsViewType> {
-        const newId = new Date();
+    async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<PostsViewType | null> {
+
+        const blog = await blogRepository.getBlogById(blogId)
+        if (!blog) return null
 
         const newPost: PostsDbType ={
             _id: new ObjectId(),
@@ -19,7 +20,7 @@ export const postService = {
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
-            blogName: newId.toString(),
+            blogName: blog.name,
             createdAt: new Date().toISOString()
 
         }

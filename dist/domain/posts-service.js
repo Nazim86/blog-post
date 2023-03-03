@@ -16,14 +16,16 @@ const blog_in_db_repository_1 = require("../repositories/blog-in-db-repository")
 exports.postService = {
     createPost(title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newId = new Date();
+            const blog = yield blog_in_db_repository_1.blogRepository.getBlogById(blogId);
+            if (!blog)
+                return null;
             const newPost = {
                 _id: new mongodb_1.ObjectId(),
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
                 blogId: blogId,
-                blogName: newId.toString(),
+                blogName: blog.name,
                 createdAt: new Date().toISOString()
             };
             const result = yield post_in_db_repository_1.postRepository.createPost(newPost);
