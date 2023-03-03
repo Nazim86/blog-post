@@ -42,10 +42,10 @@ export const blogService = {
         return getBlog
     },
 
-    async getBlogById(_id: ObjectId): Promise<BlogsViewType | boolean> {
+    async getBlogById(id: string): Promise<BlogsViewType | null> {
 
-        const foundBlog = await blogRepository.getBlogById(_id)
-      return foundBlog
+        const foundBlog = await blogRepository.getBlogById(id)
+        return foundBlog
 
     },
 

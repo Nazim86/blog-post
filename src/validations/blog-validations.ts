@@ -20,12 +20,3 @@ export const contentValidation = body('content').isString().trim().notEmpty().is
 
 export const postForBlogValidations = [titleValidation,shortDescriptionValidation,contentValidation]
 
-
-export const ParamBlogIdValidation  = param("blogId").isString().trim().notEmpty().custom(async value=>{
-    const blogId = await blogsCollection.findOne({_id: new ObjectId(value)})
-    if(!blogId){
-        throw new Error()
-    }else{
-        return true
-    }
-})

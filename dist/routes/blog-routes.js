@@ -32,7 +32,7 @@ exports.blogRoutes.get('/', blog_validations_1.queryValidations, (req, res) => _
     const getBlog = yield blog_query_repo_1.blogQueryRepo.getBlog(searchName, sortBy, sortDirection, pageNumber, pageSize);
     res.status(200).send(getBlog);
 }));
-exports.blogRoutes.get('/:blogId/posts', blog_validations_1.queryValidations, blog_validations_1.ParamBlogIdValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogRoutes.get('/:blogId/posts', blog_validations_1.queryValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { pageNumber, pageSize, sortBy, sortDirection } = (0, pagination_values_1.getPaginationValues)(req.query);
     const blogId = req.params.blogId;
     const getBlogByBlogId = yield posts_query_repo_1.postQueryRepo.getPostsByBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId);
@@ -52,14 +52,17 @@ exports.blogRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware
         res.status(201).send(newBlog);
     }
 }));
-exports.blogRoutes.post('/:blogId/posts', base_auth_middlewares_1.baseAuthorizationMiddleware, blog_validations_1.postForBlogValidations, blog_validations_1.ParamBlogIdValidation, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogRoutes.post('/:blogId/posts', base_auth_middlewares_1.baseAuthorizationMiddleware, blog_validations_1.postForBlogValidations, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
-    const blogId = new mongodb_1.ObjectId(req.params.blogId);
+    const blogId = req.params.blogId;
     const newPostForBlog = yield posts_service_1.postService.createPostForBlog(title, shortDescription, content, blogId);
     if (newPostForBlog) {
         res.status(201).send(newPostForBlog);
+    }
+    else {
+        return res.sendStatus(404);
     }
 }));
 exports.blogRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

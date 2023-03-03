@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postService = void 0;
 const mongodb_1 = require("mongodb");
 const post_in_db_repository_1 = require("../repositories/post-in-db-repository");
-const db_1 = require("../db/db");
+const blog_in_db_repository_1 = require("../repositories/blog-in-db-repository");
 exports.postService = {
     createPost(title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -32,15 +32,16 @@ exports.postService = {
     },
     createPostForBlog(title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const blogById = yield db_1.blogsCollection.findOne({ _id: blogId });
-            const blogName = (blogById === null || blogById === void 0 ? void 0 : blogById.name) || null;
+            const blogById = yield blog_in_db_repository_1.blogRepository.getBlogById(blogId);
+            if (!blogById)
+                return null;
             const createPostForBlog = {
                 _id: new mongodb_1.ObjectId(),
                 title: title,
                 shortDescription: shortDescription,
                 content: content,
                 blogId: blogId.toString(),
-                blogName: blogName,
+                blogName: blogById.name,
                 createdAt: new Date().toISOString()
             };
             const result = yield post_in_db_repository_1.postRepository.createPostForBlog(createPostForBlog);

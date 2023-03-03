@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogRepository = void 0;
 const db_1 = require("../db/db");
+const mongodb_1 = require("mongodb");
 const blog_mapping_1 = require("../mapping/blog-mapping");
 exports.blogRepository = {
     createBlog(newBlog) {
@@ -32,21 +33,26 @@ exports.blogRepository = {
             return (0, blog_mapping_1.blogMapping)(array);
         });
     },
-    getBlogById(_id) {
+    getBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const foundBlog = yield db_1.blogsCollection.findOne({ _id: _id });
-            if (foundBlog) {
-                return {
-                    id: foundBlog._id.toString(),
-                    name: foundBlog.name,
-                    description: foundBlog.description,
-                    websiteUrl: foundBlog.websiteUrl,
-                    createdAt: foundBlog.createdAt,
-                    isMembership: foundBlog.isMembership
-                };
+            try {
+                const foundBlog = yield db_1.blogsCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
+                if (foundBlog) {
+                    return {
+                        id: foundBlog._id.toString(),
+                        name: foundBlog.name,
+                        description: foundBlog.description,
+                        websiteUrl: foundBlog.websiteUrl,
+                        createdAt: foundBlog.createdAt,
+                        isMembership: foundBlog.isMembership
+                    };
+                }
+                else {
+                    return null;
+                }
             }
-            else {
-                return false;
+            catch (e) {
+                return null;
             }
         });
     },

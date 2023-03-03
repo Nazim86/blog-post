@@ -3,6 +3,7 @@ import {PostsViewType} from "../types/posts-view-type";
 import {PostsDbType} from "../types/posts-db-type";
 import {postRepository} from "../repositories/post-in-db-repository";
 import {blogsCollection} from "../db/db";
+import {blogRepository} from "../repositories/blog-in-db-repository";
 
 
 
@@ -29,10 +30,11 @@ export const postService = {
 
     },
 
-    async createPostForBlog (title: string, shortDescription: string, content: string, blogId:ObjectId): Promise<PostsViewType> {
+    async createPostForBlog (title: string, shortDescription: string, content: string, blogId:string): Promise<PostsViewType | null> {
 
-        const blogById = await blogsCollection.findOne({_id:blogId})
-        const blogName = blogById?.name || null
+        const blogById = await blogRepository.getBlogById(blogId)
+
+        if(!blogById) return null
 
         const createPostForBlog: PostsDbType = {
             _id: new ObjectId(),
@@ -40,7 +42,7 @@ export const postService = {
             shortDescription: shortDescription,
             content: content,
             blogId:blogId.toString(),
-            blogName: blogName,
+            blogName: blogById.name,
             createdAt: new Date().toISOString()
 
         }

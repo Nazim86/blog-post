@@ -32,21 +32,25 @@ export const blogRepository = {
         return blogMapping(array)
     },
 
-    async getBlogById(_id: ObjectId): Promise<BlogsViewType | boolean> {
-
-        const foundBlog = await blogsCollection.findOne({_id: _id})
-        if (foundBlog) {
-            return {
-                id: foundBlog._id.toString(),
-                name: foundBlog.name,
-                description: foundBlog.description,
-                websiteUrl: foundBlog.websiteUrl,
-                createdAt: foundBlog.createdAt,
-                isMembership: foundBlog.isMembership
+    async getBlogById(id: string): Promise<BlogsViewType | null> {
+        try {
+            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)})
+            if (foundBlog) {
+                return {
+                    id: foundBlog._id.toString(),
+                    name: foundBlog.name,
+                    description: foundBlog.description,
+                    websiteUrl: foundBlog.websiteUrl,
+                    createdAt: foundBlog.createdAt,
+                    isMembership: foundBlog.isMembership
+                }
+            } else {
+                return null
             }
-        } else {
-            return false
+        } catch (e) {
+            return null
         }
+
     },
     async updateBlog(id: ObjectId, name: string, description: string, websiteUrl: string): Promise<boolean> {
         const result = await blogsCollection.updateOne({_id: id},

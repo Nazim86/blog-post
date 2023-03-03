@@ -33,9 +33,9 @@ exports.blogService = {
             return getBlog;
         });
     },
-    getBlogById(_id) {
+    getBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const foundBlog = yield blog_in_db_repository_1.blogRepository.getBlogById(_id);
+            const foundBlog = yield blog_in_db_repository_1.blogRepository.getBlogById(id);
             return foundBlog;
         });
     },

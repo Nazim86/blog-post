@@ -3,7 +3,7 @@ import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares"
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {
     description,
-    nameValidation, ParamBlogIdValidation, postForBlogValidations, queryValidations,
+    nameValidation,  postForBlogValidations, queryValidations,
     websiteUrl
 } from "../validations/blog-validations";
 import {ObjectId} from "mongodb";
@@ -16,6 +16,7 @@ import {PostQueryType} from "../types/post-query-type";
 import {postQueryRepo} from "../query-repositories/posts-query-repo";
 import {PostsViewType} from "../types/posts-view-type";
 import {postService} from "../domain/posts-service";
+import {blogIdValidation} from "../validations/post-validations";
 
 
 export const blogRoutes = Router({})
@@ -40,7 +41,7 @@ blogRoutes.get('/', queryValidations, async (req: Request, res: Response) => {
     res.status(200).send(getBlog)
 })
 
-blogRoutes.get('/:blogId/posts', queryValidations,ParamBlogIdValidation, async (req: Request, res: Response) => {
+blogRoutes.get('/:blogId/posts', queryValidations, async (req: Request, res: Response) => {
 
     const {pageNumber, pageSize, sortBy, sortDirection} = getPaginationValues(req.query)
 
@@ -72,21 +73,23 @@ blogRoutes.post('/', baseAuthorizationMiddleware, createPostValidations,
         }
     })
 
-blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware,postForBlogValidations,ParamBlogIdValidation,inputValidationMiddleware,
+blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware, postForBlogValidations,inputValidationMiddleware,
     async (req: Request, res: Response) => {
 
+            const title = req.body.title
+            const shortDescription = req.body.shortDescription;
+            const content = req.body.content;
+            const blogId = req.params.blogId
 
-        const title = req.body.title
-        const shortDescription = req.body.shortDescription;
-        const content = req.body.content;
-        const blogId = new ObjectId(req.params.blogId);
+            const newPostForBlog: PostsViewType | null= await postService.createPostForBlog (title, shortDescription, content, blogId )
+
+            if (newPostForBlog) {
+                res.status(201).send(newPostForBlog)
+            } else {
+                return res.sendStatus(404)
+            }
 
 
-        const newPostForBlog: PostsViewType = await postService.createPostForBlog (title, shortDescription, content, blogId )
-
-        if (newPostForBlog) {
-            res.status(201).send(newPostForBlog)
-        }
     })
 
 blogRoutes.get('/:id', async (req: Request, res: Response) => {
