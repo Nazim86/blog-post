@@ -1,5 +1,4 @@
 import {Request, Response, Router} from "express";
-import {postRepository} from "../repositories/post-in-db-repository";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {
@@ -25,7 +24,7 @@ postRoutes.get('/', async (req: Request, res: Response) => {
 
     const {pageNumber,pageSize,sortBy,sortDirection} = getPaginationValues(req.query)
 
-    const getPost: PostQueryType[] = await postQueryRepo.getPost(pageNumber,pageSize,sortBy,sortDirection);
+    const getPost:PostQueryType = await postQueryRepo.getPost(pageNumber,pageSize,sortBy,sortDirection);
 
     res.status(200).send(getPost)
 })
@@ -52,7 +51,7 @@ postRoutes.post('/', baseAuthorizationMiddleware, createPostValidation,
 
 postRoutes.get('/:id',  async (req: Request, res: Response) => {
 
-    const getPost:PostsViewType|boolean = await postService.getPostById(new ObjectId(req.params.id))
+    const getPost:PostsViewType|boolean = await postQueryRepo.getPostById(new ObjectId(req.params.id))
 
     if (getPost) {
         res.status(200).send(getPost)
@@ -61,11 +60,6 @@ postRoutes.get('/:id',  async (req: Request, res: Response) => {
     }
 
 })
-
-
-
-
-
 
 
 postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,

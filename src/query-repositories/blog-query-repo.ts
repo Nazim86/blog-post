@@ -1,4 +1,4 @@
-import {blogsCollection, postsCollection} from "../db/db";
+import {blogsCollection} from "../db/db";
 import {BlogsViewType} from "../types/blogs-view-type";
 import {blogMapping} from "../mapping/blog-mapping";
 import {ObjectId} from "mongodb";
@@ -9,6 +9,23 @@ import {BlogQueryType} from "../types/blog-query-type";
 //     direction: 'asc' | 'desc'
 // }
 export const blogQueryRepo = {
+
+    async getBlogById(_id: ObjectId): Promise<BlogsViewType | boolean> {
+
+        const foundBlog = await blogsCollection.findOne({_id: _id})
+        if (foundBlog) {
+            return {
+                id: foundBlog._id.toString(),
+                name: foundBlog.name,
+                description: foundBlog.description,
+                websiteUrl: foundBlog.websiteUrl,
+                createdAt: foundBlog.createdAt,
+                isMembership: foundBlog.isMembership
+            }
+        } else {
+            return false
+        }
+    },
 
     async getBlog(
         searchNameTerm: string, sortBy: string = "createdAt", sortDirection: string = 'desc',

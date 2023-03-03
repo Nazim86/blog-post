@@ -2,6 +2,7 @@ import {ObjectId} from "mongodb";
 import {PostsViewType} from "../types/posts-view-type";
 import {PostsDbType} from "../types/posts-db-type";
 import {postRepository} from "../repositories/post-in-db-repository";
+import {blogsCollection} from "../db/db";
 
 
 
@@ -28,15 +29,17 @@ export const postService = {
 
     },
 
-    async createPostForBlog (title: string, shortDescription: string, content: string, blogId:string, blogName:string): Promise<PostsViewType> {
+    async createPostForBlog (title: string, shortDescription: string, content: string, blogId:ObjectId): Promise<PostsViewType> {
 
+        const blogById = await blogsCollection.findOne({_id:blogId})
+        const blogName = blogById?.name || null
 
         const createPostForBlog: PostsDbType = {
             _id: new ObjectId(),
             title: title,
             shortDescription: shortDescription,
             content: content,
-            blogId:blogId,
+            blogId:blogId.toString(),
             blogName: blogName,
             createdAt: new Date().toISOString()
 

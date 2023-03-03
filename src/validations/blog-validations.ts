@@ -1,4 +1,6 @@
-import {body, query} from "express-validator";
+import {body, param, query} from "express-validator";
+import {blogsCollection} from "../db/db";
+import {ObjectId} from "mongodb";
 
 export const nameValidation = body("name").isString().trim().notEmpty().isLength({max:15})
 export const description = body("description").isString().trim().notEmpty().isLength({max:500})
@@ -18,3 +20,12 @@ export const contentValidation = body('content').isString().trim().notEmpty().is
 
 export const postForBlogValidations = [titleValidation,shortDescriptionValidation,contentValidation]
 
+
+export const ParamBlogIdValidation  = param("blogId").isString().trim().notEmpty().custom(async value=>{
+    const blogId = await blogsCollection.findOne({_id: new ObjectId(value)})
+    if(!blogId){
+        throw new Error()
+    }else{
+        return true
+    }
+})

@@ -3,8 +3,7 @@ import {ObjectId} from "mongodb";
 import {PostsViewType} from "../types/posts-view-type";
 import {PostsDbType} from "../types/posts-db-type";
 import {postMapping} from "../mapping/post-mapping";
-import {PostForBlogDbType} from "../types/post-for-blog-db-type";
-import {blogRepository} from "./blog-in-db-repository";
+
 
 
 
@@ -27,7 +26,7 @@ export const postRepository = {
 
     },
 
-    async createPostForBlog (createPostForBlog:PostsDbType): Promise<PostsViewType> {
+    async  createPostForBlog (createPostForBlog:PostsDbType): Promise<PostsViewType> {
 
 
         const result = await postsCollection.insertOne(createPostForBlog)

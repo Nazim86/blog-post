@@ -3,13 +3,30 @@ import {postMapping} from "../mapping/post-mapping";
 import {PostQueryType} from "../types/post-query-type";
 import {PostsViewType} from "../types/posts-view-type";
 import {PostsDbType} from "../types/posts-db-type";
+import {ObjectId} from "mongodb";
 
 
 export const postQueryRepo =
 
     {
+        async getPostById(id:ObjectId): Promise<PostsViewType |boolean>{
+            const postById = await postsCollection.findOne({_id:id})
+            if (postById) {
+                return {
+                    id: postById._id.toString(),
+                    title: postById.title,
+                    shortDescription: postById.shortDescription,
+                    content: postById.content,
+                    blogId: postById.blogId,
+                    blogName: postById.blogName,
+                    createdAt: postById.createdAt
+                }
+            }else{
+                return false
+            }
+        },
 
-        async getPost(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<PostQueryType[]>{
+        async getPost(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<PostQueryType>{
 
             const skipSize = (pageNumber - 1) * pageSize
             const totalCount = await blogsCollection.countDocuments({})
@@ -41,8 +58,6 @@ export const postQueryRepo =
             // console.log(blogId)
             const pagesCount = Math.ceil(totalCount / pageSize)
 
-            // console.log(pageSize)
-
 
             const getPostsByBlogId:PostsDbType[] = await postsCollection.find({blogId: blogId})
                 .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
@@ -50,7 +65,8 @@ export const postQueryRepo =
                 .limit(pageSize)
                 .toArray()
 
-            // console.log(getPostsByBlogId)
+
+            if (getPostsByBlogId.length ===0) return false
 
             const mappedBlog:PostsViewType[] = postMapping(getPostsByBlogId)
 
