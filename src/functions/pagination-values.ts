@@ -1,6 +1,6 @@
 export const getPaginationValues = (query: any) => {
     return {
-        searchName: query.searchName ?? '',
+        searchName: query.searchNameTerm ?? '',
         sortBy: query.sortBy ?? 'createdAt',
         sortDirection: query.sortDirection ?? 'desc',
         pageNumber: isNaN(+query.pageNumber) ? 1 : +query.pageNumber,

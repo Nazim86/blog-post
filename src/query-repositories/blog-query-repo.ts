@@ -1,8 +1,9 @@
 import {blogsCollection} from "../db/db";
 import {BlogsViewType} from "../types/blogs-view-type";
 import {blogMapping} from "../mapping/blog-mapping";
-import {ObjectId} from "mongodb";
+import {Filter, ObjectId} from "mongodb";
 import {BlogQueryType} from "../types/blog-query-type";
+import {BlogsDbType} from "../types/blogs-db-type";
 
 // type SortedBy = {
 //     fieldname: keyof TemplateStringsArray
@@ -32,8 +33,8 @@ export const blogQueryRepo = {
         pageNumber: number = 1, pageSize: number = 10): Promise<BlogQueryType> {
 
 
-        const filter = {name: {$regex: searchNameTerm ?? '', $options: 'i'}}
-
+        const filter: Filter<BlogsDbType> = {name: {$regex: searchNameTerm ?? '', $options: 'i'}}
+        console.log(filter)
         const skipSize = (pageNumber - 1) * pageSize
         const totalCount = await blogsCollection.countDocuments(filter)
         const pagesCount = Math.ceil(totalCount / pageSize)

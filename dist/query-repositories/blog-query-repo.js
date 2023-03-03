@@ -37,7 +37,8 @@ exports.blogQueryRepo = {
     },
     getBlog(searchNameTerm, sortBy = "createdAt", sortDirection = 'desc', pageNumber = 1, pageSize = 10) {
         return __awaiter(this, void 0, void 0, function* () {
-            const filter = { name: { $regex: searchNameTerm !== null && searchNameTerm !== void 0 ? searchNameTerm : '' } };
+            const filter = { name: { $regex: searchNameTerm !== null && searchNameTerm !== void 0 ? searchNameTerm : '', $options: 'i' } };
+            console.log(filter);
             const skipSize = (pageNumber - 1) * pageSize;
             const totalCount = yield db_1.blogsCollection.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
