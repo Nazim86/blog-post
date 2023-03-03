@@ -32,7 +32,7 @@ export const blogQueryRepo = {
         pageNumber: number = 1, pageSize: number = 10): Promise<BlogQueryType> {
 
 
-        const filter = {name: {$regex: searchNameTerm ?? ''}}
+        const filter = {name: {$regex: searchNameTerm ?? '', $options: 'i'}}
 
         const skipSize = (pageNumber - 1) * pageSize
         const totalCount = await blogsCollection.countDocuments(filter)
