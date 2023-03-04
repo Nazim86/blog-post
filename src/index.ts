@@ -4,6 +4,7 @@ import {postRoutes} from "./routes/post-routes";
 import { runDb} from "./db/db";
 import {deleteRoute} from "./routes/delete-routes";
 import {userRouter} from "./routes/user-router";
+import {authRoutes} from "./routes/auth-routes";
 
 export const app = express()
 
@@ -18,6 +19,7 @@ app.use("/blogs", blogRoutes);
 app.use("/posts", postRoutes);
 app.use("/testing/all-data", deleteRoute)
 app.use("/users", userRouter)
+app.use('auth/login', authRoutes)
 
 
 

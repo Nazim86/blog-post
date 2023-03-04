@@ -20,12 +20,12 @@ exports.userService = {
     createNewUser(login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
             const passwordSalt = yield bcrypt_1.default.genSalt(10);
-            // const passwordHash = await bcrypt.hash(password,passwordSalt)
             const passwordHash = yield this._generateHash(password, passwordSalt);
             const newUser = {
                 _id: new mongodb_1.ObjectId(),
                 login: login,
                 passwordHash,
+                passwordSalt,
                 email: email,
                 createdAt: new Date().toISOString()
             };
@@ -41,6 +41,19 @@ exports.userService = {
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield user_in_db_memory_1.userRepository.deleteUser(id);
+        });
+    },
+    checkCredentials(loginOrEmail, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield user_in_db_memory_1.userRepository.checkCredentials(loginOrEmail);
+            if (!user)
+                return false;
+            const passwordSalt = user.passwordSalt;
+            const passwordHash = yield this._generateHash(password, passwordSalt);
+            if (passwordHash !== user.passwordHash) {
+                return false;
+            }
+            return true;
         });
     }
 };
