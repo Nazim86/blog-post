@@ -19,7 +19,7 @@ app.use("/blogs", blogRoutes);
 app.use("/posts", postRoutes);
 app.use("/testing/all-data", deleteRoute)
 app.use("/users", userRouter)
-app.use('auth/login', authRoutes)
+app.use("/auth/login", authRoutes)
 
 
 

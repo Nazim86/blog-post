@@ -7,7 +7,10 @@ export const authRoutes = Router({});
 
 authRoutes.post('/',authValidations,inputValidationMiddleware,async (req: Request, res: Response) => {
 
+
     const {loginOrEmail, password} = req.body;
+
+
 
     const checkCredentials = await userService.checkCredentials(loginOrEmail, password)
 

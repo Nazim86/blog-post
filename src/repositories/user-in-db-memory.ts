@@ -27,6 +27,7 @@ export const userRepository = {
 
     async checkCredentials(loginOrEmail:string):Promise<UserDbType | null>{
         const user  = await usersCollection.findOne({$or:[{login:loginOrEmail}, {email:loginOrEmail}]})
+        console.log(user)
         return user
     }
 }

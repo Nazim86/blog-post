@@ -33,6 +33,7 @@ exports.userRepository = {
     checkCredentials(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield db_1.usersCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
+            console.log(user);
             return user;
         });
     }
