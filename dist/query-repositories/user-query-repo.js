@@ -17,16 +17,19 @@ exports.userQueryRepo = {
         return __awaiter(this, void 0, void 0, function* () {
             const skipSize = (pageNumber - 1) * pageSize;
             const filter = {
-                login: { $regex: searchLoginTerm !== null && searchLoginTerm !== void 0 ? searchLoginTerm : "", $options: 'i' },
-                email: { $regex: searchEmailTerm !== null && searchEmailTerm !== void 0 ? searchEmailTerm : "", $options: "i" }
+                $or: [{ login: { $regex: searchLoginTerm !== null && searchLoginTerm !== void 0 ? searchLoginTerm : "", $options: 'i' } },
+                    { email: { $regex: searchEmailTerm !== null && searchEmailTerm !== void 0 ? searchEmailTerm : "", $options: "i" } }
+                ]
             };
             const totalCount = yield db_1.usersCollection.countDocuments(filter);
+            console.log("Total count", totalCount);
             const pagesCount = Math.ceil(totalCount / pageSize);
             const getUsers = yield db_1.usersCollection.find(filter)
                 .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
                 .skip(skipSize)
                 .limit(pageSize)
                 .toArray();
+            console.log(getUsers);
             const mappedUsers = (0, user_mapping_1.userMapping)(getUsers);
             return {
                 pagesCount: pagesCount,

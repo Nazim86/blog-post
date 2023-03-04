@@ -8,12 +8,13 @@ export const userQueryRepo = {
 
         const skipSize = (pageNumber - 1) * pageSize;
         const filter: Filter<UserDbType> = {
-            $and:
+            $or:
                 [{login: {$regex: searchLoginTerm ?? "", $options: 'i'}},
                     {email: {$regex: searchEmailTerm ?? "", $options: "i"}}
                 ]
         };
         const totalCount = await usersCollection.countDocuments(filter);
+        console.log("Total count", totalCount)
         const pagesCount = Math.ceil(totalCount / pageSize)
 
         const getUsers = await usersCollection.find(filter)
@@ -21,6 +22,8 @@ export const userQueryRepo = {
             .skip(skipSize)
             .limit(pageSize)
             .toArray()
+
+        console.log(getUsers)
 
         const mappedUsers = userMapping(getUsers)
 
@@ -34,3 +37,4 @@ export const userQueryRepo = {
 
     }
 }
+
