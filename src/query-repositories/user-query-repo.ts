@@ -8,8 +8,10 @@ export const userQueryRepo = {
 
         const skipSize = (pageNumber - 1) * pageSize;
         const filter: Filter<UserDbType> = {
-            login: {$regex: searchLoginTerm ?? "", $options: 'i'},
-            email: {$regex: searchEmailTerm ?? "", $options: "i"}
+            $and:
+                [{login: {$regex: searchLoginTerm ?? "", $options: 'i'}},
+                    {email: {$regex: searchEmailTerm ?? "", $options: "i"}}
+                ]
         };
         const totalCount = await usersCollection.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize)
