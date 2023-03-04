@@ -50,7 +50,7 @@ blogRoutes.get('/:blogId/posts', queryValidations, async (req: Request, res: Res
     if (getBlogByBlogId) {
         res.status(200).send(getBlogByBlogId)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 
 })
@@ -96,7 +96,7 @@ blogRoutes.get('/:id', async (req: Request, res: Response) => {
     if (getBlog) {
         res.status(200).send(getBlog)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 
 })
@@ -112,10 +112,12 @@ blogRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidations,
         const updateBlog: boolean = await blogService.updateBlog(req.params.id, name, description, websiteUrl)
 
         if (updateBlog) {
-            res.send(204)
+            res.sendStatus(204)
         } else {
-            res.send(404)
+            res.sendStatus(404)
         }
+
+        
     })
 
 blogRoutes.delete('/:id', baseAuthorizationMiddleware, async (req: Request, res: Response) => {
@@ -123,9 +125,9 @@ blogRoutes.delete('/:id', baseAuthorizationMiddleware, async (req: Request, res:
     const deleteBlog: boolean = await blogService.deleteBlogById(req.params.id)
 
     if (deleteBlog) {
-        res.send(204)
+        res.sendStatus(204)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 
 })

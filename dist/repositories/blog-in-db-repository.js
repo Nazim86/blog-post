@@ -58,8 +58,13 @@ exports.blogRepository = {
     },
     updateBlog(id, name, description, websiteUrl) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.blogsCollection.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { name: name, description: description, websiteUrl: websiteUrl } });
-            return result.matchedCount === 1;
+            try {
+                const result = yield db_1.blogsCollection.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { name: name, description: description, websiteUrl: websiteUrl } });
+                return result.matchedCount === 1;
+            }
+            catch (e) {
+                return false;
+            }
         });
     },
     deleteBlogById(id) {

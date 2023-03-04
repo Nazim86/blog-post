@@ -39,7 +39,7 @@ exports.blogRoutes.get('/:blogId/posts', blog_validations_1.queryValidations, (r
         res.status(200).send(getBlogByBlogId);
     }
     else {
-        res.send(404);
+        res.sendStatus(404);
     }
 }));
 exports.blogRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware, createPostValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -70,7 +70,7 @@ exports.blogRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
         res.status(200).send(getBlog);
     }
     else {
-        res.send(404);
+        res.sendStatus(404);
     }
 }));
 exports.blogRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddleware, createPostValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -79,18 +79,18 @@ exports.blogRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     const websiteUrl = req.body.websiteUrl;
     const updateBlog = yield blog_service_1.blogService.updateBlog(req.params.id, name, description, websiteUrl);
     if (updateBlog) {
-        res.send(204);
+        res.sendStatus(204);
     }
     else {
-        res.send(404);
+        res.sendStatus(404);
     }
 }));
 exports.blogRoutes.delete('/:id', base_auth_middlewares_1.baseAuthorizationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const deleteBlog = yield blog_service_1.blogService.deleteBlogById(req.params.id);
     if (deleteBlog) {
-        res.send(204);
+        res.sendStatus(204);
     }
     else {
-        res.send(404);
+        res.sendStatus(404);
     }
 }));
