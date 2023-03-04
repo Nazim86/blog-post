@@ -16,7 +16,10 @@ exports.userQueryRepo = {
     getUsers(sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm) {
         return __awaiter(this, void 0, void 0, function* () {
             const skipSize = (pageNumber - 1) * pageSize;
-            const filter = { login: { $regex: searchLoginTerm !== null && searchLoginTerm !== void 0 ? searchLoginTerm : "", $options: 'i' }, email: { $regex: searchEmailTerm !== null && searchEmailTerm !== void 0 ? searchEmailTerm : "", $options: "i" } };
+            const filter = {
+                login: { $regex: searchLoginTerm !== null && searchLoginTerm !== void 0 ? searchLoginTerm : "", $options: 'i' },
+                email: { $regex: searchEmailTerm !== null && searchEmailTerm !== void 0 ? searchEmailTerm : "", $options: "i" }
+            };
             const totalCount = yield db_1.usersCollection.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
             const getUsers = yield db_1.usersCollection.find(filter)
@@ -27,7 +30,8 @@ exports.userQueryRepo = {
             const mappedUsers = (0, user_mapping_1.userMapping)(getUsers);
             return {
                 pagesCount: pagesCount,
-                page: pageSize,
+                page: pageNumber,
+                pageSize: pageSize,
                 totalCount: totalCount,
                 items: mappedUsers
             };
