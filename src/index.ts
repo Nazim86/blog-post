@@ -3,6 +3,7 @@ import {blogRoutes} from "./routes/blog-routes";
 import {postRoutes} from "./routes/post-routes";
 import { runDb} from "./db/db";
 import {deleteRoute} from "./routes/delete-routes";
+import {userRouter} from "./routes/user-router";
 
 export const app = express()
 
@@ -16,6 +17,7 @@ const port = process.env.PORT || 5000
 app.use("/blogs", blogRoutes);
 app.use("/posts", postRoutes);
 app.use("/testing/all-data", deleteRoute)
+app.use("/users", userRouter)
 
 
 

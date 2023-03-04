@@ -12,14 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogQueryRepo = void 0;
 const db_1 = require("../db/db");
 const blog_mapping_1 = require("../mapping/blog-mapping");
+const mongodb_1 = require("mongodb");
 // type SortedBy = {
 //     fieldname: keyof TemplateStringsArray
 //     direction: 'asc' | 'desc'
 // }
 exports.blogQueryRepo = {
-    getBlogById(_id) {
+    getBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const foundBlog = yield db_1.blogsCollection.findOne({ _id: _id });
+            const foundBlog = yield db_1.blogsCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
             if (foundBlog) {
                 return {
                     id: foundBlog._id.toString(),
@@ -38,7 +39,6 @@ exports.blogQueryRepo = {
     getBlog(searchNameTerm, sortBy = "createdAt", sortDirection = 'desc', pageNumber = 1, pageSize = 10) {
         return __awaiter(this, void 0, void 0, function* () {
             const filter = { name: { $regex: searchNameTerm !== null && searchNameTerm !== void 0 ? searchNameTerm : '', $options: 'i' } };
-            console.log(filter);
             const skipSize = (pageNumber - 1) * pageSize;
             const totalCount = yield db_1.blogsCollection.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);

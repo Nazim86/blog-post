@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRepository = void 0;
 const db_1 = require("../db/db");
+const mongodb_1 = require("mongodb");
 const post_mapping_1 = require("../mapping/post-mapping");
 exports.postRepository = {
     createPost(newPost) {
@@ -68,7 +69,7 @@ exports.postRepository = {
     },
     updatePost(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.postsCollection.updateOne({ _id: id }, { $set: { title: title,
+            const result = yield db_1.postsCollection.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { title: title,
                     shortDescription: shortDescription,
                     content: content,
                     blogId: blogId } });
@@ -77,7 +78,7 @@ exports.postRepository = {
     },
     deletePostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.postsCollection.deleteOne({ _id: id });
+            const result = yield db_1.postsCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
             return result.deletedCount === 1;
         });
     }

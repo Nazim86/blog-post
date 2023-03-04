@@ -12,10 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postQueryRepo = void 0;
 const db_1 = require("../db/db");
 const post_mapping_1 = require("../mapping/post-mapping");
+const mongodb_1 = require("mongodb");
 exports.postQueryRepo = {
     getPostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const postById = yield db_1.postsCollection.findOne({ _id: id });
+            const postById = yield db_1.postsCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
             if (postById) {
                 return {
                     id: postById._id.toString(),

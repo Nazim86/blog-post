@@ -3,7 +3,8 @@ import {BlogsDbType} from "../types/blogs-db-type";
 import {PostsDbType} from "../types/posts-db-type";
 import * as Process from "process";
 
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import * as dotenv from 'dotenv'
+import {UserDbType} from "../types/user-db-type"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 dotenv.config()
 
 const url = Process.env.MONGO_URL
@@ -17,6 +18,7 @@ const db = client.db('blogPost')
 
 export const blogsCollection = db.collection<BlogsDbType>("blogs")
 export const postsCollection = db.collection<PostsDbType>("posts")
+export const usersCollection = db.collection<UserDbType>("users")
 
 export async function runDb (){
 

@@ -14,7 +14,6 @@ const express_1 = require("express");
 const base_auth_middlewares_1 = require("../middlewares/base-auth-middlewares");
 const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 const post_validations_1 = require("../validations/post-validations");
-const mongodb_1 = require("mongodb");
 const posts_service_1 = require("../domain/posts-service");
 const pagination_values_1 = require("../functions/pagination-values");
 const posts_query_repo_1 = require("../query-repositories/posts-query-repo");
@@ -39,7 +38,7 @@ exports.postRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware
     }
 }));
 exports.postRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getPost = yield posts_query_repo_1.postQueryRepo.getPostById(new mongodb_1.ObjectId(req.params.id));
+    const getPost = yield posts_query_repo_1.postQueryRepo.getPostById(req.params.id);
     if (getPost) {
         res.status(200).send(getPost);
     }
@@ -52,7 +51,7 @@ exports.postRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;
     const blogId = req.body.blogId;
-    const updatePost = yield posts_service_1.postService.updatePost(new mongodb_1.ObjectId(req.params.id), title, shortDescription, content, blogId);
+    const updatePost = yield posts_service_1.postService.updatePost(req.params.id, title, shortDescription, content, blogId);
     if (updatePost) {
         res.send(204);
     }
@@ -61,7 +60,7 @@ exports.postRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddlewa
     }
 }));
 exports.postRoutes.delete('/:id', base_auth_middlewares_1.baseAuthorizationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const deletePost = yield posts_service_1.postService.deletePostById(new mongodb_1.ObjectId(req.params.id));
+    const deletePost = yield posts_service_1.postService.deletePostById(req.params.id);
     if (deletePost) {
         res.sendStatus(204);
     }

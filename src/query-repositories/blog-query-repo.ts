@@ -34,7 +34,6 @@ export const blogQueryRepo = {
 
 
         const filter: Filter<BlogsDbType> = {name: {$regex: searchNameTerm ?? '', $options: 'i'}}
-        console.log(filter)
         const skipSize = (pageNumber - 1) * pageSize
         const totalCount = await blogsCollection.countDocuments(filter)
         const pagesCount = Math.ceil(totalCount / pageSize)
