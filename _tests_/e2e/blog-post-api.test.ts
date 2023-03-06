@@ -1,7 +1,9 @@
 import request from "supertest"
 import {app} from "../../src";
 // @ts-ignore
-import {getter} from "./test-functions";
+import {testFunctions} from "./test-functions";
+
+
 
 
 
@@ -68,7 +70,7 @@ describe("blogs testing",()=>{
 
 
 
-        await getter()
+        await testFunctions.getter()
     })
 
 
@@ -83,7 +85,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
             .expect(400)
 
-        await getter()
+        await testFunctions.getter()
 
     })
 
@@ -99,7 +101,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
             .expect(400)
 
-        await getter()
+        await testFunctions.getter()
 
     })
 
@@ -115,7 +117,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
             .expect(400)
 
-        await getter()
+        await testFunctions.getter()
 
     })
 
@@ -130,7 +132,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
             .expect(400)
 
-        await getter()
+        await testFunctions.getter()
 
     })
 
@@ -146,7 +148,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
             .expect(400)
 
-        await getter()
+        await testFunctions.getter()
 
     })
 
@@ -162,8 +164,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
             expect(posting.status).toBe(400);
 
-        await getter()
-
+        await testFunctions.getter()
     })
 
     it (`should NOT create new blog without websiteURL and return 400 `, async ()=>{
@@ -177,7 +178,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
         expect(posting.status).toBe(400);
 
-        await getter()
+        await testFunctions.getter()
     })
 
     it (`should NOT create new blog with long websiteURL length and return 400 `, async ()=>{
@@ -193,7 +194,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
         expect(posting.status).toBe(400);
 
-        await getter()
+        await testFunctions.getter()
 
     })
 
@@ -209,7 +210,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
         expect(posting.status).toBe(400);
 
-        await getter()
+        await testFunctions.getter()
 
     })
 
@@ -225,7 +226,7 @@ describe("blogs testing",()=>{
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
         expect(posting.status).toBe(400);
 
-        await getter()
+        await testFunctions.getter()
 
     })
 
@@ -266,6 +267,176 @@ describe("blogs testing",()=>{
         expect(updatedBlog.body.name).toEqual("Blog updated")
 
     })
+
+    it (`should NOT update blog without name and and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+
+                description: "Lorem ipsum dolor sit amet",
+                websiteUrl: "https://it-incubator.io/",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
+    it (`should NOT update blog w. long name and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+                name: "Blog updatedsdfsdffsdfsdfsdfsdfsdfsdfsfdfsf",
+                description: "Lorem ipsum dolor sit amet",
+                websiteUrl: "https://it-incubator.io/",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
+    it (`should NOT update blog w. not string name and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+                name: 5,
+                description: "Lorem ipsum dolor sit amet",
+                websiteUrl: "https://it-incubator.io/",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
+    it (`should NOT update blog without Description and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+                name: "Blog update",
+                websiteUrl: "https://it-incubator.io/",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
+    it (`should NOT update blog w. long description and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+                name: "Blog updated",
+                description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras quis ornare ante. Integer dignissim nunc sed urna semper accumsan sit amet id massa. Mauris ac est orci. Donec erat arcu, bibendum ut felis cursus, eleifend fringilla lectus. Etiam tempus tellus mauris, egestas tincidunt leo dapibus eu. Nam auctor eros metus, eget cursus tellus elementum id. Integer ac sem lacus. Sed lacinia ex eget tellus condimentum, ac elementum turpis volutpat. Aliquam condimentum suscipit lorem, a malesuada metus.",
+                websiteUrl: "https://it-incubator.io/",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
+    it (`should NOT update blog w. not string Description and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+                name: "Blog updated",
+                description: 5,
+                websiteUrl: "https://it-incubator.io/",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
+    it (`should NOT update blog without websiteUrl and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+                name: "Blog updated",
+                description: "Lorem ipsum dolor sit amet",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
+    it (`should NOT update blog w. long website url and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+                name: "Blog updatedsdfsdffsdfsdfsdfsdfsdfsdfsfdfsf",
+                description: "Lorem ipsum dolor sit amet",
+                websiteUrl: "https://it-incubator.ioddkkkkkdkkkkkkkkkkkdkdkkkdkdkdkdkkdkdkdkdkdkkkdkdkdkdkdkdkdkdkdkdkdkdkdkdkkdkdkdkdkdkdkdkkdkdkdkdkdkddkkddkdkkdkdkdkdkdkdkdksdssdssdsdssdsdsdsdsdsdsd/",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
+    it (`should NOT update blog wrong website url pattern and return 400 `, async ()=>{
+        const updatingBlog = await request(app)
+            .put(`/blogs/${createdBlog[0].id}`)
+            .send({
+                name: "Blog updated",
+                description: "Lorem ipsum dolor sit amet",
+                websiteUrl: "it-incubator.io/",
+            })
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+        expect(updatingBlog.status).toBe(400);
+
+        const updatedBlog  = await request(app)
+            .get(`/blogs/${createdBlog[0].id}`)
+            .send()
+
+        expect(updatedBlog.body.name).toEqual("Blog updated")
+
+    })
+
 
 
 })

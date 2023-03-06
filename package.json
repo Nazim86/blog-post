@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
+    "test2": "jest --detectOpenHandles --coverage",
     "dev": "yarn nodemon --inspect dist/index.js",
     "watch": "tsc -w"
   },
