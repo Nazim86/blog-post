@@ -3,61 +3,49 @@ import {app} from "../../src";
 // @ts-ignore
 import {createdBlog} from "./blog-post-api.test";
 
+// @ts-ignore
+import {getBlog, returnedUnchangedBlog} from "./data";
+
 export const testFunctions = {
 
-    async getter() {
+    async getBlog(expectedResult:object) {
 
         await request(app)
             .get('/blogs')
             .send()
-            .expect(200, {
-
-                pagesCount: 1,
-                page: 1,
-                pageSize: 10,
-                totalCount: 1,
-                items: createdBlog
-            })
+            .expect(200, expectedResult)
     },
 
-    async withoutName(){
+    async createBlog(newBlog:object){
 
-        await request(app)
+        return request(app)
             .post('/blogs')
-            .send({
-                description: "It incubator blog",
-                websiteUrl: "https://it-incubator.io/",
-            })
+            .send(newBlog)
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
-            .expect(400)
 
+
+        // expect(createdBlog.body).toEqual(returnedUnchangedBlog)
 
     },
 
-    async numberName(){
-        await request(app)
-            .post('/blogs')
-            .send({
-                name: 3,
-                description: "It incubator blog",
-                websiteUrl: "https://it-incubator.io/",
-            })
-            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
-            .expect(400)
+  async updateBlog(id:string, update:object){
 
-    },
+        return  request(app)
+                .put(`/blogs/${id}`)
+                .send(update)
+                .set("Authorization", "Basic YWRtaW46cXdlcnR5")
 
-    async longStringName (){
-        await request(app)
-            .post('/blogs')
-            .send({
-                name: "Testing Long string",
-                description: "It incubator blog",
-                websiteUrl: "https://it-incubator.io/",
-            })
-            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
-            .expect(400)
+  },
+
+    async getUpdatedBlog(id: string, update:object){
+         const getBlog = await request(app)
+            .get(`/blogs/${id}`)
+            .send()
+
+        expect(getBlog.body).toEqual(update)
     }
 
 
 }
+
+
