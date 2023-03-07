@@ -5,6 +5,7 @@ import {userService} from "../domain/user-service";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {userQueryRepo} from "../query-repositories/user-query-repo";
+import {checkUserCredentialsMiddleware} from "../middlewares/check-user-credentials-middleware";
 
 export const userRouter = Router({})
 
@@ -15,23 +16,19 @@ const {sortBy,sortDirection,pageNumber,pageSize,searchLoginTerm,searchEmailTerm}
     const getUsers = await userQueryRepo.getUsers (sortBy,sortDirection,pageNumber,pageSize,searchLoginTerm,searchEmailTerm)
 
        res.status(200).send(getUsers)
-
-
-
 })
 
-userRouter.post("/", baseAuthorizationMiddleware,userInputValidations,inputValidationMiddleware,async (req:Request,res:Response)=>{
+userRouter.post("/", baseAuthorizationMiddleware,userInputValidations,checkUserCredentialsMiddleware,inputValidationMiddleware,async (req:Request,res:Response)=>{
 
 const login = req.body.login
     const password = req.body.password
     const email = req.body.email
 
+
     const newUser = await userService.createNewUser(login,password,email)
     if (newUser){
         res.status(201).send(newUser)
     }
-
-
 })
 
 userRouter.delete("/:id", baseAuthorizationMiddleware,async (req:Request,res:Response)=>{

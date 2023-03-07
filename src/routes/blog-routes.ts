@@ -32,7 +32,6 @@ blogRoutes.get('/', queryValidations, async (req: Request, res: Response) => {
 
     const {searchName, sortBy, sortDirection, pageNumber, pageSize} = getPaginationValues(req.query)
 
-
     const getBlog: BlogQueryType = await blogQueryRepo.getBlog(searchName, sortBy,
         sortDirection, pageNumber, pageSize)
 
