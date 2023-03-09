@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
-import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {
     description,
     nameValidation,  postForBlogValidations, queryValidations,
@@ -19,7 +19,7 @@ import {postService} from "../domain/posts-service";
 
 export const blogRoutes = Router({})
 
-const createPostValidations = [nameValidation, description, websiteUrl, inputValidationMiddleware]
+const createPostValidations = [nameValidation, description, websiteUrl, inputValidationErrorsMiddleware]
 
 
 
@@ -69,7 +69,7 @@ blogRoutes.post('/', baseAuthorizationMiddleware, createPostValidations,
         }
     })
 
-blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware, postForBlogValidations,inputValidationMiddleware,
+blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware, postForBlogValidations,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
             const title = req.body.title

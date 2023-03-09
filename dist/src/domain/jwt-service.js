@@ -8,32 +8,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userRepository = void 0;
-const db_1 = require("../db/db");
-const mongodb_1 = require("mongodb");
-exports.userRepository = {
-    createNewUser(newUser) {
+exports.jwtService = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const settings_1 = require("../../settings");
+exports.jwtService = {
+    createJWT(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.usersCollection.insertOne(newUser);
-            return {
-                id: newUser._id.toString(),
-                login: newUser.login,
-                email: newUser.email,
-                createdAt: newUser.createdAt
-            };
+            const token = jsonwebtoken_1.default.sign({ userId: user._id }, settings_1.settings.JWT_SECRET, { expiresIn: "1h" });
+            return token;
         });
     },
-    deleteUser(id) {
+    //TODO need to finish this
+    getUserIdByToken(token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.usersCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
-            return result.deletedCount === 1;
-        });
-    },
-    checkCredentials(loginOrEmail) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const user = yield db_1.usersCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
-            return user;
+            try {
+                const decoded = jsonwebtoken_1.default.verify(token, settings_1.settings.JWT_SECRET);
+                return decoded.userId;
+            }
+            catch (e) {
+                return null;
+            }
         });
     }
 };

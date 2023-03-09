@@ -34,10 +34,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runDb = exports.usersCollection = exports.postsCollection = exports.blogsCollection = exports.client = void 0;
 const mongodb_1 = require("mongodb");
-const Process = __importStar(require("process"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-const url = Process.env.NODE_ENV === "test" ? 'mondodb:/0.0.0.0:27817' : process.env.MONGO_URL;
+const url = process.env.NODE_ENV === "test" ? 'mondodb:/0.0.0.0:27817' : process.env.MONGO_URL;
 if (!url) {
     throw new Error("Url does not found!");
 }

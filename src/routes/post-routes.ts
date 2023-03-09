@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
-import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {
     blogIdValidation,
     contentValidation,
@@ -17,7 +17,7 @@ import {PostQueryType} from "../types/post-query-type";
 export const postRoutes = Router({})
 
 
-const createPostValidation = [ postNameValidation, descriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware] //
+const createPostValidation = [ postNameValidation, descriptionValidation, contentValidation, blogIdValidation, inputValidationErrorsMiddleware] //
 
 postRoutes.get('/', async (req: Request, res: Response) => {
 

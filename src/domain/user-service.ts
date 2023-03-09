@@ -2,6 +2,7 @@ import {userRepository} from "../repositories/user-in-db-memory";
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
 import {UserViewType} from "../types/user-view-type";
+import {UserDbType} from "../types/user-db-type";
 
 
 
@@ -36,20 +37,23 @@ export const userService = {
         return await userRepository.deleteUser (id)
     },
 
-    async checkCredentials(loginOrEmail:string,password:string):Promise<boolean> {
+    async checkCredentials(loginOrEmail:string,password:string):Promise<UserDbType | null> {
 
         const user = await userRepository.checkCredentials(loginOrEmail)
 
-        if (!user) return false
+        if (!user) return user
+
             const passwordSalt = user.passwordSalt;
 
             const passwordHash = await this._generateHash(password, passwordSalt);
 
             if (passwordHash !== user.passwordHash){
 
-                return false
+                return user
             }
-            return true
+            return user
 
     }
+
+
 }

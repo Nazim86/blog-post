@@ -9,21 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authRoutes = void 0;
-const express_1 = require("express");
-const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
-const auth_validations_1 = require("../validations/auth-validations");
+exports.authMiddleware = void 0;
 const user_service_1 = require("../domain/user-service");
 const jwt_service_1 = require("../domain/jwt-service");
-exports.authRoutes = (0, express_1.Router)({});
-exports.authRoutes.post('/', auth_validations_1.authValidations, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.headers.authorization) {
+        res.send(401);
+        return;
+    }
+    const token = req.headers.authorization.split(" ")[1];
+    const userId = yield jwt_service_1.jwtService.getUserIdByToken(token);
+    //TODO need to finish repairing middleware
     const { loginOrEmail, password } = req.body;
-    const user = yield user_service_1.userService.checkCredentials(loginOrEmail, password);
-    if (user) {
-        const token = yield jwt_service_1.jwtService.createJWT(user);
-        res.status(200).send(token);
+    const checkCredentials = yield user_service_1.userService.checkCredentials(loginOrEmail, password);
+    if (checkCredentials) {
+        next();
     }
     else {
         res.sendStatus(401);
     }
-}));
+});
+exports.authMiddleware = authMiddleware;

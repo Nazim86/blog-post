@@ -1,22 +1,30 @@
 import {Request,Response, Router} from "express";
-import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {authValidations} from "../validations/auth-validations";
 import {userService} from "../domain/user-service";
+import {jwtService} from "../domain/jwt-service";
 
 export const authRoutes = Router({});
 
-authRoutes.post('/',authValidations,inputValidationMiddleware,async (req: Request, res: Response) => {
+authRoutes.post('/login',authValidations,inputValidationErrorsMiddleware,async (req: Request, res: Response) => {
 
     const {loginOrEmail, password} = req.body;
 
-    const checkCredentials = await userService.checkCredentials(loginOrEmail, password)
+    const user = await userService.checkCredentials(loginOrEmail, password)
 
-    if (checkCredentials) {
-
-        res.sendStatus(204)
+    if (!user) {
+        res.sendStatus(401)
 
     }else{
-        res.sendStatus(401)
+        const token = await jwtService.createJWT(user)
+        res.status(200).send({accessToken:token})
+
     }
 
 });
+
+//TODO also fix get here
+authRoutes.get('/me', async (req:Request, res: Response)=>{
+    const token = req.headers.
+    const getCurrentUserInfo = await jwtService.getUserIdByToken(token)
+})

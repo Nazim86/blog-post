@@ -3,7 +3,7 @@ import {getPaginationValues} from "../functions/pagination-values";
 import {userInputValidations} from "../validations/user-validations";
 import {userService} from "../domain/user-service";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
-import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {userQueryRepo} from "../query-repositories/user-query-repo";
 import {checkUserCredentialsMiddleware} from "../middlewares/check-user-credentials-middleware";
 
@@ -18,7 +18,7 @@ const {sortBy,sortDirection,pageNumber,pageSize,searchLoginTerm,searchEmailTerm}
        res.status(200).send(getUsers)
 })
 
-userRouter.post("/", baseAuthorizationMiddleware,userInputValidations,checkUserCredentialsMiddleware,inputValidationMiddleware,async (req:Request,res:Response)=>{
+userRouter.post("/", baseAuthorizationMiddleware,userInputValidations,checkUserCredentialsMiddleware,inputValidationErrorsMiddleware,async (req:Request, res:Response)=>{
 
 const login = req.body.login
     const password = req.body.password
