@@ -2,7 +2,8 @@ import request from "supertest"
 import {app} from "../../src";
 // @ts-ignore
 import {testFunctions} from "./test-functions";
-import {baseBlog, getBlog, returnedUnchangedBlog, updateBlog, updatedBlog} from "./data";
+import {baseBlog, getCreatedBlog, getEmptyBlog, returnedUnchangedBlog, updateBlog, updatedBlog} from "./data";
+import any = jasmine.any;
 
 
 beforeAll(async () => {
@@ -21,7 +22,6 @@ beforeAll(async () => {
 
 export let createdBlog: Array<any> = []
 
-let expectedResult = {...getBlog}
 
 describe("blogs testing", () => {
 
@@ -42,7 +42,7 @@ describe("blogs testing", () => {
                 pageNumber: 1,
                 pageSize: 10
             })
-            .expect(200, getBlog)
+            .expect(200, getEmptyBlog)
     });
 
 
@@ -54,7 +54,7 @@ describe("blogs testing", () => {
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
 
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
     })
 
@@ -64,7 +64,7 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
     })
 
@@ -74,7 +74,7 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
 
     })
@@ -85,7 +85,7 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
 
     })
@@ -96,7 +96,7 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
 
     })
@@ -107,7 +107,7 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
     })
 
@@ -117,7 +117,7 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
     })
 
@@ -128,7 +128,7 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
 
     })
@@ -140,7 +140,7 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
     })
 
@@ -150,25 +150,61 @@ describe("blogs testing", () => {
 
         const createBlog = await testFunctions.createBlog(newBlog)
         expect(createBlog.status).toBe(400)
-        await testFunctions.getBlog(getBlog)
+        await testFunctions.getBlog(getEmptyBlog)
 
     })
 
     it("should create new blog and return 201", async () => {
 
         const newBlog = {...baseBlog}
+        let expectedResult = {...getCreatedBlog}
 
 
         const createBlog = await testFunctions.createBlog(newBlog)
 
         expect(createBlog.status).toBe(201)
 
+        expect(createBlog.body).toEqual(returnedUnchangedBlog)
+
         createdBlog.push(createBlog.body)
+
+        // expectedResult.items[0].id = createdBlog[0]._id.toString()
+        // expectedResult.items[0].createdAt = createdBlog[0].createdAt
 
 
         // TODO expect(createBlog.body).toEqual(returnedUnchangedBlog)
 
-        await testFunctions.getBlog(expectedResult)
+        // await testFunctions.getBlog(expectedResult)
+
+        let Any;
+        await request(app)
+            .get('/blogs')
+            .send({
+                searchName: "",
+                sortBy: "createdAt",
+                sortDirection: 'desc',
+                pageNumber: 1,
+                pageSize: 10
+            })
+            .expect(200, {
+                    pagesCount: expect.any(Number) | 1,
+                    page: expect.any(Number) | 1,
+                    pageSize: expect.any(Number) | 10,
+                    totalCount: expect.any(Number) | 1,
+                    items: [
+                        {
+                            id: createdBlog[0].id,
+                            name: "Blog",
+                            description: "creating newblog",
+                            websiteUrl: "https://it-incubator.io/",
+                            createdAt: createdBlog[0].createdAt,
+                            isMembership: false
+                        }
+                    ]
+                }
+            )
+
+
     })
 
     it(`should NOT update blog because BAD ID and return 404 `, async () => {
@@ -265,6 +301,7 @@ describe("blogs testing", () => {
         expect(updatingBlog.status).toBe(204);
 
         await testFunctions.getUpdatedBlog(createdBlog[0].id, updatedBlog)
+
     })
 
 

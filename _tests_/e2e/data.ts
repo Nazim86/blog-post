@@ -1,3 +1,4 @@
+import {createdBlog} from "./blog-post-api.test";
 
 
 export const baseBlog = {
@@ -32,11 +33,28 @@ export const updatedBlog = {
 
 
 
-export const getBlog = {
+export const getEmptyBlog = {
     pagesCount: expect.any(Number) | 0,
     page: expect.any(Number) | 1,
     pageSize: expect.any(Number) | 10,
     totalCount: expect.any(Number) | 0,
     items: []
+}
+
+export const getCreatedBlog = {
+    pagesCount: expect.any(Number) | 1,
+    page: expect.any(Number) | 1,
+    pageSize: expect.any(Number) | 10,
+    totalCount: expect.any(Number) | 1,
+    items: [
+        {
+            id: expect.any(String),
+            name: "Blog",
+            description: "creating newblog",
+            websiteUrl: "https://it-incubator.io/",
+            createdAt: expect.any(String),
+            isMembership: false
+        }
+    ]
 }
 

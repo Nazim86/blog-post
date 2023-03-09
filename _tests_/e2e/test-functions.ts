@@ -4,7 +4,7 @@ import {app} from "../../src";
 import {createdBlog} from "./blog-post-api.test";
 
 // @ts-ignore
-import {getBlog, returnedUnchangedBlog} from "./data";
+import {getEmptyBlog, returnedUnchangedBlog} from "./data";
 
 export const testFunctions = {
 
