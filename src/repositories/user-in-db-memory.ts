@@ -3,6 +3,7 @@ import {UserDbType} from "./types/user-db-type";
 import {UserViewType} from "./types/user-view-type";
 
 import {ObjectId} from "mongodb";
+import {UserByIdType} from "./types/user-by-id-type";
 
 export const userRepository = {
     async createNewUser(newUser: UserDbType): Promise<UserViewType> {
@@ -24,12 +25,19 @@ export const userRepository = {
     },
 
     async checkCredentials(loginOrEmail: string): Promise<UserDbType | null> {
-        const user = await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]})
-        return user
+        return await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]})
     },
 
-    async findUserById (userId:string):Promise<UserDbType | null>{
+    async findUserById (userId:string):Promise<UserByIdType | null>{
         const result =await usersCollection.findOne({_id:new ObjectId(userId)})
-        return result
+        if (result) {
+            return {
+                email:result.email,
+                login: result.login,
+                userId: result._id.toString()
+            }
+        }else{
+            return null
+        }
     }
 }

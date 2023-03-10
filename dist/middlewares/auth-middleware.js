@@ -23,8 +23,8 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         res.sendStatus(401);
     }
     else {
+        req.context = {};
         req.context.user = yield user_service_1.userService.findUserById(userId);
-        console.log(req.context.user);
         next();
     }
 });

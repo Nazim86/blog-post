@@ -16,8 +16,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     if (!userId) {
         res.sendStatus(401)
     } else {
+        req.context = {}
         req.context.user = await userService.findUserById(userId)
-        console.log(req.context.user)
         next()
     }
 

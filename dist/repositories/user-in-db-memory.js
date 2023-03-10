@@ -32,14 +32,22 @@ exports.userRepository = {
     },
     checkCredentials(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield db_1.usersCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
-            return user;
+            return yield db_1.usersCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
         });
     },
     findUserById(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield db_1.usersCollection.findOne({ _id: new mongodb_1.ObjectId(userId) });
-            return result;
+            if (result) {
+                return {
+                    email: result.email,
+                    login: result.login,
+                    userId: result._id.toString()
+                };
+            }
+            else {
+                return null;
+            }
         });
     }
 };

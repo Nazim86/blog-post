@@ -3,6 +3,7 @@ import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
 import {UserViewType} from "../repositories/types/user-view-type";
 import {UserDbType} from "../repositories/types/user-db-type";
+import {UserByIdType} from "../repositories/types/user-by-id-type";
 
 
 export const userService = {
@@ -28,9 +29,7 @@ export const userService = {
 
     async _generateHash(password: string, passwordSalt: string): Promise<string> {
 
-        const hash = await bcrypt.hash(password, passwordSalt)
-
-        return hash
+        return await bcrypt.hash(password, passwordSalt)
     },
 
     async deleteUser(id: string): Promise<boolean> {
@@ -53,9 +52,8 @@ export const userService = {
         return user
     },
 
-    async findUserById (userId:string):Promise<UserDbType |null>{
-        const result =  await userRepository.findUserById(userId)
-        return result
+    async findUserById (userId:string):Promise<UserByIdType |null>{
+        return await userRepository.findUserById(userId)
     }
 
 
