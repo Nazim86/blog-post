@@ -1,6 +1,6 @@
 import {usersCollection} from "../db/db";
 import {Filter} from "mongodb";
-import {UserDbType} from "../types/user-db-type";
+import {UserDbType} from "../repositories/types/user-db-type";
 import {userMapping} from "../mapping/user-mapping";
 
 export const userQueryRepo = {

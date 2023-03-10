@@ -1,8 +1,8 @@
 import {blogsCollection} from "../db/db";
 import {ObjectId} from "mongodb";
 import {blogMapping} from "../mapping/blog-mapping";
-import {BlogsViewType} from "../types/blogs-view-type";
-import {BlogsDbType} from "../types/blogs-db-type";
+import {BlogsViewType} from "./types/blogs-view-type";
+import {BlogsDbType} from "./types/blogs-db-type";
 
 
 

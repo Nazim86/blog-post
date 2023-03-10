@@ -1,8 +1,8 @@
 import {blogsCollection, postsCollection} from "../db/db";
 import {postMapping} from "../mapping/post-mapping";
-import {PostQueryType} from "../types/post-query-type";
-import {PostsViewType} from "../types/posts-view-type";
-import {PostsDbType} from "../types/posts-db-type";
+import {PostQueryType} from "../repositories/types/post-query-type";
+import {PostsViewType} from "../repositories/types/posts-view-type";
+import {PostsDbType} from "../repositories/types/posts-db-type";
 import {ObjectId} from "mongodb";
 
 

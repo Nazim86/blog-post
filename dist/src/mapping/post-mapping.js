@@ -1,9 +1,8 @@
-import {PostsDbType} from "../repositories/types/posts-db-type";
-import {PostsViewType} from "../repositories/types/posts-view-type";
-
-export const postMapping = (array:PostsDbType[]):PostsViewType[]=>{
-    return array.map((post:PostsDbType): PostsViewType=> {
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.postMapping = void 0;
+const postMapping = (array) => {
+    return array.map((post) => {
         return {
             id: post._id.toString(),
             title: post.title,
@@ -12,6 +11,7 @@ export const postMapping = (array:PostsDbType[]):PostsViewType[]=>{
             blogId: post.blogId,
             blogName: post.blogName,
             createdAt: post.createdAt
-        }
-    })
-}
+        };
+    });
+};
+exports.postMapping = postMapping;

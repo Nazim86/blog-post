@@ -55,5 +55,10 @@ exports.userService = {
             }
             return user;
         });
+    },
+    findUserById(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield user_in_db_memory_1.userRepository.findUserById(userId);
+        });
     }
 };

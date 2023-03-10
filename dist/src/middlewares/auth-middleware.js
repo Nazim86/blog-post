@@ -19,14 +19,12 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
     const token = req.headers.authorization.split(" ")[1];
     const userId = yield jwt_service_1.jwtService.getUserIdByToken(token);
-    //TODO need to finish repairing middleware
-    const { loginOrEmail, password } = req.body;
-    const checkCredentials = yield user_service_1.userService.checkCredentials(loginOrEmail, password);
-    if (checkCredentials) {
-        next();
+    if (!userId) {
+        res.sendStatus(401);
     }
     else {
-        res.sendStatus(401);
+        req.context.user = yield user_service_1.userService.findUserById(userId);
+        next();
     }
 });
 exports.authMiddleware = authMiddleware;

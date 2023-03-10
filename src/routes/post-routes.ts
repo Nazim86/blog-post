@@ -7,11 +7,11 @@ import {
     descriptionValidation,
     postNameValidation
 } from "../validations/post-validations";
-import {PostsViewType} from "../types/posts-view-type";
+import {PostsViewType} from "../repositories/types/posts-view-type";
 import {postService} from "../domain/posts-service";
 import {getPaginationValues} from "../functions/pagination-values";
 import {postQueryRepo} from "../query-repositories/posts-query-repo";
-import {PostQueryType} from "../types/post-query-type";
+import {PostQueryType} from "../repositories/types/post-query-type";
 
 
 export const postRoutes = Router({})

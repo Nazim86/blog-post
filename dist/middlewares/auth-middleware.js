@@ -11,14 +11,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authMiddleware = void 0;
 const user_service_1 = require("../domain/user-service");
+const jwt_service_1 = require("../domain/jwt-service");
 const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { loginOrEmail, password } = req.body;
-    const checkCredentials = yield user_service_1.userService.checkCredentials(loginOrEmail, password);
-    if (checkCredentials) {
-        next();
+    if (!req.headers.authorization) {
+        res.send(401);
+        return;
+    }
+    const token = req.headers.authorization.split(" ")[1];
+    const userId = yield jwt_service_1.jwtService.getUserIdByToken(token);
+    if (!userId) {
+        res.sendStatus(401);
     }
     else {
-        res.sendStatus(401);
+        req.context.user = yield user_service_1.userService.findUserById(userId);
+        console.log(req.context.user);
+        next();
     }
 });
 exports.authMiddleware = authMiddleware;

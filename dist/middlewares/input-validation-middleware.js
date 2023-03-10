@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.inputValidationMiddleware = void 0;
+exports.inputValidationErrorsMiddleware = void 0;
 const express_validator_1 = require("express-validator");
-const inputValidationMiddleware = (req, res, next) => {
+const inputValidationErrorsMiddleware = (req, res, next) => {
     const errorsMessages = (0, express_validator_1.validationResult)(req);
     if (!errorsMessages.isEmpty()) {
         const errorsResponse = errorsMessages.array({ onlyFirstError: true }).map(err => ({
@@ -15,4 +15,4 @@ const inputValidationMiddleware = (req, res, next) => {
         next();
     }
 };
-exports.inputValidationMiddleware = inputValidationMiddleware;
+exports.inputValidationErrorsMiddleware = inputValidationErrorsMiddleware;

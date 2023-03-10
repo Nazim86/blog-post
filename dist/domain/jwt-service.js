@@ -14,10 +14,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwtService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const settings_1 = require("../settings");
 exports.jwtService = {
     createJWT(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            const token = jsonwebtoken_1.default.sign(user._id);
+            const token = jsonwebtoken_1.default.sign({ userId: user._id }, settings_1.settings.JWT_SECRET, { expiresIn: "1h" });
+            return token;
+        });
+    },
+    //TODO need to finish this
+    getUserIdByToken(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const decoded = jsonwebtoken_1.default.verify(token, settings_1.settings.JWT_SECRET);
+                return decoded.userId;
+            }
+            catch (e) {
+                return null;
+            }
         });
     }
 };

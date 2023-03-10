@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogRoutes = void 0;
 const express_1 = require("express");
 const base_auth_middlewares_1 = require("../middlewares/base-auth-middlewares");
-const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
+const input_validation_errors_middleware_1 = require("../middlewares/input-validation-errors-middleware");
 const blog_validations_1 = require("../validations/blog-validations");
 const blog_service_1 = require("../domain/blog-service");
 const blog_query_repo_1 = require("../query-repositories/blog-query-repo");
@@ -20,7 +20,7 @@ const pagination_values_1 = require("../functions/pagination-values");
 const posts_query_repo_1 = require("../query-repositories/posts-query-repo");
 const posts_service_1 = require("../domain/posts-service");
 exports.blogRoutes = (0, express_1.Router)({});
-const createPostValidations = [blog_validations_1.nameValidation, blog_validations_1.description, blog_validations_1.websiteUrl, input_validation_middleware_1.inputValidationMiddleware];
+const createPostValidations = [blog_validations_1.nameValidation, blog_validations_1.description, blog_validations_1.websiteUrl, input_validation_errors_middleware_1.inputValidationErrorsMiddleware];
 exports.blogRoutes.get('/', blog_validations_1.queryValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // const searchName = req.query.searchName | undefined | null
     // const sortBy = req.query.sortBy
@@ -51,7 +51,7 @@ exports.blogRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware
         res.status(201).send(newBlog);
     }
 }));
-exports.blogRoutes.post('/:blogId/posts', base_auth_middlewares_1.baseAuthorizationMiddleware, blog_validations_1.postForBlogValidations, input_validation_middleware_1.inputValidationMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.blogRoutes.post('/:blogId/posts', base_auth_middlewares_1.baseAuthorizationMiddleware, blog_validations_1.postForBlogValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const title = req.body.title;
     const shortDescription = req.body.shortDescription;
     const content = req.body.content;

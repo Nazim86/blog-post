@@ -3,6 +3,7 @@ import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-e
 import {authValidations} from "../validations/auth-validations";
 import {userService} from "../domain/user-service";
 import {jwtService} from "../domain/jwt-service";
+import {authMiddleware} from "../middlewares/auth-middleware";
 
 export const authRoutes = Router({});
 
@@ -24,7 +25,10 @@ authRoutes.post('/login',authValidations,inputValidationErrorsMiddleware,async (
 });
 
 //TODO also fix get here
-authRoutes.get('/me', async (req:Request, res: Response)=>{
-    const token = req.headers.
-    const getCurrentUserInfo = await jwtService.getUserIdByToken(token)
+authRoutes.get('/me', authMiddleware,async (req:Request, res: Response)=>{
+
+    const getCurrentUser = req.context.user
+
+    res.status(200).send(getCurrentUser)
+
 })

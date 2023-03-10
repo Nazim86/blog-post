@@ -1,7 +1,7 @@
 
 import {ObjectId} from "mongodb";
-import {BlogsViewType} from "../types/blogs-view-type";
-import {BlogsDbType} from "../types/blogs-db-type";
+import {BlogsViewType} from "../repositories/types/blogs-view-type";
+import {BlogsDbType} from "../repositories/types/blogs-db-type";
 import {blogRepository} from "../repositories/blog-in-db-repository";
 
 

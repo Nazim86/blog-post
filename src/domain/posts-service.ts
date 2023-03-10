@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
-import {PostsViewType} from "../types/posts-view-type";
-import {PostsDbType} from "../types/posts-db-type";
+import {PostsViewType} from "../repositories/types/posts-view-type";
+import {PostsDbType} from "../repositories/types/posts-db-type";
 import {postRepository} from "../repositories/post-in-db-repository";
 import {blogRepository} from "../repositories/blog-in-db-repository";
 

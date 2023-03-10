@@ -47,13 +47,19 @@ exports.userService = {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield user_in_db_memory_1.userRepository.checkCredentials(loginOrEmail);
             if (!user)
-                return false;
+                return user;
             const passwordSalt = user.passwordSalt;
             const passwordHash = yield this._generateHash(password, passwordSalt);
             if (passwordHash !== user.passwordHash) {
-                return false;
+                return user;
             }
             return user;
+        });
+    },
+    findUserById(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield user_in_db_memory_1.userRepository.findUserById(userId);
+            return result;
         });
     }
 };

@@ -12,13 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postRoutes = void 0;
 const express_1 = require("express");
 const base_auth_middlewares_1 = require("../middlewares/base-auth-middlewares");
-const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
+const input_validation_errors_middleware_1 = require("../middlewares/input-validation-errors-middleware");
 const post_validations_1 = require("../validations/post-validations");
 const posts_service_1 = require("../domain/posts-service");
 const pagination_values_1 = require("../functions/pagination-values");
 const posts_query_repo_1 = require("../query-repositories/posts-query-repo");
 exports.postRoutes = (0, express_1.Router)({});
-const createPostValidation = [post_validations_1.postNameValidation, post_validations_1.descriptionValidation, post_validations_1.contentValidation, post_validations_1.blogIdValidation, input_validation_middleware_1.inputValidationMiddleware]; //
+const createPostValidation = [post_validations_1.postNameValidation, post_validations_1.descriptionValidation, post_validations_1.contentValidation, post_validations_1.blogIdValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware]; //
 exports.postRoutes.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { pageNumber, pageSize, sortBy, sortDirection } = (0, pagination_values_1.getPaginationValues)(req.query);
     const getPost = yield posts_query_repo_1.postQueryRepo.getPost(pageNumber, pageSize, sortBy, sortDirection);

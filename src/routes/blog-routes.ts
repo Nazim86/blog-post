@@ -6,14 +6,14 @@ import {
     nameValidation,  postForBlogValidations, queryValidations,
     websiteUrl
 } from "../validations/blog-validations";
-import {BlogsViewType} from "../types/blogs-view-type";
+import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {blogService} from "../domain/blog-service";
 import {blogQueryRepo} from "../query-repositories/blog-query-repo";
-import {BlogQueryType} from "../types/blog-query-type";
+import {BlogQueryType} from "../repositories/types/blog-query-type";
 import {getPaginationValues} from "../functions/pagination-values";
-import {PostQueryType} from "../types/post-query-type";
+import {PostQueryType} from "../repositories/types/post-query-type";
 import {postQueryRepo} from "../query-repositories/posts-query-repo";
-import {PostsViewType} from "../types/posts-view-type";
+import {PostsViewType} from "../repositories/types/posts-view-type";
 import {postService} from "../domain/posts-service";
 
 

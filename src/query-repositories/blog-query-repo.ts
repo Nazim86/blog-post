@@ -1,9 +1,9 @@
 import {blogsCollection} from "../db/db";
-import {BlogsViewType} from "../types/blogs-view-type";
+import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {blogMapping} from "../mapping/blog-mapping";
 import {Filter, ObjectId} from "mongodb";
-import {BlogQueryType} from "../types/blog-query-type";
-import {BlogsDbType} from "../types/blogs-db-type";
+import {BlogQueryType} from "../repositories/types/blog-query-type";
+import {BlogsDbType} from "../repositories/types/blogs-db-type";
 
 // type SortedBy = {
 //     fieldname: keyof TemplateStringsArray

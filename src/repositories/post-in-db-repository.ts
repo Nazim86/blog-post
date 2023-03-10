@@ -1,7 +1,7 @@
 import {postsCollection} from "../db/db";
 import {ObjectId} from "mongodb";
-import {PostsViewType} from "../types/posts-view-type";
-import {PostsDbType} from "../types/posts-db-type";
+import {PostsViewType} from "./types/posts-view-type";
+import {PostsDbType} from "./types/posts-db-type";
 import {postMapping} from "../mapping/post-mapping";
 
 
