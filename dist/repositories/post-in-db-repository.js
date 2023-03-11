@@ -44,13 +44,13 @@ exports.postRepository = {
     },
     getPost() {
         return __awaiter(this, void 0, void 0, function* () {
-            const getposts = yield db_1.postsCollection.find({}).toArray();
-            return (0, post_mapping_1.postMapping)(getposts);
+            const getPosts = yield db_1.postsCollection.find({}).toArray();
+            return (0, post_mapping_1.postMapping)(getPosts);
         });
     },
     getPostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const postById = yield db_1.postsCollection.findOne({ _id: id });
+            const postById = yield db_1.postsCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
             if (postById) {
                 return {
                     id: postById._id.toString(),

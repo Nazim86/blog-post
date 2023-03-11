@@ -15,3 +15,5 @@ export const blogIdValidation = body("blogId").isString().trim().notEmpty().cust
 
 
 })
+
+export const postCommentContentValidation = body("content").isString().trim().notEmpty().isLength({min:20,max:300})

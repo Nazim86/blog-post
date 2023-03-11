@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogIdValidation = exports.contentValidation = exports.descriptionValidation = exports.postNameValidation = void 0;
+exports.postCommentContentValidation = exports.blogIdValidation = exports.contentValidation = exports.descriptionValidation = exports.postNameValidation = void 0;
 const express_validator_1 = require("express-validator");
 const db_1 = require("../db/db");
 const mongodb_1 = require("mongodb");
@@ -25,3 +25,4 @@ exports.blogIdValidation = (0, express_validator_1.body)("blogId").isString().tr
         return true;
     }
 }));
+exports.postCommentContentValidation = (0, express_validator_1.body)("content").isString().trim().notEmpty().isLength({ min: 20, max: 300 });

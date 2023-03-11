@@ -5,6 +5,7 @@ import { runDb} from "./db/db";
 import {deleteRoute} from "./routes/delete-routes";
 import {userRouter} from "./routes/user-router";
 import {authRoutes} from "./routes/auth-routes";
+import {commentRouter} from "./routes/comment-router";
 
 export const app = express()
 
@@ -20,7 +21,7 @@ app.use("/posts", postRoutes);
 app.use("/testing/all-data", deleteRoute)
 app.use("/users", userRouter)
 app.use("/auth", authRoutes)
-
+app.use("/comments",commentRouter)
 
 
 const startApp = async ()=>

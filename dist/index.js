@@ -20,6 +20,7 @@ const db_1 = require("./db/db");
 const delete_routes_1 = require("./routes/delete-routes");
 const user_router_1 = require("./routes/user-router");
 const auth_routes_1 = require("./routes/auth-routes");
+const comment_router_1 = require("./routes/comment-router");
 exports.app = (0, express_1.default)();
 // const parserMiddleware = bodyParser({})
 // app.use(parserMiddleware)
@@ -30,6 +31,7 @@ exports.app.use("/posts", post_routes_1.postRoutes);
 exports.app.use("/testing/all-data", delete_routes_1.deleteRoute);
 exports.app.use("/users", user_router_1.userRouter);
 exports.app.use("/auth", auth_routes_1.authRoutes);
+exports.app.use("/comments", comment_router_1.commentRouter);
 const startApp = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_1.runDb)();
     exports.app.listen(port, () => {

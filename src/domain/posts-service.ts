@@ -5,8 +5,6 @@ import {postRepository} from "../repositories/post-in-db-repository";
 import {blogRepository} from "../repositories/blog-in-db-repository";
 
 
-
-
 export const postService = {
 
     async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<PostsViewType | null> {
@@ -25,11 +23,10 @@ export const postService = {
 
         }
 
-        const result =  await postRepository.createPost(newPost)
-
-        return result
+        return await postRepository.createPost(newPost)
 
     },
+
 
     async createPostForBlog (title: string, shortDescription: string, content: string, blogId:string): Promise<PostsViewType | null> {
 
@@ -48,34 +45,26 @@ export const postService = {
 
         }
 
-        const result = await postRepository.createPostForBlog(createPostForBlog)
-
-        return result
+        return await postRepository.createPostForBlog(createPostForBlog)
 
     },
 
     async getPost():Promise<PostsViewType[]>{
-        const getposts = await postRepository.getPost()
-        return getposts
+        return await postRepository.getPost()
     },
 
-    async getPostById(id:ObjectId): Promise<PostsViewType |boolean> {
-        const postById = await postRepository.getPostById(id)
-        return postById
+    async getPostById(id:string): Promise<PostsViewType |boolean> {
+        return await postRepository.getPostById(id)
     }
     ,
 
     async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
-        const result = await postRepository.updatePost(id,title,shortDescription,content,blogId)
-
-
-        return result
+        return await postRepository.updatePost(id, title, shortDescription, content, blogId)
     },
 
     async deletePostById(id:string):Promise <boolean>{
-        const result = postRepository.deletePostById(id)
-        return result
+        return postRepository.deletePostById(id)
 
     }
 

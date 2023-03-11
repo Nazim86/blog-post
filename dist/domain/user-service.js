@@ -34,8 +34,7 @@ exports.userService = {
     },
     _generateHash(password, passwordSalt) {
         return __awaiter(this, void 0, void 0, function* () {
-            const hash = yield bcrypt_1.default.hash(password, passwordSalt);
-            return hash;
+            return yield bcrypt_1.default.hash(password, passwordSalt);
         });
     },
     deleteUser(id) {
@@ -58,8 +57,7 @@ exports.userService = {
     },
     findUserById(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield user_in_db_memory_1.userRepository.findUserById(userId);
-            return result;
+            return yield user_in_db_memory_1.userRepository.findUserById(userId);
         });
     }
 };

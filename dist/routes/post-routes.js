@@ -17,12 +17,34 @@ const post_validations_1 = require("../validations/post-validations");
 const posts_service_1 = require("../domain/posts-service");
 const pagination_values_1 = require("../functions/pagination-values");
 const posts_query_repo_1 = require("../query-repositories/posts-query-repo");
+const auth_middleware_1 = require("../middlewares/auth-middleware");
+const comment_service_1 = require("../domain/comment-service");
+const comments_query_repo_1 = require("../query-repositories/comments-query-repo");
 exports.postRoutes = (0, express_1.Router)({});
 const createPostValidation = [post_validations_1.postNameValidation, post_validations_1.descriptionValidation, post_validations_1.contentValidation, post_validations_1.blogIdValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware]; //
 exports.postRoutes.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { pageNumber, pageSize, sortBy, sortDirection } = (0, pagination_values_1.getPaginationValues)(req.query);
     const getPost = yield posts_query_repo_1.postQueryRepo.getPost(pageNumber, pageSize, sortBy, sortDirection);
     res.status(200).send(getPost);
+}));
+exports.postRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const getPost = yield posts_query_repo_1.postQueryRepo.getPostById(req.params.id);
+    if (getPost) {
+        res.status(200).send(getPost);
+    }
+    else {
+        res.send(404);
+    }
+}));
+exports.postRoutes.get('/:postId/comments', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pageNumber, pageSize, sortBy, sortDirection } = (0, pagination_values_1.getPaginationValues)(req.query);
+    const getCommentsForPost = yield comments_query_repo_1.commentsQueryRepo.getCommentsForPost(req.params.postId, pageNumber, pageSize, sortBy, sortDirection);
+    if (getCommentsForPost) {
+        res.status(200).send(getCommentsForPost);
+    }
+    else {
+        res.send(404);
+    }
 }));
 exports.postRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware, createPostValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const title = req.body.title;
@@ -37,13 +59,19 @@ exports.postRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware
         res.sendStatus(404);
     }
 }));
-exports.postRoutes.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const getPost = yield posts_query_repo_1.postQueryRepo.getPostById(req.params.id);
-    if (getPost) {
-        res.status(200).send(getPost);
+exports.postRoutes.post('/:postId/comments', auth_middleware_1.authMiddleware, post_validations_1.postCommentContentValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const postId = req.params.postId;
+    const content = req.body.content;
+    const userId = req.context.user.userId;
+    const userLogin = req.context.user.login;
+    console.log(typeof userLogin);
+    console.log(typeof userId);
+    const postComment = yield comment_service_1.commentService.createPostComment(postId, content, userId, userLogin);
+    if (postComment) {
+        res.status(201).send(postComment);
     }
     else {
-        res.send(404);
+        res.sendStatus(404);
     }
 }));
 exports.postRoutes.put('/:id', base_auth_middlewares_1.baseAuthorizationMiddleware, createPostValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

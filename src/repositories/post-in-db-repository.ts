@@ -1,4 +1,4 @@
-import {postsCollection} from "../db/db";
+import { postsCollection} from "../db/db";
 import {ObjectId} from "mongodb";
 import {PostsViewType} from "./types/posts-view-type";
 import {PostsDbType} from "./types/posts-db-type";
@@ -45,13 +45,16 @@ export const postRepository = {
     },
 
 
+
+
     async getPost():Promise<PostsViewType[]>{
-        const getposts = await postsCollection.find({}).toArray()
-        return postMapping(getposts)
+        const getPosts = await postsCollection.find({}).toArray()
+        return postMapping(getPosts)
     },
 
-    async getPostById(id:ObjectId): Promise<PostsViewType |boolean>{
-        const postById = await postsCollection.findOne({_id:id})
+    async getPostById(id:string): Promise<PostsViewType |boolean>{
+        const postById = await postsCollection.findOne({_id: new ObjectId(id)})
+
         if (postById) {
             return {
                 id: postById._id.toString(),
