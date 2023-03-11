@@ -64,8 +64,6 @@ exports.postRoutes.post('/:postId/comments', auth_middleware_1.authMiddleware, p
     const content = req.body.content;
     const userId = req.context.user.userId;
     const userLogin = req.context.user.login;
-    console.log(typeof userLogin);
-    console.log(typeof userId);
     const postComment = yield comment_service_1.commentService.createPostComment(postId, content, userId, userLogin);
     if (postComment) {
         res.status(201).send(postComment);

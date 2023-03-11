@@ -5,13 +5,16 @@ import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-e
 import {commentService} from "../domain/comment-service";
 import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
+import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-credentials-middleware";
 
 export const commentRouter = Router({})
 
-commentRouter.put('/:commentId', authMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
+commentRouter.put('/:commentId', authMiddleware,checkCommentCredentialsMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const content = req.body.content;
+
+
 
         const updateComment:boolean = await commentService.updateComment(req.params.commentId, content)
 
@@ -22,7 +25,7 @@ commentRouter.put('/:commentId', authMiddleware, postCommentContentValidation,in
         }
     })
 
-commentRouter.delete('/:commentId', authMiddleware,
+commentRouter.delete('/:commentId', authMiddleware,checkCommentCredentialsMiddleware,
     async (req: Request, res: Response) => {
 
         const deleteComment:boolean = await commentService.deleteComment(req.params.commentId)

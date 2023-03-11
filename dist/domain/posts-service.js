@@ -28,8 +28,7 @@ exports.postService = {
                 blogName: blog.name,
                 createdAt: new Date().toISOString()
             };
-            const result = yield post_in_db_repository_1.postRepository.createPost(newPost);
-            return result;
+            return yield post_in_db_repository_1.postRepository.createPost(newPost);
         });
     },
     createPostForBlog(title, shortDescription, content, blogId) {
@@ -46,32 +45,27 @@ exports.postService = {
                 blogName: blogById.name,
                 createdAt: new Date().toISOString()
             };
-            const result = yield post_in_db_repository_1.postRepository.createPostForBlog(createPostForBlog);
-            return result;
+            return yield post_in_db_repository_1.postRepository.createPostForBlog(createPostForBlog);
         });
     },
     getPost() {
         return __awaiter(this, void 0, void 0, function* () {
-            const getposts = yield post_in_db_repository_1.postRepository.getPost();
-            return getposts;
+            return yield post_in_db_repository_1.postRepository.getPost();
         });
     },
     getPostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const postById = yield post_in_db_repository_1.postRepository.getPostById(id);
-            return postById;
+            return yield post_in_db_repository_1.postRepository.getPostById(id);
         });
     },
     updatePost(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield post_in_db_repository_1.postRepository.updatePost(id, title, shortDescription, content, blogId);
-            return result;
+            return yield post_in_db_repository_1.postRepository.updatePost(id, title, shortDescription, content, blogId);
         });
     },
     deletePostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = post_in_db_repository_1.postRepository.deletePostById(id);
-            return result;
+            return post_in_db_repository_1.postRepository.deletePostById(id);
         });
     }
 };

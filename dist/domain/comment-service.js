@@ -16,24 +16,20 @@ const comment_db_repository_1 = require("../repositories/comment-db-repository")
 exports.commentService = {
     createPostComment(postId, content, userId, userLogin) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const postById = yield post_in_db_repository_1.postRepository.getPostById(postId);
-                if (!postById || typeof postById === "boolean")
-                    return null;
-                const postComment = {
-                    _id: new mongodb_1.ObjectId(postById.id),
-                    content: content,
-                    commentatorInfo: {
-                        userId: userId,
-                        userLogin: userLogin
-                    },
-                    createdAt: new Date().toISOString()
-                };
-                return yield comment_db_repository_1.commentDbRepository.createPostComment(postComment, userId, userLogin);
-            }
-            catch (e) {
-                return "You have already commented this post";
-            }
+            const postById = yield post_in_db_repository_1.postRepository.getPostById(postId);
+            if (!postById || typeof postById === "boolean")
+                return null;
+            const postComment = {
+                _id: new mongodb_1.ObjectId(),
+                postId: postById.id,
+                content: content,
+                commentatorInfo: {
+                    userId: userId,
+                    userLogin: userLogin
+                },
+                createdAt: new Date().toISOString()
+            };
+            return yield comment_db_repository_1.commentDbRepository.createPostComment(postComment, userId, userLogin);
         });
     },
     updateComment(commentId, content) {

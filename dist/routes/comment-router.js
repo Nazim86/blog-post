@@ -16,8 +16,9 @@ const post_validations_1 = require("../validations/post-validations");
 const input_validation_errors_middleware_1 = require("../middlewares/input-validation-errors-middleware");
 const comment_service_1 = require("../domain/comment-service");
 const comments_query_repo_1 = require("../query-repositories/comments-query-repo");
+const check_comment_credentials_middleware_1 = require("../middlewares/check-comment-credentials-middleware");
 exports.commentRouter = (0, express_1.Router)({});
-exports.commentRouter.put('/:commentId', auth_middleware_1.authMiddleware, post_validations_1.postCommentContentValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.commentRouter.put('/:commentId', auth_middleware_1.authMiddleware, check_comment_credentials_middleware_1.checkCommentCredentialsMiddleware, post_validations_1.postCommentContentValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const content = req.body.content;
     const updateComment = yield comment_service_1.commentService.updateComment(req.params.commentId, content);
     if (updateComment) {
@@ -27,7 +28,7 @@ exports.commentRouter.put('/:commentId', auth_middleware_1.authMiddleware, post_
         res.send(404);
     }
 }));
-exports.commentRouter.delete('/:commentId', auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.commentRouter.delete('/:commentId', auth_middleware_1.authMiddleware, check_comment_credentials_middleware_1.checkCommentCredentialsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const deleteComment = yield comment_service_1.commentService.deleteComment(req.params.commentId);
     if (deleteComment) {
         res.send(204);

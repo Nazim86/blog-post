@@ -9,28 +9,22 @@ export const commentService = {
 
     async createPostComment(postId:string,content: string,userId:string, userLogin:string):Promise<CommentsViewType | null|string> {
 
-        try {
+
             const postById: PostsViewType|boolean = await postRepository.getPostById(postId)
 
             if (!postById || typeof postById === "boolean") return null
 
             const postComment: CommentsDbType = {
-                _id: new ObjectId(postById.id),
+                _id: new ObjectId(),
+                postId:postById.id,
                 content: content,
                 commentatorInfo: {
                     userId: userId,
                     userLogin: userLogin
                 },
                 createdAt: new Date().toISOString()
-
             }
-
-
             return await commentDbRepository.createPostComment(postComment, userId, userLogin)
-        }
-        catch (e){
-            return "You have already commented this post"
-        }
     },
 
     async updateComment(commentId:string,content:string):Promise<boolean>{

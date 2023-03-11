@@ -9,10 +9,10 @@ export const commentsQueryRepo = {
     async getCommentsForPost (postId:string,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<CommentQueryType> {
 
         const skipSize = (pageNumber-1)*pageSize
-        const totalCount = await commentsCollection.countDocuments({_id:new ObjectId(postId)})
+        const totalCount = await commentsCollection.countDocuments({postId:postId})
         const pagesCount = Math.ceil(totalCount/pageSize)
 
-        const getCommentsForPost:CommentsDbType[] = await commentsCollection.find({_id:new ObjectId(postId)})
+        const getCommentsForPost:CommentsDbType[] = await commentsCollection.find({postId:postId})
             .sort({[sortBy]:sortDirection==="asc" ? 1 : -1})
             .skip(skipSize)
             .limit(pageSize)

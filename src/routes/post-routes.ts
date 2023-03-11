@@ -86,8 +86,7 @@ postRoutes.post('/:postId/comments', authMiddleware, postCommentContentValidatio
         const content = req.body.content
         const userId = req.context.user!.userId
         const userLogin = req.context.user!.login
-        console.log(typeof userLogin)
-        console.log(typeof userId)
+
 
         const postComment: CommentsViewType|null|string=  await commentService.createPostComment(postId,content,userId,userLogin)
 

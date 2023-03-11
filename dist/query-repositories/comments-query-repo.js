@@ -17,9 +17,9 @@ exports.commentsQueryRepo = {
     getCommentsForPost(postId, pageNumber, pageSize, sortBy, sortDirection) {
         return __awaiter(this, void 0, void 0, function* () {
             const skipSize = (pageNumber - 1) * pageSize;
-            const totalCount = yield db_1.commentsCollection.countDocuments({ _id: new mongodb_1.ObjectId(postId) });
+            const totalCount = yield db_1.commentsCollection.countDocuments({ postId: postId });
             const pagesCount = Math.ceil(totalCount / pageSize);
-            const getCommentsForPost = yield db_1.commentsCollection.find({ _id: new mongodb_1.ObjectId(postId) })
+            const getCommentsForPost = yield db_1.commentsCollection.find({ postId: postId })
                 .sort({ [sortBy]: sortDirection === "asc" ? 1 : -1 })
                 .skip(skipSize)
                 .limit(pageSize)
