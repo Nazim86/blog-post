@@ -5,9 +5,11 @@ import {PostsDbType} from "../repositories/types/posts-db-type";
 import * as dotenv from 'dotenv'
 import {UserDbType} from "../repositories/types/user-db-type";
 import {CommentsDbType} from "../repositories/types/comments-db-type"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+
+
 dotenv.config()
 
-const url = process.env.NODE_ENV === "test" ? 'mondodb:/0.0.0.0:27817': process.env.MONGO_URL
+const url = process.env.NODE_ENV === "test" ? 'mongodb://0.0.0.0:27017': process.env.MONGO_URL
 
 if (!url){
     throw new Error("Url does not found!")

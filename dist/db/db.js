@@ -36,7 +36,7 @@ exports.runDb = exports.commentsCollection = exports.usersCollection = exports.p
 const mongodb_1 = require("mongodb");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-const url = process.env.NODE_ENV === "test" ? 'mondodb:/0.0.0.0:27817' : process.env.MONGO_URL;
+const url = process.env.NODE_ENV === "test" ? 'mongodb://0.0.0.0:27017' : process.env.MONGO_URL;
 if (!url) {
     throw new Error("Url does not found!");
 }

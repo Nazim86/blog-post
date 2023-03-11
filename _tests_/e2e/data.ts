@@ -58,3 +58,19 @@ export const getCreatedBlog = {
     ]
 }
 
+export const getUpdatedBlog = {
+    pagesCount: expect.any(Number) | 1,
+    page: expect.any(Number) | 1,
+    pageSize: expect.any(Number) | 10,
+    totalCount: expect.any(Number) | 1,
+    items: [
+        {
+            id: expect.any(String),
+            name: "Blog updated",
+            description: "updating blog with new",
+            websiteUrl: "https://blog.io/",
+            createdAt: expect.any(String),
+            isMembership: false
+        }
+    ]
+}

@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV-test jest --runInBand --detectOpenHandles",
-    "test2": "jest --detectOpenHandles --coverage",
+    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles",
     "dev": "yarn nodemon --inspect dist/index.js",
     "watch": "tsc -w"
   },

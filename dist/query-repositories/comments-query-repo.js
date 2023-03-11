@@ -13,9 +13,13 @@ exports.commentsQueryRepo = void 0;
 const db_1 = require("../db/db");
 const mongodb_1 = require("mongodb");
 const comment_mapping_1 = require("../mapping/comment-mapping");
+const post_in_db_repository_1 = require("../repositories/post-in-db-repository");
 exports.commentsQueryRepo = {
     getCommentsForPost(postId, pageNumber, pageSize, sortBy, sortDirection) {
         return __awaiter(this, void 0, void 0, function* () {
+            const postById = yield post_in_db_repository_1.postRepository.getPostById(postId);
+            if (!postById)
+                return null;
             const skipSize = (pageNumber - 1) * pageSize;
             const totalCount = yield db_1.commentsCollection.countDocuments({ postId: postId });
             const pagesCount = Math.ceil(totalCount / pageSize);
