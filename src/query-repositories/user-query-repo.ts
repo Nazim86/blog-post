@@ -14,7 +14,6 @@ export const userQueryRepo = {
                 ]
         };
         const totalCount = await usersCollection.countDocuments(filter);
-        console.log("Total count", totalCount)
         const pagesCount = Math.ceil(totalCount / pageSize)
 
         const getUsers = await usersCollection.find(filter)
@@ -23,7 +22,7 @@ export const userQueryRepo = {
             .limit(pageSize)
             .toArray()
 
-        console.log(getUsers)
+
 
         const mappedUsers = userMapping(getUsers)
 

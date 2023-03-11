@@ -9,14 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteRoute = void 0;
-const express_1 = require("express");
+exports.checkCommentCredentialsMiddleware = void 0;
 const db_1 = require("../db/db");
-exports.deleteRoute = (0, express_1.Router)({});
-exports.deleteRoute.delete('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    yield db_1.blogsCollection.deleteMany({});
-    yield db_1.postsCollection.deleteMany({});
-    yield db_1.usersCollection.deleteMany({});
-    yield db_1.commentsCollection.deleteMany({});
-    return res.sendStatus(204);
-}));
+const mongodb_1 = require("mongodb");
+const checkCommentCredentialsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const findComment = yield db_1.commentsCollection.findOne({ _id: new mongodb_1.ObjectId(req.params.commentId) });
+    if (findComment) {
+        if (findComment.commentatorInfo.userLogin === req.context.user.login && findComment.commentatorInfo.userId === req.context.user.userId) {
+            next();
+        }
+        else {
+            res.sendStatus(403);
+        }
+    }
+    else {
+        res.sendStatus(404);
+    }
+});
+exports.checkCommentCredentialsMiddleware = checkCommentCredentialsMiddleware;
