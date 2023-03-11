@@ -40,7 +40,7 @@ export const userService = {
 
         const user = await userRepository.checkCredentials(loginOrEmail)
 
-        if (!user) return user
+        if (!user) return null
 
         const passwordSalt = user.passwordSalt;
 
@@ -49,7 +49,7 @@ export const userService = {
         if (passwordHash !== user.passwordHash) {
             return null
         }
-        return null
+        return user
     },
 
     async findUserById (userId:string):Promise<UserByIdType |null>{
