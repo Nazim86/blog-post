@@ -50,9 +50,9 @@ exports.userService = {
             const passwordSalt = user.passwordSalt;
             const passwordHash = yield this._generateHash(password, passwordSalt);
             if (passwordHash !== user.passwordHash) {
-                return user;
+                return null;
             }
-            return user;
+            return null;
         });
     },
     findUserById(userId) {

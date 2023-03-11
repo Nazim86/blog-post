@@ -47,9 +47,9 @@ export const userService = {
         const passwordHash = await this._generateHash(password, passwordSalt);
 
         if (passwordHash !== user.passwordHash) {
-            return user
+            return null
         }
-        return user
+        return null
     },
 
     async findUserById (userId:string):Promise<UserByIdType |null>{

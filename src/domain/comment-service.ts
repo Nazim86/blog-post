@@ -7,7 +7,7 @@ import {CommentsViewType} from "../repositories/types/comments-view-type";
 
 export const commentService = {
 
-    async createPostComment(postId:string,content: string,userId:string, userLogin:string):Promise<CommentsViewType | null|string> {
+    async createPostComment(postId:string,content: string,userId:string, userLogin:string):Promise<CommentsViewType|null> {
 
 
             const postById: PostsViewType|boolean = await postRepository.getPostById(postId)
