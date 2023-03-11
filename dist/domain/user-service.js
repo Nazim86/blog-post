@@ -46,13 +46,13 @@ exports.userService = {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield user_in_db_memory_1.userRepository.checkCredentials(loginOrEmail);
             if (!user)
-                return user;
+                return null;
             const passwordSalt = user.passwordSalt;
             const passwordHash = yield this._generateHash(password, passwordSalt);
             if (passwordHash !== user.passwordHash) {
                 return null;
             }
-            return null;
+            return user;
         });
     },
     findUserById(userId) {

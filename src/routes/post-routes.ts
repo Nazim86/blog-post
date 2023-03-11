@@ -49,7 +49,7 @@ postRoutes.get('/:postId/comments',  async (req: Request, res: Response) => {
 
     const {pageNumber,pageSize,sortBy,sortDirection} = getPaginationValues(req.query)
 
-    const getCommentsForPost:CommentQueryType|boolean =
+    const getCommentsForPost:CommentQueryType|null =
         await commentsQueryRepo.getCommentsForPost(req.params.postId, pageNumber,pageSize,sortBy,sortDirection)
 
     if (getCommentsForPost) {

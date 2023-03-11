@@ -52,7 +52,7 @@ export const postRepository = {
         return postMapping(getPosts)
     },
 
-    async getPostById(id:string): Promise<PostsViewType |boolean>{
+    async  getPostById(id:string): Promise<PostsViewType |boolean>{
         const postById = await postsCollection.findOne({_id: new ObjectId(id)})
 
         if (postById) {

@@ -4,10 +4,14 @@ import {CommentQueryType} from "../repositories/types/comment-query-type";
 import {commentMapping} from "../mapping/comment-mapping";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {CommentsDbType} from "../repositories/types/comments-db-type";
+import {PostsViewType} from "../repositories/types/posts-view-type";
+import {postRepository} from "../repositories/post-in-db-repository";
 
 export const commentsQueryRepo = {
-    async getCommentsForPost (postId:string,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<CommentQueryType> {
+    async getCommentsForPost (postId:string,pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<CommentQueryType|null> {
 
+        const postById: PostsViewType|boolean = await postRepository.getPostById(postId)
+        if (!postById) return null
         const skipSize = (pageNumber-1)*pageSize
         const totalCount = await commentsCollection.countDocuments({postId:postId})
         const pagesCount = Math.ceil(totalCount/pageSize)
@@ -17,6 +21,8 @@ export const commentsQueryRepo = {
             .skip(skipSize)
             .limit(pageSize)
             .toArray()
+
+
 
         const mappedComment:CommentsViewType[] = commentMapping(getCommentsForPost)
 
