@@ -175,13 +175,13 @@ describe("blogs CRUD testing", () => {
 
         const blogById = await blogFunctions.getBlogById(paginationData,blogId)
 
-        let expectedResult = {...createdBlog[0]}
-
-
         expect(blogById.status).toBe(404)
 
-        //TODO: check with get unchanged blog
+        let expectedResult = cloneDeep(createdBlogData)
+        expectedResult.items[0].id= createdBlog[0].id
+        expectedResult.items[0].createdAt= createdBlog[0].createdAt
 
+        await blogFunctions.getBlog(expectedResult,paginationData)
 
     });
 
@@ -300,7 +300,7 @@ describe("blogs CRUD testing", () => {
 
     it('should NOT Delete blogs by wrong id and 404 and', async () => {
 
-        await blogFunctions.deleteBlog("sdfdsfsdfsdf")
+        await blogFunctions.deleteBlog("sdf")
         expect(404)
 
         //TODO Get blog for delete
