@@ -3,7 +3,7 @@ import {app} from "../../src";
 
 export const postFunctions = {
 
-    async getPosts (expectedResult:object,paginationData:object){
+    async getPost (expectedResult:object,paginationData:object){
         await request(app)
             .get(`/posts`)
             .send(paginationData)
@@ -14,5 +14,6 @@ export const postFunctions = {
         return request(app)
             .post('/posts')
             .send(newPostData)
+            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
     }
 }

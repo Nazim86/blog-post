@@ -1,16 +1,19 @@
 import request from "supertest"
 import {app} from "../../src";
-import { cloneDeep } from 'lodash';
-// @ts-ignore
+import {cloneDeep} from 'lodash';
 import {blogFunctions} from "./blog-functions";
 import {
+    authorizationData,
     baseBlog,
     createdBlogData,
-    emptyBlogData, newPostCreatingData, paginationValues, returnedCreatedPost,
+    emptyBlogData, getUpdatedBlog, paginationValues,
     returnedUnchangedBlog,
     updateBlog,
     updatedBlog
-} from "./data";
+} from "./blogs-data";
+import {emptyPostData, newPostCreatingData, returnedCreatedPost} from "./posts-data";
+import {postFunctions} from "./post-functions";
+
 
 beforeAll(async () => {
 
@@ -40,10 +43,22 @@ describe("blogs CRUD testing", () => {
 
     // Create Blog
 
+    it(`should NOT create new blog because of wrong Authorization and return 401 `, async () => {
+        const newBlog = {...baseBlog}
+        let wrongAuthorizationData = "asvdvsdv"
+
+        const createBlog = await blogFunctions.createBlog(newBlog, wrongAuthorizationData)
+        expect(createBlog.status).toBe(401)
+
+        await blogFunctions.getBlog(emptyBlogData, paginationValues)
+
+    })
+
+
     it(`should NOT create new blog without name and return 400 `, async () => {
         const newBlog = {...baseBlog, name: null}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
@@ -54,7 +69,7 @@ describe("blogs CRUD testing", () => {
 
         const newBlog = {...baseBlog, name: 123}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
@@ -64,7 +79,7 @@ describe("blogs CRUD testing", () => {
 
         const newBlog = {...baseBlog, name: "blog".repeat(1000)}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
@@ -75,7 +90,7 @@ describe("blogs CRUD testing", () => {
 
         const newBlog = {...baseBlog, description: null}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
@@ -86,7 +101,7 @@ describe("blogs CRUD testing", () => {
 
         const newBlog = {...baseBlog, description: 123}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
@@ -97,7 +112,7 @@ describe("blogs CRUD testing", () => {
 
         const newBlog = {...baseBlog, description: "blog".repeat(1000)}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
@@ -107,7 +122,7 @@ describe("blogs CRUD testing", () => {
 
         const newBlog = {...baseBlog, websiteUrl: null}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
@@ -118,7 +133,7 @@ describe("blogs CRUD testing", () => {
         const newBlog = {...baseBlog, websiteUrl: "https://blog.io/".repeat(200)}
 
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
@@ -130,7 +145,7 @@ describe("blogs CRUD testing", () => {
         const newBlog = {...baseBlog, websiteUrl: "blog.io/"}
 
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
@@ -140,7 +155,7 @@ describe("blogs CRUD testing", () => {
 
         const newBlog = {...baseBlog, websiteUrl: 123}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
         await blogFunctions.getBlog(emptyBlogData, paginationValues)
@@ -151,7 +166,7 @@ describe("blogs CRUD testing", () => {
 
         const newBlog = {...baseBlog}
 
-        const createBlog = await blogFunctions.createBlog(newBlog)
+        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
 
         expect(createBlog.status).toBe(201)
 
@@ -160,10 +175,10 @@ describe("blogs CRUD testing", () => {
         createdBlog.push(createBlog.body)
 
         let expectedResult = cloneDeep(createdBlogData)
-        expectedResult.items[0].id= createdBlog[0].id
-        expectedResult.items[0].createdAt= createdBlog[0].createdAt
+        expectedResult.items[0].id = createdBlog[0].id
+        expectedResult.items[0].createdAt = createdBlog[0].createdAt
 
-  await blogFunctions.getBlog(expectedResult,paginationValues)
+        await blogFunctions.getBlog(expectedResult, paginationValues)
 
     })
 
@@ -173,15 +188,15 @@ describe("blogs CRUD testing", () => {
         const paginationData = {...paginationValues}
         const blogId = "asd"
 
-        const blogById = await blogFunctions.getBlogById(paginationData,blogId)
+        const blogById = await blogFunctions.getBlogById(paginationData, blogId)
 
         expect(blogById.status).toBe(404)
 
         let expectedResult = cloneDeep(createdBlogData)
-        expectedResult.items[0].id= createdBlog[0].id
-        expectedResult.items[0].createdAt= createdBlog[0].createdAt
+        expectedResult.items[0].id = createdBlog[0].id
+        expectedResult.items[0].createdAt = createdBlog[0].createdAt
 
-        await blogFunctions.getBlog(expectedResult,paginationData)
+        await blogFunctions.getBlog(expectedResult, paginationData)
 
     });
 
@@ -189,7 +204,7 @@ describe("blogs CRUD testing", () => {
         const paginationData = {...paginationValues}
         const blogId = createdBlog[0].id
 
-        const blogById = await blogFunctions.getBlogById(paginationData,blogId)
+        const blogById = await blogFunctions.getBlogById(paginationData, blogId)
 
         let expectedResult = {...createdBlog[0]}
 
@@ -201,10 +216,21 @@ describe("blogs CRUD testing", () => {
 
 
     //Update Blog
+
+    it(`should NOT update blog with wrong Authorization data and and return 401 `, async () => {
+        const update = {...updateBlog}
+        const wrongAuthorizationData = "asdasdad"
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, wrongAuthorizationData)
+        expect(updatingBlog.status).toBe(401);
+
+        await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
+
+    })
+
     it(`should NOT update blog because BAD ID and return 404 `, async () => {
         const update = {...updateBlog}
 
-        const updatingBlog = await blogFunctions.updateBlog("123", update)
+        const updatingBlog = await blogFunctions.updateBlog("123", update, authorizationData)
         expect(updatingBlog.status).toBe(404);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -213,7 +239,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog without name and and return 400 `, async () => {
         const update = {...updateBlog, name: null}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -222,7 +248,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog w. long name and return 400 `, async () => {
         const update = {...updateBlog, name: "blog".repeat(1000)}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -230,7 +256,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog w. not string name and return 400 `, async () => {
         const update = {...updateBlog, name: 123}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -239,7 +265,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog without Description and return 400 `, async () => {
         const update = {...updateBlog, description: null}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -248,7 +274,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog w. long description and return 400 `, async () => {
         const update = {...updateBlog, description: "desc".repeat(1000)}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -257,7 +283,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog w. not string Description and return 400 `, async () => {
         const update = {...updateBlog, description: 123}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -265,7 +291,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog without websiteUrl and return 400 `, async () => {
         const update = {...updateBlog, websiteUrl: null}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -273,7 +299,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog w. long website url and return 400 `, async () => {
         const update = {...updateBlog, websiteUrl: updateBlog.websiteUrl.repeat(1000)}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -281,7 +307,7 @@ describe("blogs CRUD testing", () => {
 
     it(`should NOT update blog wrong website url pattern and return 400 `, async () => {
         const update = {...updateBlog, websiteUrl: "student.com"}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
@@ -291,20 +317,37 @@ describe("blogs CRUD testing", () => {
 
     it(`should update blog and return 204`, async () => {
         const update = {...updateBlog}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update)
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
         expect(updatingBlog.status).toBe(204);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, updatedBlog)
 
     })
 
-    it('should NOT Delete blogs by wrong id and 404 and', async () => {
+    it('should not Delete blogs with Authorization and return 401', async () => {
+        const wrongAuthorizationData = "asasdad"
 
-        await blogFunctions.deleteBlog("sdf")
+        const copyGetUpdatedBlog = cloneDeep(getUpdatedBlog)
+        copyGetUpdatedBlog.items[0].id = createdBlog[0].id
+        copyGetUpdatedBlog.items[0].createdAt = createdBlog[0].createdAt
+
+        await blogFunctions.deleteBlog(createdBlog[0].id, wrongAuthorizationData)
+        expect(401)
+
+        await blogFunctions.getBlog(copyGetUpdatedBlog, paginationValues)
+
+    });
+
+    it('should NOT Delete blogs by wrong id and 404 and', async () => {
+        const copyGetUpdatedBlog = cloneDeep(getUpdatedBlog)
+        copyGetUpdatedBlog.items[0].id = createdBlog[0].id
+        copyGetUpdatedBlog.items[0].createdAt = createdBlog[0].createdAt
+
+        await blogFunctions.deleteBlog("sdf", authorizationData)
         expect(404)
 
-        //TODO Get blog for delete
-        // await testFunctions.getBlog(getUpdatedBlog)
+        await blogFunctions.getBlog(copyGetUpdatedBlog, paginationValues)
+
 
     });
 
@@ -312,53 +355,53 @@ describe("blogs CRUD testing", () => {
 
         const emptyBlog = {...emptyBlogData}
 
-        await blogFunctions.deleteBlog(createdBlog[0].id)
+        await blogFunctions.deleteBlog(createdBlog[0].id, authorizationData)
         expect(204)
 
-        await blogFunctions.getBlog(emptyBlog,paginationValues)
+        await blogFunctions.getBlog(emptyBlog, paginationValues)
 
     });
 
-
 })
 
-describe("post testing",()=>{
-    let blog;
-        beforeAll(async () => {
+
+describe("post testing", () => {
+    //TODO should replace any with type
+    let blog:any;
+    beforeAll(async () => {
 
         //clearAllData()
-            beforeAll(async () => {
-                await request(app)
-                    .delete('/testing/all-data')
-            });
+        beforeAll(async () => {
+            await request(app)
+                .delete('/testing/all-data')
+        });
 
         //blog = create blog()
-
+         blog= await blogFunctions.createBlog({...baseBlog}, authorizationData)
     })
 
 
-
-    it('should return 200 and empty post', async () => {
-const emptyPost = {...emptyBlogData}
+    it('should get post empty post and return 200', async () => {
+        const emptyPost = {...emptyPostData}
         //create post(blog.id)
         // const {status, body: data} =
-        await blogFunctions.getBlog(emptyPost,paginationValues)
+        await postFunctions.getPost(emptyPost, paginationValues)
 
     });
 
     it('should create Post return 201 and created Post', async () => {
-        const emptyPost = {...emptyBlogData}
-        const newPostData = {...newPostCreatingData,blogId:createdBlog[0].id}
-        const expectedResult = {...returnedCreatedPost,blogId: createdBlog[0].id,
-            blogName:createdBlog[0].name}
+        const emptyPost = {...emptyPostData}
+        const newPostData = {...newPostCreatingData, blogId: blog.id}
+        const expectedResult = {
+            ...returnedCreatedPost, blogId: blog.id,
+            blogName: blog.name
+        }
 
-        // const createPost = await blogFunctions.createPost(newPostData)
-        // expect(createPost.status).toBe(201)
-        // expect(createPost.body).toEqual(expectedResult)
+        const createPost = await postFunctions.createPost(newPostData)
+        expect(createPost.status).toBe(201)
+        expect(createPost.body).toEqual(expectedResult)
 
-        // const getPosts = await testFunctions.getPosts()
-        // expect(getPosts.status).toBe(200)
-        // expect(getPosts.body).toEqual(emptyPost)
+        const getPosts = await postFunctions.getPost(expectedResult,paginationValues)
 
     });
 

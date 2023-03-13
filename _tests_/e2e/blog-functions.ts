@@ -1,13 +1,8 @@
 import request from "supertest";
 import {app} from "../../src";
-// @ts-ignore
-import {createdBlog} from "./blog-post-api.test";
 
-// @ts-ignore
-import {createdBlogData, emptyBlogData, paginationValues, returnedUnchangedBlog} from "./data";
-import {ObjectId} from "mongodb";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
-type TestResultType<T> = {
+export type TestResultType<T> = {
     body: T,
     status: number
 }
@@ -43,12 +38,12 @@ export const blogFunctions = {
     },
 
 
-    async createBlog(newBlog:object){
+    async createBlog(newBlog: object, authorizationData:string):Promise<TestResultType<BlogsViewType>>{
 
         return request(app)
             .post('/blogs')
             .send(newBlog)
-            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+            .set("Authorization", authorizationData)
 
 
 
@@ -57,12 +52,12 @@ export const blogFunctions = {
 
     },
 
-  async updateBlog(id:string, update:object){
+  async updateBlog(id: string, update: object, authorizationData:string){
 
         return  request(app)
                 .put(`/blogs/${id}`)
                 .send(update)
-                .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+                .set("Authorization", authorizationData)
 
   },
 
@@ -74,11 +69,11 @@ export const blogFunctions = {
         expect(getBlog.body).toEqual(update)
     },
 
-    async deleteBlog(id:string){
+    async deleteBlog(id: string, authorizationData:string){
         await request(app)
             .delete(`/blogs/${id}`)
             .send()
-            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+            .set("Authorization", authorizationData)
 
     },
 
