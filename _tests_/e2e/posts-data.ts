@@ -6,6 +6,13 @@ export const emptyPostData = {
     items: []
 }
 
+export const postPaginationValues = {
+    pageNumber: 1,
+    pageSize: 10,
+    sortBy: "createdAt",
+    sortDirection: 'desc',
+}
+
 export const newPostCreatingData = {
     title: "ChatGPT",
     shortDescription: "AI",

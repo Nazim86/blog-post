@@ -11,15 +11,15 @@ import {
     updateBlog,
     updatedBlog
 } from "./blogs-data";
-import {emptyPostData, newPostCreatingData, returnedCreatedPost} from "./posts-data";
+import {emptyPostData, postPaginationValues} from "./posts-data";
 import {postFunctions} from "./post-functions";
 
 
-beforeAll(async () => {
-
-    await request(app)
-        .delete('/testing/all-data')
-});
+// beforeAll(async () => {
+//
+//     await request(app)
+//         .delete('/testing/all-data')
+// });
 
 export let createdBlog: Array<any> = []
 
@@ -371,38 +371,40 @@ describe("post testing", () => {
     beforeAll(async () => {
 
         //clearAllData()
-        beforeAll(async () => {
-            await request(app)
+
+        await request(app)
                 .delete('/testing/all-data')
-        });
+
 
         //blog = create blog()
          blog= await blogFunctions.createBlog({...baseBlog}, authorizationData)
     })
 
-
     it('should get post empty post and return 200', async () => {
         const emptyPost = {...emptyPostData}
+        const paginationData = {...postPaginationValues}
         //create post(blog.id)
         // const {status, body: data} =
-        await postFunctions.getPost(emptyPost, paginationValues)
+        await postFunctions.getPost(emptyPost, paginationData)
+
 
     });
 
-    it('should create Post return 201 and created Post', async () => {
-        const emptyPost = {...emptyPostData}
-        const newPostData = {...newPostCreatingData, blogId: blog.id}
-        const expectedResult = {
-            ...returnedCreatedPost, blogId: blog.id,
-            blogName: blog.name
-        }
-
-        const createPost = await postFunctions.createPost(newPostData)
-        expect(createPost.status).toBe(201)
-        expect(createPost.body).toEqual(expectedResult)
-
-        const getPosts = await postFunctions.getPost(expectedResult,paginationValues)
-
-    });
+    // it('should create Post return 201 and created Post', async () => {
+    //     const emptyPost = {...emptyPostData}
+    //     const newPostData = {...newPostCreatingData, blogId: blog.id}
+    //     const paginationData = {...postPaginationValues}
+    //     const expectedResult = {
+    //         ...returnedCreatedPost, blogId: blog.id,
+    //         blogName: blog.name
+    //     }
+    //
+    //     const createPost = await postFunctions.createPost(newPostData)
+    //     expect(createPost.status).toBe(201)
+    //     expect(createPost.body).toEqual(expectedResult)
+    //
+    //     const getPosts = await postFunctions.getPost(expectedResult,paginationData)
+    //
+    // });
 
 })

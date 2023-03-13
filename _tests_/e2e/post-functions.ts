@@ -8,6 +8,7 @@ export const postFunctions = {
             .get(`/posts`)
             .send(paginationData)
             .expect(200,expectedResult)
+
     },
 
     async createPost(newPostData:object){

@@ -1,4 +1,4 @@
-import {blogsCollection, postsCollection} from "../db/db";
+import { postsCollection} from "../db/db";
 import {postMapping} from "../mapping/post-mapping";
 import {PostQueryType} from "../repositories/types/post-query-type";
 import {PostsViewType} from "../repositories/types/posts-view-type";
@@ -29,7 +29,7 @@ export const postQueryRepo =
         async getPost(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<PostQueryType>{
 
             const skipSize = (pageNumber - 1) * pageSize
-            const totalCount = await blogsCollection.countDocuments({})
+            const totalCount = await postsCollection.countDocuments({})
             const pagesCount = Math.ceil(totalCount / pageSize)
 
             const getposts:PostsDbType[] = await postsCollection.find({})
