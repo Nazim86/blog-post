@@ -6,6 +6,23 @@ export const emptyPostData = {
     items: []
 }
 
+export const createdPostWithPagination = {
+    pagesCount: expect.any(Number) | 1,
+    page: expect.any(Number) | 1,
+    pageSize: expect.any(Number) | 10,
+    totalCount: expect.any(Number) | 1,
+    items:[ {
+        id: expect.any(String),
+        title: "ChatGPT",
+        shortDescription: "AI",
+        content: "About Ai technologies",
+        blogId: "6409dca9e947f5d966149e41",
+        blogName: "createdBlog[0].name",
+        createdAt: expect.any(String)
+    }
+    ]
+}
+
 export const postPaginationValues = {
     pageNumber: 1,
     pageSize: 10,
@@ -22,10 +39,10 @@ export const newPostCreatingData = {
 
 export const returnedCreatedPost = {
     id: expect.any(String),
-    title: "Post",
-    shortDescription: "creating post for blogs",
-    content: "Content is related to Post",
-    blogId: 'createdBlog[0].id,',
+    title: "ChatGPT",
+    shortDescription: "AI",
+    content: "About Ai technologies",
+    blogId: "6409dca9e947f5d966149e41",
     blogName: "createdBlog[0].name",
     createdAt: expect.any(String)
 }

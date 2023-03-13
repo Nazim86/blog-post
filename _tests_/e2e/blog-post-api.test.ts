@@ -11,7 +11,13 @@ import {
     updateBlog,
     updatedBlog
 } from "./blogs-data";
-import {emptyPostData, postPaginationValues} from "./posts-data";
+import {
+    createdPostWithPagination,
+    emptyPostData,
+    newPostCreatingData,
+    postPaginationValues,
+    returnedCreatedPost
+} from "./posts-data";
 import {postFunctions} from "./post-functions";
 
 
@@ -390,21 +396,31 @@ describe("post testing", () => {
 
     });
 
-    // it('should create Post return 201 and created Post', async () => {
-    //     const emptyPost = {...emptyPostData}
-    //     const newPostData = {...newPostCreatingData, blogId: blog.id}
-    //     const paginationData = {...postPaginationValues}
-    //     const expectedResult = {
-    //         ...returnedCreatedPost, blogId: blog.id,
-    //         blogName: blog.name
-    //     }
-    //
-    //     const createPost = await postFunctions.createPost(newPostData)
-    //     expect(createPost.status).toBe(201)
-    //     expect(createPost.body).toEqual(expectedResult)
-    //
-    //     const getPosts = await postFunctions.getPost(expectedResult,paginationData)
-    //
-    // });
+    it('should create Post return 201 and created Post', async () => {
+
+        //TODO Questions: checking after creating post. Why expect.any(String) does not work
+
+        const newPostData = {...newPostCreatingData, blogId: blog.body.id}
+        const paginationData = {...postPaginationValues}
+        const expectedNewPost = {
+            ...returnedCreatedPost, blogId: blog.body.id,
+            blogName: blog.body.name
+        }
+
+        const createPost = await postFunctions.createPost(newPostData,authorizationData)
+        expect(createPost.status).toBe(201)
+        expect(createPost.body).toEqual(expectedNewPost)
+
+        const expectedGetResult = cloneDeep(createdPostWithPagination)
+        expectedGetResult.items[0].id = createPost.body.id
+        expectedGetResult.items[0].createdAt = createPost.body.createdAt
+        expectedGetResult.items[0].blogName = createPost.body.blogName
+        expectedGetResult.items[0].blogId = blog.body.id
+
+
+
+        await postFunctions.getPost(expectedGetResult,paginationData)
+
+    });
 
 })

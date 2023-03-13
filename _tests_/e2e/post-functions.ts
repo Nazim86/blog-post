@@ -11,10 +11,11 @@ export const postFunctions = {
 
     },
 
-    async createPost(newPostData:object){
+    async createPost(newPostData:object,authorizationData:string){
+        console.log(newPostData)
         return request(app)
             .post('/posts')
             .send(newPostData)
-            .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+            .set("Authorization", authorizationData)
     }
 }
