@@ -13,19 +13,26 @@ export const blogQueryRepo = {
 
     async getBlogById(id: string): Promise<BlogsViewType | boolean> {
 
-        const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)})
-        if (foundBlog) {
-            return {
-                id: foundBlog._id.toString(),
-                name: foundBlog.name,
-                description: foundBlog.description,
-                websiteUrl: foundBlog.websiteUrl,
-                createdAt: foundBlog.createdAt,
-                isMembership: foundBlog.isMembership
+        try {
+
+            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)})
+            if (foundBlog) {
+                return {
+                    id: foundBlog._id.toString(),
+                    name: foundBlog.name,
+                    description: foundBlog.description,
+                    websiteUrl: foundBlog.websiteUrl,
+                    createdAt: foundBlog.createdAt,
+                    isMembership: foundBlog.isMembership
+                }
+            } else {
+                return false
             }
-        } else {
+        }
+        catch (e){
             return false
         }
+
     },
 
     async getBlog(

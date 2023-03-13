@@ -4,18 +4,36 @@ import {app} from "../../src";
 import {createdBlog} from "./blog-post-api.test";
 
 // @ts-ignore
-import {getEmptyBlog, returnedUnchangedBlog} from "./data";
+import {createdBlogData, emptyBlogData, paginationValues, returnedUnchangedBlog} from "./data";
 import {ObjectId} from "mongodb";
+import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
+type TestResultType<T> = {
+    body: T,
+    status: number
+}
 
-export const testFunctions = {
+// Promise<TestResultType<BlogsViewType>>
 
-    async getBlog(expectedResult:object) {
+export const blogFunctions = {
 
-        await request(app)
+    async getBlog(expectedResult: object, paginationData: object) {
+
+        // const response =
+            await request(app)
             .get('/blogs')
-            .send()
+            .send(paginationData)
             .expect(200, expectedResult)
+
+        // return {body: response.body, status: response.status}
     },
+    async getBlogById(paginationData:object,blogId:string){
+
+        return request(app)
+            .get(`/blogs/${blogId}`)
+            .send(paginationData)
+    },
+
+
 
     async getPostsByBlogId(blogId:string){
 
@@ -31,6 +49,8 @@ export const testFunctions = {
             .post('/blogs')
             .send(newBlog)
             .set("Authorization", "Basic YWRtaW46cXdlcnR5")
+
+
 
 
         // expect(createdBlog.body).toEqual(returnedUnchangedBlog)
@@ -62,26 +82,8 @@ export const testFunctions = {
 
     },
 
-    async getPosts (){
-        return request(app)
-            .get(`/posts`)
-            .send()
-    },
-
-    async createPost(){
-        return request(app)
-            .post('/posts')
-            .send({
-                _id: new ObjectId(),
-                title: "Post",
-                shortDescription: "creating post for blogs",
-                content: "Content is related to Post",
-                blogId: blogId,
-                blogName: blog.name,
-                createdAt: new Date().toISOString()
-            })
-
-    }
 }
+
+
 
 

@@ -90,6 +90,7 @@ blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware, postForBlogValida
 
 blogRoutes.get('/:id', async (req: Request, res: Response) => {
 
+
     const getBlog: BlogsViewType | boolean = await blogQueryRepo.getBlogById(req.params.id)
 
     if (getBlog) {

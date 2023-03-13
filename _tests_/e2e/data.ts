@@ -1,4 +1,5 @@
 import {createdBlog} from "./blog-post-api.test";
+import {ObjectId} from "mongodb";
 
 
 export const baseBlog = {
@@ -31,9 +32,15 @@ export const updatedBlog = {
     isMembership: false
 }
 
+export const paginationValues = {
+    searchName: "",
+    sortBy: "createdAt",
+    sortDirection: 'desc',
+    pageNumber: 1,
+    pageSize: 10
+}
 
-
-export const getEmptyBlog = {
+export const emptyBlogData = {
     pagesCount: expect.any(Number) | 0,
     page: expect.any(Number) | 1,
     pageSize: expect.any(Number) | 10,
@@ -41,7 +48,7 @@ export const getEmptyBlog = {
     items: []
 }
 
-export const getCreatedBlog = {
+export const createdBlogData = {
     pagesCount: expect.any(Number) | 1,
     page: expect.any(Number) | 1,
     pageSize: expect.any(Number) | 10,
@@ -73,4 +80,21 @@ export const getUpdatedBlog = {
             isMembership: false
         }
     ]
+}
+
+export const newPostCreatingData = {
+    title: "ChatGPT",
+    shortDescription: "AI",
+    content: "About Ai technologies",
+    blogId: "6409dca9e947f5d966149e41"
+}
+
+export const returnedCreatedPost = {
+    id: expect.any(String),
+    title: "Post",
+    shortDescription: "creating post for blogs",
+    content: "Content is related to Post",
+    blogId: 'createdBlog[0].id,',
+    blogName: "createdBlog[0].name",
+    createdAt: expect.any(String)
 }
