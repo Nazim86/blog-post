@@ -16,9 +16,10 @@ import {
     emptyPostData,
     newPostCreatingData,
     postPaginationValues,
-    returnedCreatedPost
+    returnedCreatedPost, updatedPostData, updatedPostWithPagination
 } from "./posts-data";
 import {postFunctions} from "./post-functions";
+import {PostsViewType} from "../../src/repositories/types/posts-view-type";
 
 
 // beforeAll(async () => {
@@ -371,6 +372,7 @@ describe("blogs CRUD testing", () => {
 })
 
 
+let createdPost:Array<PostsViewType> = [];
 describe("post testing", () => {
     //TODO should replace any with type
     let blog:any;
@@ -391,10 +393,14 @@ describe("post testing", () => {
         const paginationData = {...postPaginationValues}
         //create post(blog.id)
         // const {status, body: data} =
-        await postFunctions.getPost(emptyPost, paginationData)
+        const {body,status}=  await postFunctions.getPost(paginationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyPost)
 
 
     });
+
+
 
     it('should create Post return 201 and created Post', async () => {
 
@@ -411,16 +417,56 @@ describe("post testing", () => {
         expect(createPost.status).toBe(201)
         expect(createPost.body).toEqual(expectedNewPost)
 
+        createdPost.push(createPost.body)
+
         const expectedGetResult = cloneDeep(createdPostWithPagination)
-        expectedGetResult.items[0].id = createPost.body.id
-        expectedGetResult.items[0].createdAt = createPost.body.createdAt
-        expectedGetResult.items[0].blogName = createPost.body.blogName
-        expectedGetResult.items[0].blogId = blog.body.id
+        expectedGetResult.items[0].blogId=blog.body.id
+        expectedGetResult.items[0].blogName=blog.body.name
 
+       const {status,body}=  await postFunctions.getPost(paginationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(expectedGetResult)
+    });
 
+    // Get Post By Id
+    it('should get post by ID empty post and return 200', async () => {
+        const postById = {
+            ...returnedCreatedPost, blogId: blog.body.id,
+            blogName: blog.body.name
+        }
+   const id = createdPost[0].id
 
-        await postFunctions.getPost(expectedGetResult,paginationData)
+        const {body,status}=  await postFunctions.getPostById(id)
+        expect(status).toBe(200)
+        expect(body).toEqual(postById)
 
     });
+
+
+    //Update post by id
+
+    it('should Update post by ID empty post and return 204', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id}
+
+        const expectedGetResult = cloneDeep(updatedPostWithPagination)
+        expectedGetResult.items[0].blogId=blog.body.id
+        expectedGetResult.items[0].blogName=blog.body.name
+
+        const paginationData = {...postPaginationValues}
+        const id = createdPost[0].id
+
+        const updatedBlog=  await postFunctions.updatePostById(id,updatePost,authorizationData)
+        expect(updatedBlog.status).toBe(204)
+
+        const {status,body}=  await postFunctions.getPost(paginationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(expectedGetResult)
+
+    });
+
+
+
+
 
 })

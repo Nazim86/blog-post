@@ -23,6 +23,23 @@ export const createdPostWithPagination = {
     ]
 }
 
+export const updatedPostWithPagination = {
+    pagesCount: expect.any(Number) | 1,
+    page: expect.any(Number) | 1,
+    pageSize: expect.any(Number) | 10,
+    totalCount: expect.any(Number) | 1,
+    items:[ {
+        id: expect.any(String),
+        title: "Merlin",
+        shortDescription: "Artificial Intelligence",
+        content: "Usage of Merlin",
+        blogId: "6409dca9e947f5d966149e41",
+        blogName: "createdBlog[0].name",
+        createdAt: expect.any(String)
+    }
+    ]
+}
+
 export const postPaginationValues = {
     pageNumber: 1,
     pageSize: 10,
@@ -34,6 +51,13 @@ export const newPostCreatingData = {
     title: "ChatGPT",
     shortDescription: "AI",
     content: "About Ai technologies",
+    blogId: "6409dca9e947f5d966149e41"
+}
+
+export const updatedPostData = {
+    title: "Merlin",
+    shortDescription: "Artificial Intelligence",
+    content: "Usage of Merlin",
     blogId: "6409dca9e947f5d966149e41"
 }
 
