@@ -43,6 +43,14 @@ export const postFunctions = {
             .set("Authorization", authorizationData)
 
 
-    }
+    },
+
+    async deletePostById(id:string,authorizationData:string):Promise<TestResultType<PostsViewType>>{
+       return request(app)
+            .delete(`/posts/${id}`)
+            .send()
+            .set("Authorization", authorizationData)
+
+    },
 
 }

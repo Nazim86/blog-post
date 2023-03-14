@@ -391,8 +391,7 @@ describe("post testing", () => {
     it('should get post empty post and return 200', async () => {
         const emptyPost = {...emptyPostData}
         const paginationData = {...postPaginationValues}
-        //create post(blog.id)
-        // const {status, body: data} =
+
         const {body,status}=  await postFunctions.getPost(paginationData)
         expect(status).toBe(200)
         expect(body).toEqual(emptyPost)
@@ -464,6 +463,26 @@ describe("post testing", () => {
         expect(body).toEqual(expectedGetResult)
 
     });
+
+
+    // Delete Post By Id
+
+    it('should Delete post by ID empty post and return 204', async () => {
+
+        const id = createdPost[0].id
+
+        const deletePost =  await postFunctions.deletePostById(id,authorizationData)
+        expect(deletePost.status).toBe(204)
+
+        const emptyPost = {...emptyPostData}
+        const paginationData = {...postPaginationValues}
+
+        const {body,status}=  await postFunctions.getPost(paginationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyPost)
+
+    });
+
 
 
 
