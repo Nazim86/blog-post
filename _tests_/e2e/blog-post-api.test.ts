@@ -711,86 +711,85 @@ describe("user testing", () => {
         const userData = {...userCreateData,login:123}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users long login and 400 ', async () => {
         const userData = {...userCreateData,login:"sd".repeat(500)}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users short login and 400 ', async () => {
         const userData = {...userCreateData,login:"sd"}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users without login and 400 ', async () => {
         const userData = {...userCreateData,login:null}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users without password and 400 ', async () => {
         const userData = {...userCreateData,password:null}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users short password and 400 ', async () => {
         const userData = {...userCreateData,password:'1234'}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users long password and 400 ', async () => {
         const userData = {...userCreateData,password:'1234'.repeat(20)}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users number in password and 400 ', async () => {
         const userData = {...userCreateData,password:123}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users without email and 400 ', async () => {
         const userData = {...userCreateData,email:null}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users number in email and 400 ', async () => {
         const userData = {...userCreateData,email:123}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users with wrong email pattern and 400 ', async () => {
         const userData = {...userCreateData,email:"nazim@.com"}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,authorizationData)
+        await notCreateUser(userData, authorizationData)
     });
 
     it('should NOT create users with wrong authorization data and 401 ', async () => {
         const userData = {...userCreateData}
 
         //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData,'sds',401)
+        await notCreateUser(userData, 'sds',401)
     });
-
 
 
     it('should create users and return newly created user and 201 ', async () => {
