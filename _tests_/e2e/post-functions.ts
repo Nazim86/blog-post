@@ -39,10 +39,10 @@ export const postFunctions = {
 
 
 
-    async getPostByBlogId(id:string):Promise<TestResultType<PostsViewType>>{
+    async getPostByBlogId(paginationValues:object,id:string,):Promise<TestResultType<PostsViewType>>{
         const result = await request(app)
             .get(`/blogs/${id}/posts`)
-            .send()
+            .send(paginationValues)
 
         return {status:result.status,body:result.body}
 

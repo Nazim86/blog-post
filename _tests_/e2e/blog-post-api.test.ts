@@ -14,7 +14,7 @@ import {
 import {
     createdPostWithPagination,
     emptyPostData, newPostByBlogIdData,
-    newPostCreatingData,
+
     postPaginationValues,
     returnedCreatedPost, updatedPostData, updatedPostWithPagination
 } from "./posts-data";
@@ -410,39 +410,12 @@ describe("post testing", () => {
     });
 
 
-    it('should create Post return 201 and created Post', async () => {
-
-        //TODO Questions: checking after creating post. Why expect.any(String) does not work
-        //TODO build Should NOT for Create
-
-        const newPostData = {...newPostCreatingData, blogId: blog.body.id}
-        const expectedNewPost = {
-            ...returnedCreatedPost, blogId: blog.body.id,
-            blogName: blog.body.name
-        }
-
-        const createPost = await postFunctions.createPost(newPostData, authorizationData)
-        expect(createPost.status).toBe(201)
-        expect(createPost.body).toEqual(expectedNewPost)
-
-        createdPost.push(createPost.body)
-
-        const expectedGetResult = cloneDeep(createdPostWithPagination)
-        expectedGetResult.items[0].blogId = blog.body.id
-        expectedGetResult.items[0].blogName = blog.body.name
-
-        const {status, body} = await postFunctions.getPost(postPaginationValues)
-        expect(status).toBe(200)
-        expect(body).toEqual(expectedGetResult)
-    });
-
-
     it('should NOT get post wrong blogId and return 404', async () => {
         const postByBlogId = cloneDeep(createdPostWithPagination)
         postByBlogId.items[0].blogId = blog.body.id
         postByBlogId.items[0].blogName = blog.body.name
 
-        const {status} = await postFunctions.getPostByBlogId('sdf')
+        const {status} = await postFunctions.getPostByBlogId(postPaginationValues,'sdf')
         expect(status).toBe(404)
     });
 
@@ -452,7 +425,7 @@ describe("post testing", () => {
         postByBlogId.items[0].blogId = blog.body.id
         postByBlogId.items[0].blogName = blog.body.name
 
-        const {body, status} = await postFunctions.getPostByBlogId(blog.body.id)
+        const {body, status} = await postFunctions.getPostByBlogId(postPaginationValues,blog.body.id)
         expect(status).toBe(200)
         expect(body).toEqual(postByBlogId)
     });
@@ -468,18 +441,18 @@ describe("post testing", () => {
         }
 
         const createPost = await postFunctions.createPostByBlogId(blog.body.id, newPostData, authorizationData)
-        // expect(createPost.status).toBe(201)
-        // expect(createPost.body).toEqual(expectedNewPost)
-        //
-        // createdPost.push(createPost.body)
-        //
-        // const expectedGetResult = cloneDeep(createdPostWithPagination)
-        // expectedGetResult.items[0].blogId = blog.body.id
-        // expectedGetResult.items[0].blogName = blog.body.name
-        //
-        // const {status, body} = await postFunctions.getPost(postPaginationValues)
-        // expect(status).toBe(200)
-        // expect(body).toEqual(expectedGetResult)
+        expect(createPost.status).toBe(201)
+        expect(createPost.body).toEqual(expectedNewPost)
+
+        createdPost.push(createPost.body)
+
+        const expectedGetResult = cloneDeep(createdPostWithPagination)
+        expectedGetResult.items[0].blogId = blog.body.id
+        expectedGetResult.items[0].blogName = blog.body.name
+
+        const {status, body} = await postFunctions.getPost(postPaginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(expectedGetResult)
     });
 
 
