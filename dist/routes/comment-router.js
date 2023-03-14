@@ -46,3 +46,4 @@ exports.commentRouter.get('/:commentId', (req, res) => __awaiter(void 0, void 0,
         res.send(404);
     }
 }));
+//# sourceMappingURL=comment-router.js.map

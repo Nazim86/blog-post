@@ -15,3 +15,4 @@ const postMapping = (array) => {
     });
 };
 exports.postMapping = postMapping;
+//# sourceMappingURL=post-mapping.js.map

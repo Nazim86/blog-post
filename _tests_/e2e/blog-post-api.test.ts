@@ -22,7 +22,14 @@ import {postFunctions} from "./post-functions";
 import {PostsViewType} from "../../src/repositories/types/posts-view-type";
 import {notUpdate} from "./post-should-not-functions";
 import {userFunctions} from "./user-functions";
-import {getEmptyUsersData, userCreateData, userCreatedData, userPaginationValues} from "./user-data";
+import {
+    createdUserWithPagination,
+    getEmptyUsersData,
+    userCreateData,
+    userCreatedData,
+    userPaginationValues
+} from "./user-data";
+import {notCreateUser} from "./user-should-not-functions";
 
 
 // beforeAll(async () => {
@@ -677,7 +684,7 @@ describe("post testing", () => {
 
 })
 
-
+let users:PostsViewType[]=[]; // very strange, required PostsViewType
 describe("user testing", () => {
     beforeAll(async () => {
         await request(app)
@@ -700,15 +707,152 @@ describe("user testing", () => {
 
     });
 
+    it('should NOT create users with number in login and 400 ', async () => {
+        const userData = {...userCreateData,login:123}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users long login and 400 ', async () => {
+        const userData = {...userCreateData,login:"sd".repeat(500)}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users short login and 400 ', async () => {
+        const userData = {...userCreateData,login:"sd"}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users without login and 400 ', async () => {
+        const userData = {...userCreateData,login:null}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users without password and 400 ', async () => {
+        const userData = {...userCreateData,password:null}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users short password and 400 ', async () => {
+        const userData = {...userCreateData,password:'1234'}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users long password and 400 ', async () => {
+        const userData = {...userCreateData,password:'1234'.repeat(20)}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users number in password and 400 ', async () => {
+        const userData = {...userCreateData,password:123}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users without email and 400 ', async () => {
+        const userData = {...userCreateData,email:null}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users number in email and 400 ', async () => {
+        const userData = {...userCreateData,email:123}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users with wrong email pattern and 400 ', async () => {
+        const userData = {...userCreateData,email:"nazim@.com"}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,authorizationData)
+    });
+
+    it('should NOT create users with wrong authorization data and 401 ', async () => {
+        const userData = {...userCreateData}
+
+        //this function includes trying to create user and checking this with GET
+        await notCreateUser(userData,'sds',401)
+    });
+
+
+
     it('should create users and return newly created user and 201 ', async () => {
 
-        const {status, body} = await userFunctions.createUser(userCreateData, authorizationData)
-        expect(status).toBe(201)
-        expect(body).toEqual(userCreatedData)
+        const newUser= await userFunctions.createUser(userCreateData, authorizationData)
+        expect(newUser.status).toBe(201)
+        expect(newUser.body).toEqual(userCreatedData)
 
-        //TODO build get users
+        users.push(newUser.body)
+
+        const expectedResult = {...createdUserWithPagination}
+
+        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(expectedResult)
 
     });
+
+    it('should NOT create existing user and 400 ', async () => {
+
+        const newUser= await userFunctions.createUser(userCreateData, authorizationData)
+        expect(newUser.status).toBe(400)
+        expect(newUser.body).toEqual({})
+
+        users.push(newUser.body)
+
+        const expectedResult = {...createdUserWithPagination}
+
+        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(expectedResult)
+    });
+
+
+    it('should NOT Delete User with wrong ID and return 404', async () => {
+
+        const id = 'asd'
+
+        const deleteUser = await userFunctions.deleteUserById(id, authorizationData)
+        expect(deleteUser.status).toBe(404)
+
+        const expectedResult = {...createdUserWithPagination}
+
+        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(expectedResult)
+
+    });
+
+    it('should Delete User by ID and return 204', async () => {
+
+        const id = users[0].id
+
+        const deleteUser = await userFunctions.deleteUserById(id, authorizationData)
+        expect(deleteUser.status).toBe(204)
+
+        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(getEmptyUsersData)
+
+    });
+
 
 
 

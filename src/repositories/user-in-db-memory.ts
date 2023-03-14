@@ -20,8 +20,14 @@ export const userRepository = {
     },
 
     async deleteUser(id: string): Promise<boolean> {
-        const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
-        return result.deletedCount === 1;
+        try {
+            const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
+            return result.deletedCount === 1;
+        }
+        catch (e) {
+            return false
+        }
+
     },
 
     async checkCredentials(loginOrEmail: string): Promise<UserDbType | null> {

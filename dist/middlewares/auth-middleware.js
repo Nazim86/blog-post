@@ -14,7 +14,7 @@ const user_service_1 = require("../domain/user-service");
 const jwt_service_1 = require("../domain/jwt-service");
 const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.headers.authorization) {
-        res.send(401);
+        res.sendStatus(401);
         return;
     }
     const token = req.headers.authorization.split(" ")[1];
@@ -29,3 +29,4 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.authMiddleware = authMiddleware;
+//# sourceMappingURL=auth-middleware.js.map

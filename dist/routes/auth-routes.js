@@ -33,3 +33,4 @@ exports.authRoutes.get('/me', auth_middleware_1.authMiddleware, (req, res) => __
     const getCurrentUser = req.context.user;
     res.status(200).send(getCurrentUser);
 }));
+//# sourceMappingURL=auth-routes.js.map

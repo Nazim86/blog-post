@@ -12,3 +12,4 @@ const userMapping = (newUser) => {
     });
 };
 exports.userMapping = userMapping;
+//# sourceMappingURL=user-mapping.js.map

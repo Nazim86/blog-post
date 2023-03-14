@@ -69,17 +69,28 @@ exports.postRepository = {
     },
     updatePost(id, title, shortDescription, content, blogId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.postsCollection.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { title: title,
-                    shortDescription: shortDescription,
-                    content: content,
-                    blogId: blogId } });
-            return result.matchedCount === 1;
+            try {
+                const result = yield db_1.postsCollection.updateOne({ _id: new mongodb_1.ObjectId(id) }, { $set: { title: title,
+                        shortDescription: shortDescription,
+                        content: content,
+                        blogId: blogId } });
+                return result.matchedCount === 1;
+            }
+            catch (e) {
+                return false;
+            }
         });
     },
     deletePostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.postsCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
-            return result.deletedCount === 1;
+            try {
+                const result = yield db_1.postsCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
+                return result.deletedCount === 1;
+            }
+            catch (e) {
+                return false;
+            }
         });
     }
 };
+//# sourceMappingURL=post-in-db-repository.js.map

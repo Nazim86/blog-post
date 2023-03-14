@@ -20,3 +20,4 @@ exports.deleteRoute.delete('/', (req, res) => __awaiter(void 0, void 0, void 0, 
     yield db_1.commentsCollection.deleteMany({});
     return res.sendStatus(204);
 }));
+//# sourceMappingURL=delete-routes.js.map

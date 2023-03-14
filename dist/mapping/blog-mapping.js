@@ -14,3 +14,4 @@ const blogMapping = (array) => {
     });
 };
 exports.blogMapping = blogMapping;
+//# sourceMappingURL=blog-mapping.js.map

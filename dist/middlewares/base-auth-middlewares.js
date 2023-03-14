@@ -5,10 +5,11 @@ const baseAuthorizationMiddleware = (req, res, next) => {
     const userLoginPassword = req.headers.authorization;
     const encodedLoginPassword = Buffer.from("admin:qwerty", 'utf8').toString('base64');
     if (userLoginPassword != "Basic " + encodedLoginPassword) {
-        return res.send(401);
+        return res.sendStatus(401);
     }
     else {
         next();
     }
 };
 exports.baseAuthorizationMiddleware = baseAuthorizationMiddleware;
+//# sourceMappingURL=base-auth-middlewares.js.map

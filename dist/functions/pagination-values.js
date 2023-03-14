@@ -14,3 +14,4 @@ const getPaginationValues = (query) => {
     };
 }; // need more explanation
 exports.getPaginationValues = getPaginationValues;
+//# sourceMappingURL=pagination-values.js.map

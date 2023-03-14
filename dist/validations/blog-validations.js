@@ -15,3 +15,4 @@ exports.titleValidation = (0, express_validator_1.body)('title').isString().trim
 exports.shortDescriptionValidation = (0, express_validator_1.body)('shortDescription').isString().trim().notEmpty().isLength({ max: 100 });
 exports.contentValidation = (0, express_validator_1.body)('content').isString().trim().notEmpty().isLength({ max: 1000 });
 exports.postForBlogValidations = [exports.titleValidation, exports.shortDescriptionValidation, exports.contentValidation];
+//# sourceMappingURL=blog-validations.js.map

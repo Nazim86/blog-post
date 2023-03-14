@@ -5,3 +5,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // sortDirection:string
 // pageNumber : number
 // pageSize : number
+//# sourceMappingURL=blog-query-type.js.map

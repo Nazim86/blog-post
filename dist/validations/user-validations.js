@@ -6,3 +6,4 @@ exports.loginValidation = (0, express_validator_1.body)('login').isString().trim
 exports.passwordValidation = (0, express_validator_1.body)('password').isString().trim().notEmpty().isLength({ min: 6, max: 20 });
 exports.emailValidation = (0, express_validator_1.body)('email').isString().trim().notEmpty().matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
 exports.userInputValidations = [exports.loginValidation, exports.passwordValidation, exports.emailValidation];
+//# sourceMappingURL=user-validations.js.map

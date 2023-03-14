@@ -16,19 +16,24 @@ const mongodb_1 = require("mongodb");
 exports.postQueryRepo = {
     getPostById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const postById = yield db_1.postsCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
-            if (postById) {
-                return {
-                    id: postById._id.toString(),
-                    title: postById.title,
-                    shortDescription: postById.shortDescription,
-                    content: postById.content,
-                    blogId: postById.blogId,
-                    blogName: postById.blogName,
-                    createdAt: postById.createdAt
-                };
+            try {
+                const postById = yield db_1.postsCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
+                if (postById) {
+                    return {
+                        id: postById._id.toString(),
+                        title: postById.title,
+                        shortDescription: postById.shortDescription,
+                        content: postById.content,
+                        blogId: postById.blogId,
+                        blogName: postById.blogName,
+                        createdAt: postById.createdAt
+                    };
+                }
+                else {
+                    return false;
+                }
             }
-            else {
+            catch (e) {
                 return false;
             }
         });
@@ -36,7 +41,7 @@ exports.postQueryRepo = {
     getPost(pageNumber, pageSize, sortBy, sortDirection) {
         return __awaiter(this, void 0, void 0, function* () {
             const skipSize = (pageNumber - 1) * pageSize;
-            const totalCount = yield db_1.blogsCollection.countDocuments({});
+            const totalCount = yield db_1.postsCollection.countDocuments({});
             const pagesCount = Math.ceil(totalCount / pageSize);
             const getposts = yield db_1.postsCollection.find({})
                 .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
@@ -77,3 +82,4 @@ exports.postQueryRepo = {
         });
     }
 };
+//# sourceMappingURL=posts-query-repo.js.map

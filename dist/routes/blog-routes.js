@@ -94,3 +94,4 @@ exports.blogRoutes.delete('/:id', base_auth_middlewares_1.baseAuthorizationMiddl
         res.sendStatus(404);
     }
 }));
+//# sourceMappingURL=blog-routes.js.map

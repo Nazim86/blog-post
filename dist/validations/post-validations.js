@@ -26,3 +26,4 @@ exports.blogIdValidation = (0, express_validator_1.body)("blogId").isString().tr
     }
 }));
 exports.postCommentContentValidation = (0, express_validator_1.body)("content").isString().trim().notEmpty().isLength({ min: 20, max: 300 });
+//# sourceMappingURL=post-validations.js.map

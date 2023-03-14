@@ -22,4 +22,12 @@ export const userFunctions = {
             .set("Authorization", authorizationData)
 
     },
+
+    async deleteUserById(id:string,authorizationData:string):Promise<TestResultType<PostsViewType>>{
+        return request(app)
+            .delete(`/users/${id}`)
+            .send()
+            .set("Authorization", authorizationData)
+
+    },
 }

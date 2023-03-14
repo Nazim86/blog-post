@@ -20,18 +20,23 @@ const mongodb_1 = require("mongodb");
 exports.blogQueryRepo = {
     getBlogById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const foundBlog = yield db_1.blogsCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
-            if (foundBlog) {
-                return {
-                    id: foundBlog._id.toString(),
-                    name: foundBlog.name,
-                    description: foundBlog.description,
-                    websiteUrl: foundBlog.websiteUrl,
-                    createdAt: foundBlog.createdAt,
-                    isMembership: foundBlog.isMembership
-                };
+            try {
+                const foundBlog = yield db_1.blogsCollection.findOne({ _id: new mongodb_1.ObjectId(id) });
+                if (foundBlog) {
+                    return {
+                        id: foundBlog._id.toString(),
+                        name: foundBlog.name,
+                        description: foundBlog.description,
+                        websiteUrl: foundBlog.websiteUrl,
+                        createdAt: foundBlog.createdAt,
+                        isMembership: foundBlog.isMembership
+                    };
+                }
+                else {
+                    return false;
+                }
             }
-            else {
+            catch (e) {
                 return false;
             }
         });
@@ -58,61 +63,4 @@ exports.blogQueryRepo = {
         });
     }
 };
-//----------------------------------------------------------------------------------
-//
-//         const foundBlog = await blogsCollection.findOne({_id: _id})
-//         if (foundBlog) {
-//             return {
-//                 id: foundBlog._id.toString(),
-//                 name: foundBlog.name,
-//                 description: foundBlog.description,
-//                 websiteUrl: foundBlog.websiteUrl,
-//                 createdAt: foundBlog.createdAt,
-//                 isMembership: foundBlog.isMembership
-//             }
-//         } else {
-//             return false
-//         }
-//     },
-// }
-// let users = [
-// {id:'dsdf2-sdfs-23', name:'dimych', age:34},
-// {id:'csdc3-ddfs-11', name:'ivan', age:30},
-// {id:'dsdc1-dwfs-31', name:'ignat', age:20},
-//     {id:'qsdf2-sdfs-23', name:'kolya', age:22},
-// {id:'6sac2-1d1s-21', name:'artem', age:20},
-//     {id:'6sac2-1d1s-21', name:'artem', age:22},
-//     {id:'6sac2-1d1s-21', name:'artem', age:28},
-//     {id:'6sac2-1d1s-21', name:'artem', age:25},
-//     {id:'7sac2-1d1s-21', name:'artem', age:30},
-//     {id:'11sac2-1d1s-21', name:'artem', age:30},
-//     {id:'10sac2-1d1s-21', name:'artem', age:30},
-//     {id:'9ac2-1d1s-21', name:'artem', age:30},
-//     {id:'8sac2-1d1s-21', name:'artem', age:30},
-//
-// ]
-//
-// type SortedBy <T>= {
-//     fieldName: keyof T
-//     direction: 'asc'|'desc'
-// }
-// const getSortedItems = <T>(items:T[],sortBy:SortedBy<T>[])=>{
-//     return [...items].sort((u1,u2)=>{
-//
-//         for (let sortConfig of sortBy){
-//
-//             if (u1[sortConfig.fieldName]<u2[sortConfig.fieldName]){
-//                 return sortConfig.direction === 'asc' ? -1 : 1
-//             }
-//             if (u1[sortConfig.fieldName]>u2[sortConfig.fieldName]){
-//                 return sortConfig.direction === 'asc' ? 1 : -1
-//             }
-//
-//         }
-//
-//
-//         return 0
-//     });
-// }
-//
-// console.log(getSortedItems(users,[{fieldName: 'name', direction: 'asc'},{fieldName: 'age', direction: 'desc'},{fieldName: 'id', direction: 'asc'}]))
+//# sourceMappingURL=blog-query-repo.js.map

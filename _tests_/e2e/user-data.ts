@@ -17,6 +17,21 @@ export const getEmptyUsersData ={
     items: []
 }
 
+export const createdUserWithPagination = {
+    pagesCount: expect.any(Number) | 1,
+    page: expect.any(Number) | 1,
+    pageSize: expect.any(Number) | 10,
+    totalCount: expect.any(Number) | 1,
+    items:[ {
+        id:expect.any(String),
+        login: "nazim",
+        email: "nazim@gmail.com",
+        createdAt:expect.any(String)
+    }
+    ]
+}
+
+
 export const userCreateData = {
     login: "nazim",
     password:"123456",
