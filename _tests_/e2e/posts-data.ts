@@ -16,8 +16,8 @@ export const createdPostWithPagination = {
         title: "ChatGPT",
         shortDescription: "AI",
         content: "About Ai technologies",
-        blogId: "6409dca9e947f5d966149e41",
-        blogName: "createdBlog[0].name",
+        blogId: expect.any(String),
+        blogName: expect.any(String),
         createdAt: expect.any(String)
     }
     ]
@@ -33,8 +33,8 @@ export const updatedPostWithPagination = {
         title: "Merlin",
         shortDescription: "Artificial Intelligence",
         content: "Usage of Merlin",
-        blogId: "6409dca9e947f5d966149e41",
-        blogName: "createdBlog[0].name",
+        blogId: expect.any(String),
+        blogName: expect.any(String),
         createdAt: expect.any(String)
     }
     ]

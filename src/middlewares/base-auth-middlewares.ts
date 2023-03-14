@@ -7,7 +7,7 @@ export const baseAuthorizationMiddleware = (req:Request, res:Response, next: Nex
     const encodedLoginPassword: string = Buffer.from("admin:qwerty", 'utf8').toString('base64');
 
     if (userLoginPassword != "Basic "+encodedLoginPassword ) {
-        return res.send(401)
+        return res.sendStatus(401)
     }else{
         next()
     }

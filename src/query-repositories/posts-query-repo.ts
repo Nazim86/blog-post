@@ -6,24 +6,30 @@ import {PostsDbType} from "../repositories/types/posts-db-type";
 import {ObjectId} from "mongodb";
 
 
-export const postQueryRepo =
+export const postQueryRepo = {
 
-    {
+
         async getPostById(id:string): Promise<PostsViewType |boolean>{
-            const postById = await postsCollection.findOne({_id: new ObjectId(id)})
-            if (postById) {
-                return {
-                    id: postById._id.toString(),
-                    title: postById.title,
-                    shortDescription: postById.shortDescription,
-                    content: postById.content,
-                    blogId: postById.blogId,
-                    blogName: postById.blogName,
-                    createdAt: postById.createdAt
+            try {
+                const postById = await postsCollection.findOne({_id: new ObjectId(id)})
+                if (postById) {
+                    return {
+                        id: postById._id.toString(),
+                        title: postById.title,
+                        shortDescription: postById.shortDescription,
+                        content: postById.content,
+                        blogId: postById.blogId,
+                        blogName: postById.blogName,
+                        createdAt: postById.createdAt
+                    }
+                }else{
+                    return false
                 }
-            }else{
+            }
+            catch(e){
                 return false
             }
+
         },
 
         async getPost(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<PostQueryType>{

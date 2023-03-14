@@ -20,6 +20,7 @@ import {
 } from "./posts-data";
 import {postFunctions} from "./post-functions";
 import {PostsViewType} from "../../src/repositories/types/posts-view-type";
+import {notUpdate} from "./post-should-not-functions";
 
 
 // beforeAll(async () => {
@@ -372,27 +373,27 @@ describe("blogs CRUD testing", () => {
 })
 
 
-let createdPost:Array<PostsViewType> = [];
+let createdPost: Array<PostsViewType> = [];
 describe("post testing", () => {
     //TODO should replace any with type
-    let blog:any;
+    let blog: any;
     beforeAll(async () => {
 
         //clearAllData()
 
         await request(app)
-                .delete('/testing/all-data')
+            .delete('/testing/all-data')
 
 
         //blog = create blog()
-         blog= await blogFunctions.createBlog({...baseBlog}, authorizationData)
+        blog = await blogFunctions.createBlog({...baseBlog}, authorizationData)
     })
 
     it('should get post empty post and return 200', async () => {
         const emptyPost = {...emptyPostData}
         const paginationData = {...postPaginationValues}
 
-        const {body,status}=  await postFunctions.getPost(paginationData)
+        const {body, status} = await postFunctions.getPost(paginationData)
         expect(status).toBe(200)
         expect(body).toEqual(emptyPost)
 
@@ -400,92 +401,230 @@ describe("post testing", () => {
     });
 
 
-
     it('should create Post return 201 and created Post', async () => {
 
         //TODO Questions: checking after creating post. Why expect.any(String) does not work
+        //TODO build Should NOT for Create
 
         const newPostData = {...newPostCreatingData, blogId: blog.body.id}
-        const paginationData = {...postPaginationValues}
         const expectedNewPost = {
             ...returnedCreatedPost, blogId: blog.body.id,
             blogName: blog.body.name
         }
 
-        const createPost = await postFunctions.createPost(newPostData,authorizationData)
+        const createPost = await postFunctions.createPost(newPostData, authorizationData)
         expect(createPost.status).toBe(201)
         expect(createPost.body).toEqual(expectedNewPost)
 
         createdPost.push(createPost.body)
 
         const expectedGetResult = cloneDeep(createdPostWithPagination)
-        expectedGetResult.items[0].blogId=blog.body.id
-        expectedGetResult.items[0].blogName=blog.body.name
+        expectedGetResult.items[0].blogId = blog.body.id
+        expectedGetResult.items[0].blogName = blog.body.name
 
-       const {status,body}=  await postFunctions.getPost(paginationData)
+        const {status, body} = await postFunctions.getPost(postPaginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(expectedGetResult)
     });
 
     // Get Post By Id
-    it('should get post by ID empty post and return 200', async () => {
+    it('should NOT get post with wrong ID and return 404', async () => {
+
+        const id = 'sdf'
+
+        const {status} = await postFunctions.getPostById(id)
+        expect(status).toBe(404)
+
+    });
+
+    it('should get post by ID and return 200', async () => {
         const postById = {
             ...returnedCreatedPost, blogId: blog.body.id,
             blogName: blog.body.name
         }
-   const id = createdPost[0].id
+        const id = createdPost[0].id
 
-        const {body,status}=  await postFunctions.getPostById(id)
+        const {body, status} = await postFunctions.getPostById(id)
         expect(status).toBe(200)
         expect(body).toEqual(postById)
-
     });
 
 
     //Update post by id
-
-    it('should Update post by ID empty post and return 204', async () => {
+    it('should NOT Update post with wrong Authorization data and return 401', async () => {
         const updatePost = {
-            ...updatedPostData, blogId: blog.body.id}
+            ...updatedPostData, blogId: blog.body.id
+        }
 
-        const expectedGetResult = cloneDeep(updatedPostWithPagination)
-        expectedGetResult.items[0].blogId=blog.body.id
-        expectedGetResult.items[0].blogName=blog.body.name
+        await notUpdate(createdPost[0].id, updatePost, 'asd', 401)
+    });
 
-        const paginationData = {...postPaginationValues}
+    it('should NOT Update post with wrong ID and return 404', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id
+        }
+
+        await notUpdate('sdsf', updatePost, authorizationData, 404)
+    });
+
+    it('should NOT Update post by ID with wrong long title and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, title: "x".repeat(500)
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by ID with title is not string and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, title: 233
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by ID without title and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, title: null
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by ID without shortDescription and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, shortDescription: null
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by id long shortDescription and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, shortDescription: "null".repeat(1000)
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by id with number in shortDescription and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, shortDescription: 123
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+
+    it('should NOT Update post by id with number in content and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, content: 123
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by id with long content and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, content: "asda".repeat(1000)
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by id without content and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id, content: null
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by id without blogId and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: null
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+
+    });
+
+    it('should NOT Update post by id with wrong blogId and return 400', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: "sdsdfsdf"
+        }
+
+        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+    });
+
+    it('should Update post by ID and return 204', async () => {
+        const updatePost = {
+            ...updatedPostData, blogId: blog.body.id
+        }
+
         const id = createdPost[0].id
 
-        const updatedBlog=  await postFunctions.updatePostById(id,updatePost,authorizationData)
+        const updatedBlog = await postFunctions.updatePostById(id, updatePost, authorizationData)
         expect(updatedBlog.status).toBe(204)
 
-        const {status,body}=  await postFunctions.getPost(paginationData)
+        const {status, body} = await postFunctions.getPost(postPaginationValues)
         expect(status).toBe(200)
-        expect(body).toEqual(expectedGetResult)
+        expect(body).toEqual(updatedPostWithPagination)
 
     });
 
 
     // Delete Post By Id
 
-    it('should Delete post by ID empty post and return 204', async () => {
+    it('should NOT Delete post with wrong Authorization data and return 401', async () => {
 
         const id = createdPost[0].id
 
-        const deletePost =  await postFunctions.deletePostById(id,authorizationData)
-        expect(deletePost.status).toBe(204)
+        const deletePost = await postFunctions.deletePostById(id, "ssdfsdf")
+        expect(deletePost.status).toBe(401)
 
-        const emptyPost = {...emptyPostData}
-        const paginationData = {...postPaginationValues}
-
-        const {body,status}=  await postFunctions.getPost(paginationData)
+        const {body, status} = await postFunctions.getPost(postPaginationValues)
         expect(status).toBe(200)
-        expect(body).toEqual(emptyPost)
+        expect(body).toEqual(updatedPostWithPagination)
 
     });
 
 
+    it('should NOT Delete post with wrong ID and return 404', async () => {
+
+        const id = "sdfsf"
+
+        const deletePost = await postFunctions.deletePostById(id, authorizationData)
+        expect(deletePost.status).toBe(404)
+
+        const {body, status} = await postFunctions.getPost(postPaginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(updatedPostWithPagination)
+
+    });
 
 
+    it('should Delete post by ID and return 204', async () => {
 
+        const id = createdPost[0].id
+
+        const deletePost = await postFunctions.deletePostById(id, authorizationData)
+        expect(deletePost.status).toBe(204)
+
+        const {body, status} = await postFunctions.getPost(postPaginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyPostData)
+
+    });
 
 })
+
