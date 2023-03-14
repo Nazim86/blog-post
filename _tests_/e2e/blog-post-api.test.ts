@@ -13,7 +13,7 @@ import {
 } from "./blogs-data";
 import {
     createdPostWithPagination,
-    emptyPostData,
+    emptyPostData, newPostByBlogIdData,
     newPostCreatingData,
     postPaginationValues,
     returnedCreatedPost, updatedPostData, updatedPostWithPagination
@@ -21,6 +21,8 @@ import {
 import {postFunctions} from "./post-functions";
 import {PostsViewType} from "../../src/repositories/types/posts-view-type";
 import {notUpdate} from "./post-should-not-functions";
+import {userFunctions} from "./user-functions";
+import {getEmptyUsersData, userCreateData, userCreatedData, userPaginationValues} from "./user-data";
 
 
 // beforeAll(async () => {
@@ -433,12 +435,12 @@ describe("post testing", () => {
         postByBlogId.items[0].blogId = blog.body.id
         postByBlogId.items[0].blogName = blog.body.name
 
-        const { status} = await postFunctions.getPostByBlogId('sdf')
+        const {status} = await postFunctions.getPostByBlogId('sdf')
         expect(status).toBe(404)
     });
 
 
-    it('should get post by blogId for speicified blog and return 200', async () => {
+    it('should get post by blogId for specified blog and return 200', async () => {
         const postByBlogId = cloneDeep(createdPostWithPagination)
         postByBlogId.items[0].blogId = blog.body.id
         postByBlogId.items[0].blogName = blog.body.name
@@ -448,6 +450,30 @@ describe("post testing", () => {
         expect(body).toEqual(postByBlogId)
     });
 
+    it('should create Post for specific blog by blogId return 201 and created Post', async () => {
+//TODO Error: connect ECONNREFUSED 127.0.0.1:80
+        //TODO build Should NOT for Create
+
+        const newPostData = {...newPostByBlogIdData}
+        const expectedNewPost = {
+            ...returnedCreatedPost, blogId: blog.body.id,
+            blogName: blog.body.name
+        }
+
+        const createPost = await postFunctions.createPostByBlogId(blog.body.id, newPostData, authorizationData)
+        // expect(createPost.status).toBe(201)
+        // expect(createPost.body).toEqual(expectedNewPost)
+        //
+        // createdPost.push(createPost.body)
+        //
+        // const expectedGetResult = cloneDeep(createdPostWithPagination)
+        // expectedGetResult.items[0].blogId = blog.body.id
+        // expectedGetResult.items[0].blogName = blog.body.name
+        //
+        // const {status, body} = await postFunctions.getPost(postPaginationValues)
+        // expect(status).toBe(200)
+        // expect(body).toEqual(expectedGetResult)
+    });
 
 
     // Get Post By Id
@@ -651,3 +677,39 @@ describe("post testing", () => {
 
 })
 
+
+describe("user testing", () => {
+    beforeAll(async () => {
+        await request(app)
+            .delete('/testing/all-data')
+    })
+
+
+    it('should NOT get user with wrong Authorization and return 401 ', async () => {
+
+        const {status} = await userFunctions.getUsers(userPaginationValues, 'ssd')
+        expect(status).toBe(401)
+
+    });
+
+    it('should get users and return 200 ', async () => {
+
+        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+        expect(status).toBe(200)
+        expect(body).toEqual(getEmptyUsersData)
+
+    });
+
+    it('should create users and return newly created user and 201 ', async () => {
+
+        const {status, body} = await userFunctions.createUser(userCreateData, authorizationData)
+        expect(status).toBe(201)
+        expect(body).toEqual(userCreatedData)
+
+        //TODO build get users
+
+    });
+
+
+
+})

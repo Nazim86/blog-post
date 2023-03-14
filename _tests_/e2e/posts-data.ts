@@ -54,6 +54,12 @@ export const newPostCreatingData = {
     blogId: "6409dca9e947f5d966149e41"
 }
 
+export const newPostByBlogIdData = {
+    title: "ChatGPT",
+    shortDescription: "AI",
+    content: "About Ai technologies",
+}
+
 export const updatedPostData = {
     title: "Merlin",
     shortDescription: "Artificial Intelligence",

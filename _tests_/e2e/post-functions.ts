@@ -28,6 +28,17 @@ export const postFunctions = {
 
     },
 
+    async createPostByBlogId(id:string,newPostData:object,authorizationData:string):Promise<TestResultType<PostsViewType>>{
+
+        return  request(app)
+            .post(`blogs/${id}/posts`)
+            .send(newPostData)
+            .set("Authorization", authorizationData)
+
+    },
+
+
+
     async getPostByBlogId(id:string):Promise<TestResultType<PostsViewType>>{
         const result = await request(app)
             .get(`/blogs/${id}/posts`)
@@ -36,6 +47,7 @@ export const postFunctions = {
         return {status:result.status,body:result.body}
 
     },
+
 
     async getPostById(id:string):Promise<TestResultType<PostsViewType>>{
         const result = await request(app)
