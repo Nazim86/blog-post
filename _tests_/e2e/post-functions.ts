@@ -28,6 +28,15 @@ export const postFunctions = {
 
     },
 
+    async getPostByBlogId(id:string):Promise<TestResultType<PostsViewType>>{
+        const result = await request(app)
+            .get(`/blogs/${id}/posts`)
+            .send()
+
+        return {status:result.status,body:result.body}
+
+    },
+
     async getPostById(id:string):Promise<TestResultType<PostsViewType>>{
         const result = await request(app)
             .get(`/posts/${id}`)
