@@ -31,15 +31,16 @@ import {
 } from "./user-data";
 import {notCreateUser} from "./user-should-not-functions";
 import {client} from "../../src/db/db";
+import {authFunctions} from "./auth-functions";
 
 
 afterAll(async ()=>{
     await client.close();
 });
 
-export let createdBlog: Array<any> = []
-describe("blogs CRUD testing", () => {
 
+describe("blogs CRUD testing", () => {
+    let createdBlog: Array<any> = []
     beforeAll(async () => {
         await request(app)
             .delete('/testing/all-data')
@@ -378,8 +379,9 @@ describe("blogs CRUD testing", () => {
 
 })
 
-let createdPost: Array<PostsViewType> = [];
+
 describe("post testing", () => {
+    let createdPost: Array<PostsViewType> = [];
     //TODO should replace any with type
     let blog: any;
     beforeAll(async () => {
@@ -410,8 +412,6 @@ describe("post testing", () => {
     it('should create Post for specific blog by blogId return 201 and created Post', async () => {
 
         //TODO build Should NOT for Create
-
-
 
         const newPostData = {...newPostByBlogIdData}
         const expectedNewPost = {
@@ -656,8 +656,9 @@ describe("post testing", () => {
 
 })
 
-let users:PostsViewType[]=[]; // very strange, required PostsViewType
+// very strange, required PostsViewType
 describe("user testing", () => {
+    let users:PostsViewType[]=[];
     beforeAll(async () => {
         await request(app)
             .delete('/testing/all-data')
@@ -824,7 +825,66 @@ describe("user testing", () => {
 
     });
 
-
-
-
 })
+
+
+describe("auth testing", () => {
+    //TODO should replace any with type
+    let newUser:any //TODO choose right type for newUser
+    let token:string;
+
+    beforeAll(async () => {
+
+        //clearAllData()
+
+        await request(app)
+            .delete('/testing/all-data')
+
+        newUser= await userFunctions.createUser(userCreateData, authorizationData)
+
+    });
+
+    it('should login return 200', async () => {
+
+        //TODO build Should NOT for auth login
+
+        const loginUserData = {
+            loginOrEmail:newUser.body.login,
+            password:"123456"
+        }
+        const loginUser = await authFunctions.loginUser(loginUserData)
+        token = loginUser.body.accessToken
+        expect(loginUser.status).toBe(200)
+        expect(loginUser.body).toEqual({accessToken:expect.any(String)})
+    });
+
+    it('should get current user return 200', async () => {
+
+        //TODO build Should NOT for auth get user
+
+        const currentUser = {
+            email: newUser.body.email,
+            login: newUser.body.login,
+            userId: newUser.body.id
+        }
+
+        const loginUser = await authFunctions.getCurrentUser(token)
+        expect(loginUser.status).toBe(200)
+        expect(loginUser.body).toEqual(currentUser)
+
+    });
+})
+
+describe("comments testing", () => {
+    //TODO should replace any with type
+
+    beforeAll(async () => {
+
+        //clearAllData()
+        await request(app)
+            .delete('/testing/all-data')
+
+        // newUser = await userFunctions.createUser(userCreateData, authorizationData)
+    });
+
+});
