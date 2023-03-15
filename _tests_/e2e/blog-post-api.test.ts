@@ -30,17 +30,14 @@ import {
     userPaginationValues
 } from "./user-data";
 import {notCreateUser} from "./user-should-not-functions";
+import {client} from "../../src/db/db";
 
 
-// beforeAll(async () => {
-//
-//     await request(app)
-//         .delete('/testing/all-data')
-// });
+afterAll(async ()=>{
+    await client.close();
+});
 
 export let createdBlog: Array<any> = []
-
-
 describe("blogs CRUD testing", () => {
 
     beforeAll(async () => {
@@ -381,7 +378,6 @@ describe("blogs CRUD testing", () => {
 
 })
 
-
 let createdPost: Array<PostsViewType> = [];
 describe("post testing", () => {
     //TODO should replace any with type
@@ -396,7 +392,8 @@ describe("post testing", () => {
 
         //blog = create blog()
         blog = await blogFunctions.createBlog({...baseBlog}, authorizationData)
-    })
+
+    });
 
     it('should get post empty post and return 200', async () => {
         const emptyPost = {...emptyPostData}
@@ -410,29 +407,11 @@ describe("post testing", () => {
     });
 
 
-    it('should NOT get post wrong blogId and return 404', async () => {
-        const postByBlogId = cloneDeep(createdPostWithPagination)
-        postByBlogId.items[0].blogId = blog.body.id
-        postByBlogId.items[0].blogName = blog.body.name
-
-        const {status} = await postFunctions.getPostByBlogId(postPaginationValues,'sdf')
-        expect(status).toBe(404)
-    });
-
-
-    it('should get post by blogId for specified blog and return 200', async () => {
-        const postByBlogId = cloneDeep(createdPostWithPagination)
-        postByBlogId.items[0].blogId = blog.body.id
-        postByBlogId.items[0].blogName = blog.body.name
-
-        const {body, status} = await postFunctions.getPostByBlogId(postPaginationValues,blog.body.id)
-        expect(status).toBe(200)
-        expect(body).toEqual(postByBlogId)
-    });
-
     it('should create Post for specific blog by blogId return 201 and created Post', async () => {
-//TODO Error: connect ECONNREFUSED 127.0.0.1:80
+
         //TODO build Should NOT for Create
+
+
 
         const newPostData = {...newPostByBlogIdData}
         const expectedNewPost = {
@@ -453,6 +432,26 @@ describe("post testing", () => {
         const {status, body} = await postFunctions.getPost(postPaginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(expectedGetResult)
+    });
+
+    it('should NOT get post wrong blogId and return 404', async () => {
+        const postByBlogId = cloneDeep(createdPostWithPagination)
+        postByBlogId.items[0].blogId = blog.body.id
+        postByBlogId.items[0].blogName = blog.body.name
+
+        const {status} = await postFunctions.getPostByBlogId(postPaginationValues,'sdf')
+        expect(status).toBe(404)
+    });
+
+
+    it('should get post by blogId for specified blog and return 200', async () => {
+        const postByBlogId = cloneDeep(createdPostWithPagination)
+        postByBlogId.items[0].blogId = blog.body.id
+        postByBlogId.items[0].blogName = blog.body.name
+
+        const {body, status} = await postFunctions.getPostByBlogId(postPaginationValues,blog.body.id)
+        expect(status).toBe(200)
+        expect(body).toEqual(postByBlogId)
     });
 
 

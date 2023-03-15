@@ -61,7 +61,6 @@ export const postQueryRepo = {
 
             const skipSize = (pageNumber - 1) * pageSize
             const totalCount = await postsCollection.countDocuments({blogId: blogId})
-            // console.log(blogId)
             const pagesCount = Math.ceil(totalCount / pageSize)
 
 
@@ -75,7 +74,6 @@ export const postQueryRepo = {
             if (getPostsByBlogId.length ===0) return false
 
             const mappedBlog:PostsViewType[] = postMapping(getPostsByBlogId)
-
 
 
             return {

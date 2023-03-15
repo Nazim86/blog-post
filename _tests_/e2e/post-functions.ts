@@ -31,12 +31,11 @@ export const postFunctions = {
     async createPostByBlogId(id:string,newPostData:object,authorizationData:string):Promise<TestResultType<PostsViewType>>{
 
         return  request(app)
-            .post(`blogs/${id}/posts`)
+            .post(`/blogs/${id}/posts`)
             .send(newPostData)
             .set("Authorization", authorizationData)
 
     },
-
 
 
     async getPostByBlogId(paginationValues:object,id:string,):Promise<TestResultType<PostsViewType>>{
