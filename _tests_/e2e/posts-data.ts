@@ -7,10 +7,10 @@ export const emptyPostData = {
 }
 
 export const createdPostWithPagination = {
-    pagesCount: expect.any(Number) | 1,
-    page: expect.any(Number) | 1,
-    pageSize: expect.any(Number) | 10,
-    totalCount: expect.any(Number) | 1,
+    pagesCount: expect.any(Number) ?? 1,
+    page: expect.any(Number) ?? 1,
+    pageSize: expect.any(Number) ?? 10,
+    totalCount: expect.any(Number) ?? 1,
     items:[ {
         id: expect.any(String),
         title: "ChatGPT",

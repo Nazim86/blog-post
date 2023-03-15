@@ -13,7 +13,7 @@ import {
 } from "./blogs-data";
 import {
     createdPostWithPagination,
-    emptyPostData, newPostByBlogIdData,
+    emptyPostData, newPostByBlogIdData, newPostCreatingData,
 
     postPaginationValues,
     returnedCreatedPost, updatedPostData, updatedPostWithPagination
@@ -409,9 +409,37 @@ describe("post testing", () => {
     });
 
 
+    it('should create Post and return 201 and created Post', async () => {
+
+        //TODO build Should NOT for Create
+
+        const newPostData = {...newPostByBlogIdData, blogId:blog.body.id}
+        const expectedNewPost = {
+            ...returnedCreatedPost, blogId: blog.body.id,
+            blogName: blog.body.name
+        }
+
+        const createPost = await postFunctions.createPost( newPostData, authorizationData)
+        expect(createPost.status).toBe(201)
+        expect(createPost.body).toEqual(expectedNewPost)
+
+        createdPost.push(createPost.body)
+
+        const expectedGetResult = cloneDeep(createdPostWithPagination)
+        expectedGetResult.items[0].blogId = blog.body.id
+        expectedGetResult.items[0].blogName = blog.body.name
+
+        const {status, body} = await postFunctions.getPost(postPaginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(expectedGetResult)
+    });
+
+
+
     it('should create Post for specific blog by blogId return 201 and created Post', async () => {
 
         //TODO build Should NOT for Create
+        //TODO solve problem with get after creating two posts
 
         const newPostData = {...newPostByBlogIdData}
         const expectedNewPost = {
@@ -425,9 +453,12 @@ describe("post testing", () => {
 
         createdPost.push(createPost.body)
 
-        const expectedGetResult = cloneDeep(createdPostWithPagination)
-        expectedGetResult.items[0].blogId = blog.body.id
-        expectedGetResult.items[0].blogName = blog.body.name
+        let expectedGetResult = cloneDeep(emptyPostData)
+        expectedGetResult.items= ["sdf","dfsdf"]
+        // expectedGetResult.items[0].blogId = blog.body.id
+        // expectedGetResult.items[0].blogName = blog.body.name
+        expectedGetResult.totalCount = 2
+
 
         const {status, body} = await postFunctions.getPost(postPaginationValues)
         expect(status).toBe(200)
@@ -445,6 +476,9 @@ describe("post testing", () => {
 
 
     it('should get post by blogId for specified blog and return 200', async () => {
+
+        //TODO solve problem with get after creating two posts
+
         const postByBlogId = cloneDeep(createdPostWithPagination)
         postByBlogId.items[0].blogId = blog.body.id
         postByBlogId.items[0].blogName = blog.body.name
@@ -875,16 +909,20 @@ describe("auth testing", () => {
     });
 })
 
-describe("comments testing", () => {
-    //TODO should replace any with type
-
-    beforeAll(async () => {
-
-        //clearAllData()
-        await request(app)
-            .delete('/testing/all-data')
-
-        // newUser = await userFunctions.createUser(userCreateData, authorizationData)
-    });
-
-});
+// describe("comments testing", () => {
+//     //TODO should replace any with type
+// let blog
+//     beforeAll(async () => {
+//
+//         //clearAllData()
+//         await request(app)
+//             .delete('/testing/all-data')
+//         blog = await blogFunctions.createBlog({...baseBlog}, authorizationData)
+//         const createPost = await postFunctions.createPostByBlogId(blog.body.id, newB, authorizationData)
+//
+//
+//
+//         // newUser = await userFunctions.createUser(userCreateData, authorizationData)
+//     });
+//
+// });
