@@ -349,6 +349,30 @@ describe("blogs SHOULD NOT CRUD testing", () => {
 
 });
 
+
+describe("Blogs pagination testing", () => {
+    let createdBlog: Array<any> = []
+    beforeAll(async () => {
+        await request(app)
+            .delete('/testing/all-data')
+    });
+
+    it(`should return right pagination values `, async () => {
+let newBlogData
+        for (let i=0; i<=30;i++){
+            newBlogData = {...baseBlog, name: `Testing pagination ${i}`}
+            const createBlog = await blogFunctions.createBlog(newBlogData, authorizationData)
+            createdBlog.push(createBlog)
+
+        }
+
+
+    })
+
+
+});
+
+
 describe("blogs CRUD testing", () => {
     let createdBlog: Array<any> = []
     beforeAll(async () => {
@@ -428,7 +452,7 @@ describe("blogs CRUD testing", () => {
 
     });
 
-})
+});
 
 
 describe("post testing", () => {
@@ -730,7 +754,7 @@ describe("post testing", () => {
         expect(body).toEqual(createdPostWithPagination)
     });
 
-})
+});
 
 // very strange, required PostsViewType
 describe("user testing", () => {
@@ -901,7 +925,7 @@ describe("user testing", () => {
 
     });
 
-})
+});
 
 
 describe("auth testing", () => {
@@ -950,7 +974,7 @@ describe("auth testing", () => {
         expect(loginUser.body).toEqual(currentUser)
 
     });
-})
+});
 
 describe("comments testing", () => {
     //TODO should replace any with type
