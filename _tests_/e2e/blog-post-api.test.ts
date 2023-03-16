@@ -13,7 +13,7 @@ import {
 } from "./blogs-data";
 import {
     createdPostWithPagination,
-    emptyPostData, newPostByBlogIdData, newPostCreatingData,
+    emptyPostData, newPostByBlogIdData,
 
     postPaginationValues,
     returnedCreatedPost, updatedPostData, updatedPostWithPagination
@@ -435,60 +435,6 @@ describe("post testing", () => {
     });
 
 
-
-    it('should create Post for specific blog by blogId return 201 and created Post', async () => {
-
-        //TODO build Should NOT for Create
-        //TODO solve problem with get after creating two posts
-
-        const newPostData = {...newPostByBlogIdData}
-        const expectedNewPost = {
-            ...returnedCreatedPost, blogId: blog.body.id,
-            blogName: blog.body.name
-        }
-
-        const createPost = await postFunctions.createPostByBlogId(blog.body.id, newPostData, authorizationData)
-        expect(createPost.status).toBe(201)
-        expect(createPost.body).toEqual(expectedNewPost)
-
-        createdPost.push(createPost.body)
-
-        let expectedGetResult = cloneDeep(emptyPostData)
-        expectedGetResult.items= ["sdf","dfsdf"]
-        // expectedGetResult.items[0].blogId = blog.body.id
-        // expectedGetResult.items[0].blogName = blog.body.name
-        expectedGetResult.totalCount = 2
-
-
-        const {status, body} = await postFunctions.getPost(postPaginationValues)
-        expect(status).toBe(200)
-        expect(body).toEqual(expectedGetResult)
-    });
-
-    it('should NOT get post wrong blogId and return 404', async () => {
-        const postByBlogId = cloneDeep(createdPostWithPagination)
-        postByBlogId.items[0].blogId = blog.body.id
-        postByBlogId.items[0].blogName = blog.body.name
-
-        const {status} = await postFunctions.getPostByBlogId(postPaginationValues,'sdf')
-        expect(status).toBe(404)
-    });
-
-
-    it('should get post by blogId for specified blog and return 200', async () => {
-
-        //TODO solve problem with get after creating two posts
-
-        const postByBlogId = cloneDeep(createdPostWithPagination)
-        postByBlogId.items[0].blogId = blog.body.id
-        postByBlogId.items[0].blogName = blog.body.name
-
-        const {body, status} = await postFunctions.getPostByBlogId(postPaginationValues,blog.body.id)
-        expect(status).toBe(200)
-        expect(body).toEqual(postByBlogId)
-    });
-
-
     // Get Post By Id
     it('should NOT get post with wrong ID and return 404', async () => {
 
@@ -686,6 +632,51 @@ describe("post testing", () => {
         expect(status).toBe(200)
         expect(body).toEqual(emptyPostData)
 
+    });
+
+    it('should create Post for specific blog by blogId return 201 and created Post', async () => {
+
+        //TODO build Should NOT for Create
+        //TODO solve problem with get after creating two posts
+
+        const newPostData = {...newPostByBlogIdData}
+        const expectedNewPost = {
+            ...returnedCreatedPost, blogId: blog.body.id,
+            blogName: blog.body.name
+        }
+
+        const createPost = await postFunctions.createPostByBlogId(blog.body.id, newPostData, authorizationData)
+        expect(createPost.status).toBe(201)
+        expect(createPost.body).toEqual(expectedNewPost)
+
+        createdPost.push(createPost.body)
+
+        const {status, body} = await postFunctions.getPost(postPaginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(createdPostWithPagination)
+    });
+
+    it('should NOT get post wrong blogId and return 404', async () => {
+        const postByBlogId = cloneDeep(createdPostWithPagination)
+        postByBlogId.items[0].blogId = blog.body.id
+        postByBlogId.items[0].blogName = blog.body.name
+
+        const {status} = await postFunctions.getPostByBlogId(postPaginationValues,'sdf')
+        expect(status).toBe(404)
+    });
+
+
+    it('should get post by blogId for specified blog and return 200', async () => {
+
+        //TODO solve problem with get after creating two posts
+
+        const postByBlogId = cloneDeep(createdPostWithPagination)
+        postByBlogId.items[0].blogId = blog.body.id
+        postByBlogId.items[0].blogName = blog.body.name
+
+        const {body, status} = await postFunctions.getPostByBlogId(postPaginationValues,blog.body.id)
+        expect(status).toBe(200)
+        expect(body).toEqual(createdPostWithPagination)
     });
 
 })

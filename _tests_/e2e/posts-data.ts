@@ -23,6 +23,32 @@ export const createdPostWithPagination = {
     ]
 }
 
+export const createdTwoPostWithPagination = {
+    pagesCount: expect.any(Number) ?? 1,
+    page: expect.any(Number) ?? 1,
+    pageSize: expect.any(Number) ?? 10,
+    totalCount: expect.any(Number) ?? 2,
+    items:[ {
+        id: expect.any(String),
+        title: "ChatGPT",
+        shortDescription: "AI",
+        content: "About Ai technologies",
+        blogId: expect.any(String),
+        blogName: expect.any(String),
+        createdAt: expect.any(String)
+    },{
+        id: expect.any(String),
+        title: "ChatGPT",
+        shortDescription: "AI",
+        content: "About Ai technologies",
+        blogId: expect.any(String),
+        blogName: expect.any(String),
+        createdAt: expect.any(String)
+    }
+    ]
+}
+
+
 export const updatedPostWithPagination = {
     pagesCount: expect.any(Number) | 1,
     page: expect.any(Number) | 1,
