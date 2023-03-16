@@ -62,7 +62,6 @@ exports.postQueryRepo = {
         return __awaiter(this, void 0, void 0, function* () {
             const skipSize = (pageNumber - 1) * pageSize;
             const totalCount = yield db_1.postsCollection.countDocuments({ blogId: blogId });
-            // console.log(blogId)
             const pagesCount = Math.ceil(totalCount / pageSize);
             const getPostsByBlogId = yield db_1.postsCollection.find({ blogId: blogId })
                 .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })

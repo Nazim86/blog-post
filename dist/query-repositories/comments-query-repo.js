@@ -40,18 +40,23 @@ exports.commentsQueryRepo = {
     },
     getComment(commentId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const getComment = yield db_1.commentsCollection.findOne({ _id: new mongodb_1.ObjectId(commentId) });
-            if (!getComment)
+            try {
+                const getComment = yield db_1.commentsCollection.findOne({ _id: new mongodb_1.ObjectId(commentId) });
+                if (!getComment)
+                    return null;
+                return {
+                    id: getComment._id.toString(),
+                    content: getComment.content,
+                    commentatorInfo: {
+                        userId: getComment.commentatorInfo.userId,
+                        userLogin: getComment.commentatorInfo.userLogin
+                    },
+                    createdAt: getComment.createdAt
+                };
+            }
+            catch (e) {
                 return null;
-            return {
-                id: getComment._id.toString(),
-                content: getComment.content,
-                commentatorInfo: {
-                    userId: getComment.commentatorInfo.userId,
-                    userLogin: getComment.commentatorInfo.userLogin
-                },
-                createdAt: getComment.createdAt
-            };
+            }
         });
     }
 };

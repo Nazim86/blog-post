@@ -13,7 +13,7 @@ import {
 } from "./blogs-data";
 import {
     createdPostWithPagination,
-    emptyPostData, newPostByBlogIdData,
+    emptyPostData, newPostByBlogIdData, newPostCreatingData,
 
     postPaginationValues,
     returnedCreatedPost, updatedPostData, updatedPostWithPagination
@@ -32,6 +32,8 @@ import {
 import {notCreateUser} from "./user-should-not-functions";
 import {client} from "../../src/db/db";
 import {authFunctions} from "./auth-functions";
+import {commentFunctions} from "./comment-functions";
+import {commentCreatingData, commentWithPagination, createdComment} from "./comments-data";
 
 
 afterAll(async ()=>{
@@ -900,20 +902,60 @@ describe("auth testing", () => {
     });
 })
 
-// describe("comments testing", () => {
-//     //TODO should replace any with type
-// let blog
-//     beforeAll(async () => {
-//
-//         //clearAllData()
-//         await request(app)
-//             .delete('/testing/all-data')
-//         blog = await blogFunctions.createBlog({...baseBlog}, authorizationData)
-//         const createPost = await postFunctions.createPostByBlogId(blog.body.id, newB, authorizationData)
-//
-//
-//
-//         // newUser = await userFunctions.createUser(userCreateData, authorizationData)
-//     });
-//
-// });
+describe("comments testing", () => {
+    //TODO should replace any with type
+let blog:any
+    let post:any
+    let user:any
+    let loginUser:any
+    beforeAll(async () => {
+
+        //clearAllData()
+        await request(app)
+            .delete('/testing/all-data')
+
+        blog = await blogFunctions.createBlog(baseBlog, authorizationData)
+
+        const newPost = {...newPostCreatingData,blogId:blog.body.id}
+        post = await postFunctions.createPost(newPost, authorizationData)
+
+        user = await userFunctions.createUser(userCreateData, authorizationData)
+
+        const loginUserData = {
+            loginOrEmail:user.body.login,
+            password:"123456"
+        }
+
+        loginUser = await authFunctions.loginUser(loginUserData)
+
+    });
+
+
+    it('should create comment and return 201', async () => {
+
+        const newComment= await commentFunctions.createComment(post.body.id,
+            commentCreatingData, loginUser.body.accessToken)
+        const returnedComment = {...createdComment,
+            commentatorInfo:{...createdComment.commentatorInfo,
+                userLogin:user.body.login,userId: user.body.id}}
+
+        expect(newComment.status).toBe(201)
+        expect(newComment.body).toEqual(returnedComment)
+
+        const {status,body}= await commentFunctions.getComments(post.body.id)
+        expect(status).toBe(200)
+        expect(body).toEqual(commentWithPagination)
+
+    });
+
+
+    it('should get comments and return 200', async () => {
+
+        const {status,body}= await commentFunctions.getComments(post.body.id)
+        expect(status).toBe(200)
+        expect(body).toEqual(commentWithPagination)
+
+    });
+
+
+});

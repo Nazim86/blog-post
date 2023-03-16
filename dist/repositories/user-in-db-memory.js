@@ -26,8 +26,13 @@ exports.userRepository = {
     },
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.usersCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
-            return result.deletedCount === 1;
+            try {
+                const result = yield db_1.usersCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
+                return result.deletedCount === 1;
+            }
+            catch (e) {
+                return false;
+            }
         });
     },
     checkCredentials(loginOrEmail) {

@@ -8,6 +8,7 @@ export const authFunctions = {
             .post("/auth/login")
             .send(loginUserData)
 
+
     },
 
     async getCurrentUser(token:string){
