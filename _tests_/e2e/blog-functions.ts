@@ -11,15 +11,14 @@ export type TestResultType<T> = {
 
 export const blogFunctions = {
 
-    async getBlog(expectedResult: object, paginationData: object) {
+    async getBlog(paginationData: object) {
 
-        // const response =
-            await request(app)
+         const response = await request(app)
             .get('/blogs')
             .send(paginationData)
-            .expect(200, expectedResult)
 
-        // return {body: response.body, status: response.status}
+
+        return {body: response.body, status: response.status}
     },
     async getBlogById(paginationData:object,blogId:string){
 

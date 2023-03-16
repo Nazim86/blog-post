@@ -45,26 +45,15 @@ afterAll(async () => {
     await client.close();
 });
 
-
-describe("blogs CRUD testing", () => {
+describe("blogs SHOULD NOT CRUD testing", () => {
     let createdBlog: Array<any> = []
     beforeAll(async () => {
         await request(app)
             .delete('/testing/all-data')
-    });
-
-    // Get Blogs
-    it('should return 200 and empty array', async () => {
-        const paginationData = {...paginationValues}
-        const expectedResult = {...emptyBlogData}
-
-        await blogFunctions.getBlog(expectedResult, paginationData)
 
     });
 
-
-    // Create Blog
-
+// Should NOT tests for Creating Blog - begin ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     it(`should NOT create new blog because of wrong Authorization and return 401 `, async () => {
         const newBlog = {...baseBlog}
         let wrongAuthorizationData = "asvdvsdv"
@@ -72,10 +61,10 @@ describe("blogs CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, wrongAuthorizationData)
         expect(createBlog.status).toBe(401)
 
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
-
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
     })
-
 
     it(`should NOT create new blog without name and return 400 `, async () => {
         const newBlog = {...baseBlog, name: null}
@@ -83,8 +72,9 @@ describe("blogs CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
-
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
     })
 
     it(`should NOT create new blog with number in name and return 400 `, async () => {
@@ -93,8 +83,10 @@ describe("blogs CRUD testing", () => {
 
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
     })
 
     it(`should NOT create new blog with long string in name and return 400 `, async () => {
@@ -103,8 +95,10 @@ describe("blogs CRUD testing", () => {
 
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
 
     })
 
@@ -114,8 +108,10 @@ describe("blogs CRUD testing", () => {
 
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
 
     })
 
@@ -125,8 +121,10 @@ describe("blogs CRUD testing", () => {
 
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
 
     })
 
@@ -136,8 +134,10 @@ describe("blogs CRUD testing", () => {
 
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
     })
 
     it(`should NOT create new blog without websiteURL and return 400 `, async () => {
@@ -146,8 +146,10 @@ describe("blogs CRUD testing", () => {
 
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
     })
 
     it(`should NOT create new blog with long websiteURL length and return 400 `, async () => {
@@ -157,8 +159,10 @@ describe("blogs CRUD testing", () => {
 
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
 
     })
 
@@ -169,8 +173,10 @@ describe("blogs CRUD testing", () => {
 
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
 
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
     })
 
     it(`should NOT create new blog with number in websiteURL and return 400 `, async () => {
@@ -180,32 +186,19 @@ describe("blogs CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        await blogFunctions.getBlog(emptyBlogData, paginationValues)
-
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
     })
+    // END ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
-    it("should create new blog and return 201", async () => {
+    it(`should create new blog and return 204 `, async () => {
 
-        const newBlog = {...baseBlog}
-
-        const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
-
-        expect(createBlog.status).toBe(201)
-
-        expect(createBlog.body).toEqual(returnedUnchangedBlog)
-
+        const createBlog = await blogFunctions.createBlog(baseBlog, authorizationData)
         createdBlog.push(createBlog.body)
-
-        let expectedResult = cloneDeep(createdBlogData)
-        expectedResult.items[0].id = createdBlog[0].id
-        expectedResult.items[0].createdAt = createdBlog[0].createdAt
-
-        await blogFunctions.getBlog(expectedResult, paginationValues)
-
     })
 
-    //Get Blog By Id
-
+    //Should Not GET Blog
     it('should NOT get blog by wrong ID should return 404', async () => {
         const paginationData = {...paginationValues}
         const blogId = "asd"
@@ -218,27 +211,12 @@ describe("blogs CRUD testing", () => {
         expectedResult.items[0].id = createdBlog[0].id
         expectedResult.items[0].createdAt = createdBlog[0].createdAt
 
-        await blogFunctions.getBlog(expectedResult, paginationData)
-
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(createdBlogData)
     });
 
-    it('should get blog by ID should return 200 and found blog', async () => {
-        const paginationData = {...paginationValues}
-        const blogId = createdBlog[0].id
-
-        const blogById = await blogFunctions.getBlogById(paginationData, blogId)
-
-        let expectedResult = {...createdBlog[0]}
-
-
-        expect(blogById.status).toBe(200)
-        expect(blogById.body).toEqual(expectedResult)
-
-    });
-
-
-    //Update Blog
-
+    //Should NOT UPDATE Blog
     it(`should NOT update blog with wrong Authorization data and and return 401 `, async () => {
         const update = {...updateBlog}
         const wrongAuthorizationData = "asdasdad"
@@ -333,19 +311,11 @@ describe("blogs CRUD testing", () => {
         expect(updatingBlog.status).toBe(400);
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, returnedUnchangedBlog)
-
-
     })
+    // END ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
-    it(`should update blog and return 204`, async () => {
-        const update = {...updateBlog}
-        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, update, authorizationData)
-        expect(updatingBlog.status).toBe(204);
 
-        await blogFunctions.getUpdatedBlog(createdBlog[0].id, updatedBlog)
-
-    })
-
+    //Should NOT DELETE Blog
     it('should not Delete blogs with Authorization and return 401', async () => {
         const wrongAuthorizationData = "asasdad"
 
@@ -356,7 +326,10 @@ describe("blogs CRUD testing", () => {
         await blogFunctions.deleteBlog(createdBlog[0].id, wrongAuthorizationData)
         expect(401)
 
-        await blogFunctions.getBlog(copyGetUpdatedBlog, paginationValues)
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(createdBlogData)
+
 
     });
 
@@ -368,19 +341,90 @@ describe("blogs CRUD testing", () => {
         await blogFunctions.deleteBlog("sdf", authorizationData)
         expect(404)
 
-        await blogFunctions.getBlog(copyGetUpdatedBlog, paginationValues)
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(createdBlogData)
+
+    });
+
+});
+
+describe("blogs CRUD testing", () => {
+    let createdBlog: Array<any> = []
+    beforeAll(async () => {
+        await request(app)
+            .delete('/testing/all-data')
+    });
+
+    // Get Blogs
+    it('should return 200 and empty array', async () => {
+
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
+
+    });
+
+
+    // Create Blog
+    it("should create new blog and return 201", async () => {
+
+        const createBlog = await blogFunctions.createBlog(baseBlog, authorizationData)
+
+        expect(createBlog.status).toBe(201)
+
+        expect(createBlog.body).toEqual(returnedUnchangedBlog)
+
+        createdBlog.push(createBlog.body)
+
+        let expectedResult = cloneDeep(createdBlogData)
+        expectedResult.items[0].id = createdBlog[0].id
+        expectedResult.items[0].createdAt = createdBlog[0].createdAt
+
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(createdBlogData)
+    })
+
+    //Get Blog By Id
+    it('should get blog by ID should return 200 and found blog', async () => {
+        const blogId = createdBlog[0].id
+
+        const blogById = await blogFunctions.getBlogById(paginationValues, blogId)
+
+        let expectedResult = {...createdBlog[0]}
+
+        expect(blogById.status).toBe(200)
+        expect(blogById.body).toEqual(expectedResult)
 
 
     });
 
-    it('should Delete blogs by id and 200 and empty array', async () => {
 
-        const emptyBlog = {...emptyBlogData}
+    //Update Blog
+    it(`should update blog and return 204`, async () => {
+
+        const updatingBlog = await blogFunctions.updateBlog(createdBlog[0].id, updateBlog, authorizationData)
+        expect(updatingBlog.status).toBe(204);
+
+        await blogFunctions.getUpdatedBlog(createdBlog[0].id, updatedBlog)
+
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(getUpdatedBlog)
+
+    })
+
+
+    //Delete Blog
+    it('should Delete blogs by id and 200 and empty array', async () => {
 
         await blogFunctions.deleteBlog(createdBlog[0].id, authorizationData)
         expect(204)
 
-        await blogFunctions.getBlog(emptyBlog, paginationValues)
+        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        expect(status).toBe(200)
+        expect(body).toEqual(emptyBlogData)
 
     });
 
