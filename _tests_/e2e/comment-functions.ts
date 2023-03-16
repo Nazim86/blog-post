@@ -3,7 +3,7 @@ import {app} from "../../src";
 
 export const commentFunctions = {
 
-    async getComments (postId:string){
+    async getCommentByPostId (postId:string){
             const result = await request(app)
                 .get(`/posts/${postId}/comments`)
                 .send()
@@ -12,6 +12,26 @@ export const commentFunctions = {
 
         },
 
+    async getCommentByCommentId (commentId:string){
+        const result = await request(app)
+            .get(`/comments/${commentId}`)
+            .send()
+
+        return {status:result.status,body:result.body}
+
+    },
+
+    async deleteCommentByCommentId (commentId:string,token:string){
+        return request(app)
+            .delete(`/comments/${commentId}`)
+            .send()
+            .set("Authorization", `Bearer ${token}`)
+
+
+    },
+
+
+
     async createComment (postId:string,commentData:object,token:string) {
 
         return request(app)
@@ -19,6 +39,17 @@ export const commentFunctions = {
             .send(commentData)
             .set("Authorization", `Bearer ${token}`)
 
+    },
 
-    }
+    async updateComment (commentId:string,updateData:object,token:string) {
+
+        return request(app)
+            .put(`/comments/${commentId}`)
+            .send(updateData)
+            .set("Authorization", `Bearer ${token}`)
+
+
+    },
+
+
 }

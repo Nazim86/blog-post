@@ -28,4 +28,20 @@ export const commentWithPagination = {
     ]
 }
 
+export const commentUpdated = {
+
+
+        id: expect.any(String),
+        content: "Already done homework 7 and going on",
+        commentatorInfo: {
+            userId: expect.any(String),
+            userLogin: expect.any(String)
+        },
+        createdAt: expect.any(String)
+
+
+}
+
 export const commentCreatingData = {content:"Learning to code in IT incubator"}
+
+export const commentUpdatingData = {content:"Already done homework 7 and going on"}
