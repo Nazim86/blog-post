@@ -45,6 +45,8 @@ postRoutes.get('/:id',  async (req: Request, res: Response) => {
 
 })
 
+console.log("tstd")
+
 postRoutes.get('/:postId/comments',  async (req: Request, res: Response) => {
 
     const {pageNumber,pageSize,sortBy,sortDirection} = getPaginationValues(req.query)
