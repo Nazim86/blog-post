@@ -1,9 +1,11 @@
 import {Request,Response, Router} from "express";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {authValidations} from "../validations/auth-validations";
-import {userService} from "../domain/user-service";
 import {jwtService} from "../domain/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
+import {userInputValidations} from "../validations/user-validations";
+import {authService} from "../domain/auth-service";
+import {userService} from "../domain/user-service";
 
 export const authRoutes = Router({});
 
@@ -23,6 +25,21 @@ authRoutes.post('/login',authValidations,inputValidationErrorsMiddleware,async (
     }
 
 });
+
+authRoutes.post('/registration',userInputValidations,inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const {login,password,email} = req.body
+
+
+        const newUser = await authService.createNewUser(login,password,email)
+        if (newUser){
+            res.status(204).send(newUser)
+        }
+
+
+    });
+
 
 //TODO also fix get here
 authRoutes.get('/me', authMiddleware,async (req:Request, res: Response)=>{

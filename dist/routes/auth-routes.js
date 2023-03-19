@@ -13,9 +13,11 @@ exports.authRoutes = void 0;
 const express_1 = require("express");
 const input_validation_errors_middleware_1 = require("../middlewares/input-validation-errors-middleware");
 const auth_validations_1 = require("../validations/auth-validations");
-const user_service_1 = require("../domain/user-service");
 const jwt_service_1 = require("../domain/jwt-service");
 const auth_middleware_1 = require("../middlewares/auth-middleware");
+const user_validations_1 = require("../validations/user-validations");
+const auth_service_1 = require("../domain/auth-service");
+const user_service_1 = require("../domain/user-service");
 exports.authRoutes = (0, express_1.Router)({});
 exports.authRoutes.post('/login', auth_validations_1.authValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { loginOrEmail, password } = req.body;
@@ -26,6 +28,13 @@ exports.authRoutes.post('/login', auth_validations_1.authValidations, input_vali
     else {
         const token = yield jwt_service_1.jwtService.createJWT(user);
         res.status(200).send({ accessToken: token });
+    }
+}));
+exports.authRoutes.post('/registration', user_validations_1.userInputValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { login, password, email } = req.body;
+    const newUser = yield auth_service_1.authService.createNewUser(login, password, email);
+    if (newUser) {
+        res.status(204).send(newUser);
     }
 }));
 //TODO also fix get here
