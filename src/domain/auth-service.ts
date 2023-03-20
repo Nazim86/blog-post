@@ -1,6 +1,5 @@
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
-import {UserDbType} from "../repositories/types/user-db-type";
 import {UserByIdType} from "../repositories/types/user-by-id-type";
 import {authRepository} from "../repositories/auth-db-repository";
 import { v4 as uuid } from 'uuid';
@@ -22,6 +21,7 @@ export const authService = {
             accountData: {
                 login: login,
                 passwordHash,
+                passwordSalt,
                 email: email,
                 createdAt: new Date().toISOString()
             },
@@ -30,7 +30,8 @@ export const authService = {
                 emailExpiration: add(new Date(),{
                     hours:1,
                     minutes:3
-                })
+                }),
+                isConfirmed:false
             }
         }
 
@@ -52,23 +53,33 @@ export const authService = {
         return await bcrypt.hash(password, passwordSalt)
     },
 
+    async registrationConfirmation(code:string){
+        const user = await authRepository.findUserByConfirmationCode(code)
+
+        if(!user) return false
+        if (user.emailConfirmation.confirmationCode !== code) return false
+        if (user.emailConfirmation.emailExpiration < new Date()) return false
+
+           return await authRepository.updateConfirmation(user._id)
+    },
+
     async deleteUser(id: string): Promise<boolean> {
         return await authRepository.deleteUser(id)
     },
 
-    async checkCredentials(loginOrEmail: string, password: string): Promise<UserDbType | null> {
+    async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDbType | null> {
 
         const user = await authRepository.checkCredentials(loginOrEmail)
 
         if (!user) return null
+        if(!user.emailConfirmation.isConfirmed) return null
 
-        const passwordSalt = user.passwordSalt;
+        const passwordSalt = user.accountData.passwordSalt;
 
         const passwordHash = await this._generateHash(password, passwordSalt);
 
-        if (passwordHash !== user.passwordHash) {
-            return null
-        }
+        if (passwordHash !== user.accountData.passwordHash) return null
+
         return user
     },
 

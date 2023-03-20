@@ -18,6 +18,7 @@ const auth_middleware_1 = require("../middlewares/auth-middleware");
 const user_validations_1 = require("../validations/user-validations");
 const auth_service_1 = require("../domain/auth-service");
 const user_service_1 = require("../domain/user-service");
+const check_user_account_credentials_middleware_1 = require("../middlewares/check-user-account-credentials-middleware");
 exports.authRoutes = (0, express_1.Router)({});
 exports.authRoutes.post('/login', auth_validations_1.authValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { loginOrEmail, password } = req.body;
@@ -30,12 +31,19 @@ exports.authRoutes.post('/login', auth_validations_1.authValidations, input_vali
         res.status(200).send({ accessToken: token });
     }
 }));
-exports.authRoutes.post('/registration', user_validations_1.userInputValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRoutes.post('/registration', user_validations_1.userInputValidations, check_user_account_credentials_middleware_1.checkUserCredentialsMiddleware, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { login, password, email } = req.body;
     const newUser = yield auth_service_1.authService.createNewUser(login, password, email);
     if (newUser) {
         res.status(204).send(newUser);
     }
+}));
+exports.authRoutes.post('/registration-confirmation', auth_validations_1.confirmationCodeValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const confirmationCode = req.body.code;
+    const registrationConfirmation = yield auth_service_1.authService.registrationConfirmation(confirmationCode);
+    if (!registrationConfirmation)
+        res.sendStatus(400);
+    res.sendStatus(204);
 }));
 //TODO also fix get here
 exports.authRoutes.get('/me', auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

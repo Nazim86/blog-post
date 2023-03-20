@@ -1,11 +1,12 @@
 import {Request,Response, Router} from "express";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
-import {authValidations} from "../validations/auth-validations";
+import {authValidations, confirmationCodeValidation} from "../validations/auth-validations";
 import {jwtService} from "../domain/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {userInputValidations} from "../validations/user-validations";
 import {authService} from "../domain/auth-service";
 import {userService} from "../domain/user-service";
+import {checkUserCredentialsMiddleware} from "../middlewares/check-user-account-credentials-middleware";
 
 export const authRoutes = Router({});
 
@@ -26,7 +27,7 @@ authRoutes.post('/login',authValidations,inputValidationErrorsMiddleware,async (
 
 });
 
-authRoutes.post('/registration',userInputValidations,inputValidationErrorsMiddleware,
+authRoutes.post('/registration',userInputValidations,checkUserCredentialsMiddleware,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const {login,password,email} = req.body
@@ -37,7 +38,19 @@ authRoutes.post('/registration',userInputValidations,inputValidationErrorsMiddle
             res.status(204).send(newUser)
         }
 
+    });
 
+authRoutes.post('/registration-confirmation',confirmationCodeValidation,inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const confirmationCode = req.body.code
+
+
+        const registrationConfirmation = await authService.registrationConfirmation(confirmationCode)
+
+        if (!registrationConfirmation) res.sendStatus(400)
+
+        res.sendStatus(204)
     });
 
 

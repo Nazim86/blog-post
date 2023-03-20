@@ -29,6 +29,7 @@ exports.authService = {
                 accountData: {
                     login: login,
                     passwordHash,
+                    passwordSalt,
                     email: email,
                     createdAt: new Date().toISOString()
                 },
@@ -37,7 +38,8 @@ exports.authService = {
                     emailExpiration: (0, add_1.default)(new Date(), {
                         hours: 1,
                         minutes: 3
-                    })
+                    }),
+                    isConfirmed: false
                 }
             };
             const createUser = yield auth_db_repository_1.authRepository.createNewUser(newUser);
@@ -55,6 +57,18 @@ exports.authService = {
             return yield bcrypt_1.default.hash(password, passwordSalt);
         });
     },
+    registrationConfirmation(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield auth_db_repository_1.authRepository.findUserByConfirmationCode(code);
+            if (!user)
+                return false;
+            if (user.emailConfirmation.confirmationCode !== code)
+                return false;
+            if (user.emailConfirmation.emailExpiration < new Date())
+                return false;
+            return yield auth_db_repository_1.authRepository.updateConfirmation(user._id);
+        });
+    },
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield auth_db_repository_1.authRepository.deleteUser(id);
@@ -65,11 +79,12 @@ exports.authService = {
             const user = yield auth_db_repository_1.authRepository.checkCredentials(loginOrEmail);
             if (!user)
                 return null;
-            const passwordSalt = user.passwordSalt;
-            const passwordHash = yield this._generateHash(password, passwordSalt);
-            if (passwordHash !== user.passwordHash) {
+            if (!user.emailConfirmation.isConfirmed)
                 return null;
-            }
+            const passwordSalt = user.accountData.passwordSalt;
+            const passwordHash = yield this._generateHash(password, passwordSalt);
+            if (passwordHash !== user.accountData.passwordHash)
+                return null;
             return user;
         });
     },

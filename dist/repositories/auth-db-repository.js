@@ -19,6 +19,17 @@ exports.authRepository = {
             return newUser;
         });
     },
+    findUserByConfirmationCode(code) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield db_1.usersAcountsCollection.findOne({ "emailConfirmation.confirmationCode": code });
+        });
+    },
+    updateConfirmation(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield db_1.usersAcountsCollection.updateOne({ _id: userId }, { $set: { "emailConfirmation.isConfirmed": true } });
+            return result.modifiedCount === 1;
+        });
+    },
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -32,7 +43,7 @@ exports.authRepository = {
     },
     checkCredentials(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
+            return yield db_1.usersAcountsCollection.findOne({ "accountDate.login": loginOrEmail });
         });
     },
     findUserById(userId) {
