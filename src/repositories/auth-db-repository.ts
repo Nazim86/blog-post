@@ -1,4 +1,4 @@
-import {usersAcountsCollection, usersCollection} from "../db/db";
+import {usersAccountsCollection, usersCollection} from "../db/db";
 
 import {ObjectId} from "mongodb";
 import {UserByIdType} from "./types/user-by-id-type";
@@ -7,26 +7,26 @@ import {UserAccountDbType} from "./types/user-account-db-type";
 export const authRepository = {
     async createNewUser(newUser: UserAccountDbType): Promise<UserAccountDbType> {
 
-        await usersAcountsCollection.insertOne(newUser)
+        await usersAccountsCollection.insertOne(newUser)
         return newUser
 
     },
 
     async findUserByConfirmationCode(code: string):Promise<UserAccountDbType|null> {
 
-        return await usersAcountsCollection.findOne(
+        return await usersAccountsCollection.findOne(
             {"emailConfirmation.confirmationCode": code})
 
     },
 
     async findUserByEmail(email:string){
 
-        return await usersAcountsCollection.findOne({"accountData.email":email})
+        return await usersAccountsCollection.findOne({"accountData.email":email})
     },
 
     async updateConfirmation(userId: ObjectId): Promise<boolean> {
 
-        const result = await usersAcountsCollection.updateOne({_id: userId}, {$set: {"emailConfirmation.isConfirmed": true}})
+        const result = await usersAccountsCollection.updateOne({_id: userId}, {$set: {"emailConfirmation.isConfirmed": true}})
         return result.modifiedCount === 1
     },
 
@@ -41,7 +41,7 @@ export const authRepository = {
     },
 
     async checkCredentials(loginOrEmail: string): Promise<UserAccountDbType | null> {
-        return await usersAcountsCollection.findOne( {"accountDate.login": loginOrEmail})
+        return await usersAccountsCollection.findOne( {"accountDate.login": loginOrEmail})
     },
 
     async findUserById(userId: string): Promise<UserByIdType | null> {

@@ -15,23 +15,23 @@ const mongodb_1 = require("mongodb");
 exports.authRepository = {
     createNewUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.usersAcountsCollection.insertOne(newUser);
+            yield db_1.usersAccountsCollection.insertOne(newUser);
             return newUser;
         });
     },
     findUserByConfirmationCode(code) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersAcountsCollection.findOne({ "emailConfirmation.confirmationCode": code });
+            return yield db_1.usersAccountsCollection.findOne({ "emailConfirmation.confirmationCode": code });
         });
     },
     findUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersAcountsCollection.findOne({ "accountData.email": email });
+            return yield db_1.usersAccountsCollection.findOne({ "accountData.email": email });
         });
     },
     updateConfirmation(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.usersAcountsCollection.updateOne({ _id: userId }, { $set: { "emailConfirmation.isConfirmed": true } });
+            const result = yield db_1.usersAccountsCollection.updateOne({ _id: userId }, { $set: { "emailConfirmation.isConfirmed": true } });
             return result.modifiedCount === 1;
         });
     },
@@ -48,7 +48,7 @@ exports.authRepository = {
     },
     checkCredentials(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersAcountsCollection.findOne({ "accountDate.login": loginOrEmail });
+            return yield db_1.usersAccountsCollection.findOne({ "accountDate.login": loginOrEmail });
         });
     },
     findUserById(userId) {

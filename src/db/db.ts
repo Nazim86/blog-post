@@ -23,7 +23,7 @@ export const blogsCollection = db.collection<BlogsDbType>("blogs")
 export const postsCollection = db.collection<PostsDbType>("posts")
 export const usersCollection = db.collection<UserDbType>("users")
 export const commentsCollection = db.collection<CommentsDbType>("comments")
-export const usersAcountsCollection = db.collection<UserAccountDbType>("userAccounts")
+export const usersAccountsCollection = db.collection<UserAccountDbType>("usersAccounts")
 
 export async function runDb (){
 
