@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer"
 
 export const emailAdapter={
-    async sendConfirmationEmail(confirmationCode:string){
+    async sendConfirmationEmail(confirmationCode:string,email:string){
 
         // create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
@@ -15,7 +15,7 @@ export const emailAdapter={
         // send mail with defined transport object
         let info = await transporter.sendMail({
             from: '"Jan Cloude Vandamme 👻" <fuadson86@gmail.com>', // sender address
-            to: "fuadson86@gmail.com", // list of receivers
+            to: email, // list of receivers
             subject: "Email Confirmation", // Subject line
             html: ` <h1>Thank for your registration</h1>
        <p>To finish registration please follow the link below:
