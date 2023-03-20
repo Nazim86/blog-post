@@ -24,6 +24,11 @@ exports.authRepository = {
             return yield db_1.usersAcountsCollection.findOne({ "emailConfirmation.confirmationCode": code });
         });
     },
+    findUserByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield db_1.usersAcountsCollection.findOne({ "accountData.email": email });
+        });
+    },
     updateConfirmation(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield db_1.usersAcountsCollection.updateOne({ _id: userId }, { $set: { "emailConfirmation.isConfirmed": true } });

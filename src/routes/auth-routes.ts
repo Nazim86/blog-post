@@ -3,7 +3,7 @@ import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-e
 import {authValidations, confirmationCodeValidation} from "../validations/auth-validations";
 import {jwtService} from "../domain/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
-import {userInputValidations} from "../validations/user-validations";
+import {emailValidation, userInputValidations} from "../validations/user-validations";
 import {authService} from "../domain/auth-service";
 import {userService} from "../domain/user-service";
 import {checkUserCredentialsMiddleware} from "../middlewares/check-user-account-credentials-middleware";
@@ -49,6 +49,19 @@ authRoutes.post('/registration-confirmation',confirmationCodeValidation,inputVal
         const registrationConfirmation = await authService.registrationConfirmation(confirmationCode)
 
         if (!registrationConfirmation) res.sendStatus(400)
+
+        res.sendStatus(204)
+    });
+
+authRoutes.post('/registration-email-resending',emailValidation,inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const email = req.body.email
+
+
+        const emailResending = await authService.resendEmail(email)
+
+        if (!emailResending) res.sendStatus(400)
 
         res.sendStatus(204)
     });

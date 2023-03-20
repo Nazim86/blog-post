@@ -31,7 +31,7 @@ exports.emailAdapter = {
                 to: "fuadson86@gmail.com",
                 subject: "Email Confitmation",
                 text: `Please click this link to confirm your email`,
-                html: `<p>${confirmationCode}</p>`, // html body
+                html: `<p>https://some-front.com/confirm-registration?code=${confirmationCode}</p>`, // html body
             });
             return info;
         });

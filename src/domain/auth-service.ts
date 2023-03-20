@@ -63,6 +63,24 @@ export const authService = {
            return await authRepository.updateConfirmation(user._id)
     },
 
+    async resendEmail(email:string){
+        const user = await authRepository.findUserByEmail(email)
+
+        if(!user) return false
+        if(user.emailConfirmation.isConfirmed) return true
+        if (user.emailConfirmation.emailExpiration < new Date()) return false
+
+        try {
+            await emailManager.sendConfirmationEmail(user)
+        }
+        catch (e){
+            return null
+        }
+
+        return user
+
+    },
+
     async deleteUser(id: string): Promise<boolean> {
         return await authRepository.deleteUser(id)
     },

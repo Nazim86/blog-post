@@ -45,6 +45,13 @@ exports.authRoutes.post('/registration-confirmation', auth_validations_1.confirm
         res.sendStatus(400);
     res.sendStatus(204);
 }));
+exports.authRoutes.post('/registration-email-resending', user_validations_1.emailValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const email = req.body.email;
+    const emailResending = yield auth_service_1.authService.resendEmail(email);
+    if (!emailResending)
+        res.sendStatus(400);
+    res.sendStatus(204);
+}));
 //TODO also fix get here
 exports.authRoutes.get('/me', auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const getCurrentUser = req.context.user;

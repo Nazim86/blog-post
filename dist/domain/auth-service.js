@@ -69,6 +69,24 @@ exports.authService = {
             return yield auth_db_repository_1.authRepository.updateConfirmation(user._id);
         });
     },
+    resendEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield auth_db_repository_1.authRepository.findUserByEmail(email);
+            if (!user)
+                return false;
+            if (user.emailConfirmation.isConfirmed)
+                return true;
+            if (user.emailConfirmation.emailExpiration < new Date())
+                return false;
+            try {
+                yield email_manager_1.emailManager.sendConfirmationEmail(user);
+            }
+            catch (e) {
+                return null;
+            }
+            return user;
+        });
+    },
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield auth_db_repository_1.authRepository.deleteUser(id);

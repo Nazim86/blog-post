@@ -19,6 +19,11 @@ export const authRepository = {
 
     },
 
+    async findUserByEmail(email:string){
+
+        return await usersAcountsCollection.findOne({"accountData.email":email})
+    },
+
     async updateConfirmation(userId: ObjectId): Promise<boolean> {
 
         const result = await usersAcountsCollection.updateOne({_id: userId}, {$set: {"emailConfirmation.isConfirmed": true}})

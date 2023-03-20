@@ -18,7 +18,7 @@ export const emailAdapter={
             to: "fuadson86@gmail.com", // list of receivers
             subject: "Email Confitmation", // Subject line
             text: `Please click this link to confirm your email`, // plain text body
-            html: `<p>${confirmationCode}</p>`, // html body
+            html: `<p>https://some-front.com/confirm-registration?code=${confirmationCode}</p>`, // html body
         });
 
         return info
