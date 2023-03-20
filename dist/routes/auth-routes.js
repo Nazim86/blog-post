@@ -34,6 +34,7 @@ exports.authRoutes.post('/login', auth_validations_1.authValidations, input_vali
 exports.authRoutes.post('/registration', user_validations_1.userInputValidations, check_user_account_credentials_middleware_1.checkUsersAccountsCredentialsMiddleware, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { login, password, email } = req.body;
     const newUser = yield auth_service_1.authService.createNewUser(login, password, email);
+    console.log(newUser.emailConfirmation.confirmationCode);
     if (newUser) {
         res.status(204).send(newUser);
     }
@@ -51,9 +52,12 @@ exports.authRoutes.post('/registration-confirmation', auth_validations_1.confirm
 exports.authRoutes.post('/registration-email-resending', user_validations_1.emailValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const emailResending = yield auth_service_1.authService.resendEmail(email);
-    if (!emailResending)
+    if (emailResending) {
+        res.sendStatus(204);
+    }
+    else {
         res.sendStatus(400);
-    res.sendStatus(204);
+    }
 }));
 //TODO also fix get here
 exports.authRoutes.get('/me', auth_middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -77,7 +77,7 @@ exports.authService = {
             if (!user)
                 return false;
             if (user.emailConfirmation.isConfirmed)
-                return true;
+                return false;
             if (user.emailConfirmation.emailExpiration < new Date())
                 return false;
             try {

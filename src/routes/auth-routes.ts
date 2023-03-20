@@ -36,6 +36,7 @@ authRoutes.post('/registration',userInputValidations,checkUsersAccountsCredentia
 
 
         const newUser = await authService.createNewUser(login,password,email)
+        console.log(newUser!.emailConfirmation.confirmationCode)
         if (newUser){
             res.status(204).send(newUser)
         }
@@ -65,9 +66,11 @@ authRoutes.post('/registration-email-resending',emailValidation,inputValidationE
 
         const emailResending = await authService.resendEmail(email)
 
-        if (!emailResending) res.sendStatus(400)
-
-        res.sendStatus(204)
+        if (emailResending) {
+            res.sendStatus(204)
+        }else{
+            res.sendStatus(400)
+        }
     });
 
 

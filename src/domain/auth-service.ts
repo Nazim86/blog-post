@@ -70,7 +70,7 @@ export const authService = {
         const user:UserAccountDbType | null = await authRepository.findUserByEmail(email)
 
         if(!user) return false
-        if(user.emailConfirmation.isConfirmed) return true
+        if(user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.emailExpiration < new Date()) return false
 
         try {
