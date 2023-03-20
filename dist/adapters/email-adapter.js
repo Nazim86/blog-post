@@ -29,9 +29,12 @@ exports.emailAdapter = {
             let info = yield transporter.sendMail({
                 from: '"Jan Cloude Vandamme 👻" <fuadson86@gmail.com>',
                 to: "fuadson86@gmail.com",
-                subject: "Email Confitmation",
-                text: `Please click this link to confirm your email`,
-                html: `<p>https://some-front.com/confirm-registration?code=${confirmationCode}</p>`, // html body
+                subject: "Email Confirmation",
+                html: ` <h1>Thank for your registration</h1>
+       <p>To finish registration please follow the link below:
+          <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a>
+      </p>
+     `, // html body
             });
             return info;
         });

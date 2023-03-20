@@ -16,9 +16,12 @@ export const emailAdapter={
         let info = await transporter.sendMail({
             from: '"Jan Cloude Vandamme 👻" <fuadson86@gmail.com>', // sender address
             to: "fuadson86@gmail.com", // list of receivers
-            subject: "Email Confitmation", // Subject line
-            text: `Please click this link to confirm your email`, // plain text body
-            html: `<p>https://some-front.com/confirm-registration?code=${confirmationCode}</p>`, // html body
+            subject: "Email Confirmation", // Subject line
+            html: ` <h1>Thank for your registration</h1>
+       <p>To finish registration please follow the link below:
+          <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a>
+      </p>
+     `,// html body
         });
 
         return info
