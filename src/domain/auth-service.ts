@@ -53,18 +53,21 @@ export const authService = {
         return await bcrypt.hash(password, passwordSalt)
     },
 
-    async registrationConfirmation(code:string){
-        const user = await authRepository.findUserByConfirmationCode(code)
+    async registrationConfirmation(code:string):Promise<boolean>{
+
+        const user:UserAccountDbType | null = await authRepository.findUserByConfirmationCode(code)
 
         if(!user) return false
+        if(user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.emailExpiration < new Date()) return false
 
-           return await authRepository.updateConfirmation(user._id)
+        return await authRepository.updateConfirmation(user._id)
     },
 
-    async resendEmail(email:string){
-        const user = await authRepository.findUserByEmail(email)
+    async resendEmail(email:string):Promise<UserAccountDbType|boolean>{
+
+        const user:UserAccountDbType | null = await authRepository.findUserByEmail(email)
 
         if(!user) return false
         if(user.emailConfirmation.isConfirmed) return true
@@ -74,7 +77,7 @@ export const authService = {
             await emailManager.sendConfirmationEmail(user)
         }
         catch (e){
-            return null
+            return false
         }
 
         return user

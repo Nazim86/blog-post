@@ -62,6 +62,8 @@ exports.authService = {
             const user = yield auth_db_repository_1.authRepository.findUserByConfirmationCode(code);
             if (!user)
                 return false;
+            if (user.emailConfirmation.isConfirmed)
+                return false;
             if (user.emailConfirmation.confirmationCode !== code)
                 return false;
             if (user.emailConfirmation.emailExpiration < new Date())
@@ -82,7 +84,7 @@ exports.authService = {
                 yield email_manager_1.emailManager.sendConfirmationEmail(user);
             }
             catch (e) {
-                return null;
+                return false;
             }
             return user;
         });

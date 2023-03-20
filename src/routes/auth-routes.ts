@@ -48,11 +48,13 @@ authRoutes.post('/registration-confirmation',confirmationCodeValidation,inputVal
         const confirmationCode = req.body.code
 
 
-        const registrationConfirmation = await authService.registrationConfirmation(confirmationCode)
+        const registrationConfirmation:boolean = await authService.registrationConfirmation(confirmationCode)
 
-        if (!registrationConfirmation) res.sendStatus(400)
-
-        res.sendStatus(204)
+        if (registrationConfirmation) {
+            res.sendStatus(204)
+        }else{
+            res.sendStatus(400)
+        }
     });
 
 authRoutes.post('/registration-email-resending',emailValidation,inputValidationErrorsMiddleware,

@@ -41,9 +41,12 @@ exports.authRoutes.post('/registration', user_validations_1.userInputValidations
 exports.authRoutes.post('/registration-confirmation', auth_validations_1.confirmationCodeValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const confirmationCode = req.body.code;
     const registrationConfirmation = yield auth_service_1.authService.registrationConfirmation(confirmationCode);
-    if (!registrationConfirmation)
+    if (registrationConfirmation) {
+        res.sendStatus(204);
+    }
+    else {
         res.sendStatus(400);
-    res.sendStatus(204);
+    }
 }));
 exports.authRoutes.post('/registration-email-resending', user_validations_1.emailValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
