@@ -18,6 +18,7 @@ exports.deleteRoute.delete('/', (req, res) => __awaiter(void 0, void 0, void 0, 
     yield db_1.postsCollection.deleteMany({});
     yield db_1.usersCollection.deleteMany({});
     yield db_1.commentsCollection.deleteMany({});
+    yield db_1.usersAcountsCollection.deleteMany({});
     return res.sendStatus(204);
 }));
 //# sourceMappingURL=delete-routes.js.map

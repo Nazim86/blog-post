@@ -9,12 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkUserCredentialsMiddleware = void 0;
+exports.checkUsersAccountsCredentialsMiddleware = void 0;
 const db_1 = require("../db/db");
-const checkUserCredentialsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const checkUsersAccountsCredentialsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const login = req.body.login;
     const email = req.body.email;
-    const checkCredentials = yield db_1.usersAcountsCollection.findOne({ $or: [{ login: login }, { email: email }] });
+    const checkCredentials = yield db_1.usersAcountsCollection.findOne({ $or: [{ "accountData.login": login }, { "accountData.email": email }] });
     if (checkCredentials) {
         res.status(400).send("This user exists in the system");
     }
@@ -22,5 +22,5 @@ const checkUserCredentialsMiddleware = (req, res, next) => __awaiter(void 0, voi
         next();
     }
 });
-exports.checkUserCredentialsMiddleware = checkUserCredentialsMiddleware;
+exports.checkUsersAccountsCredentialsMiddleware = checkUsersAccountsCredentialsMiddleware;
 //# sourceMappingURL=check-user-account-credentials-middleware.js.map

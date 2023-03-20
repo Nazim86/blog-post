@@ -6,7 +6,9 @@ import {authMiddleware} from "../middlewares/auth-middleware";
 import {emailValidation, userInputValidations} from "../validations/user-validations";
 import {authService} from "../domain/auth-service";
 import {userService} from "../domain/user-service";
-import {checkUserCredentialsMiddleware} from "../middlewares/check-user-account-credentials-middleware";
+import {
+    checkUsersAccountsCredentialsMiddleware
+} from "../middlewares/check-user-account-credentials-middleware";
 
 export const authRoutes = Router({});
 
@@ -27,7 +29,7 @@ authRoutes.post('/login',authValidations,inputValidationErrorsMiddleware,async (
 
 });
 
-authRoutes.post('/registration',userInputValidations,checkUserCredentialsMiddleware,inputValidationErrorsMiddleware,
+authRoutes.post('/registration',userInputValidations,checkUsersAccountsCredentialsMiddleware,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const {login,password,email} = req.body
