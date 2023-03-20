@@ -22,7 +22,7 @@ exports.emailAdapter = {
                 service: "gmail",
                 auth: {
                     user: "fuadson86@gmail.com ",
-                    pass: "gjzqiqyfzudigipo", // generated ethereal password
+                    pass: process.env.gmailPass, // generated ethereal password
                 },
             });
             // send mail with defined transport object

@@ -8,7 +8,7 @@ export const emailAdapter={
             service:"gmail",
             auth: {
                 user: "fuadson86@gmail.com ", // generated ethereal user
-                pass: "gjzqiqyfzudigipo", // generated ethereal password
+                pass: process.env.gmailPass, // generated ethereal password
             },
         });
 
