@@ -941,8 +941,8 @@ describe("auth testing", () => {
             .delete('/testing/all-data')
 
         newUser = await userFunctions.createUser(userCreateData, authorizationData)
-        const {body} = await userFunctions.getUsers(paginationValues,authorizationData)
-        await authFunctions.registrationConfirmation(body.items[0].emailConfirmation.confirmationCode)
+        // const {body} = await userFunctions.getUsers(paginationValues,authorizationData)
+        await authFunctions.registrationConfirmation("body.items[0].emailConfirmation.confirmationCode")
 
     });
 

@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 import add from "date-fns/add"
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {emailManager} from "../managers/email-manager";
+import {usersAccountsCollection} from "../db/db";
 
 
 
@@ -71,6 +72,9 @@ export const authService = {
         if(!user) return false
         if(user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.emailExpiration < new Date()) return false
+
+        const newCode = uuid()
+        await usersAccountsCollection.updateOne({_id:user._id},{$set:{"emailConfirmation.confirmationCode":newCode}})
 
         try {
             await emailManager.sendConfirmationEmail(user)
