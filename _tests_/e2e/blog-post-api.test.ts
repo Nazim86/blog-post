@@ -30,7 +30,7 @@ import {
     userPaginationValues
 } from "./user-data";
 import {notCreateUser} from "./user-should-not-functions";
-import {client} from "../../src/db/db";
+import {client, usersAccountsCollection} from "../../src/db/db";
 import {authFunctions} from "./auth-functions";
 import {commentFunctions} from "./comment-functions";
 import {
@@ -941,8 +941,9 @@ describe("auth testing", () => {
             .delete('/testing/all-data')
 
         newUser = await userFunctions.createUser(userCreateData, authorizationData)
+        const getUser  = await usersAccountsCollection.findOne({"accountData.email":"nazim@gmail.com"})
         // const {body} = await userFunctions.getUsers(paginationValues,authorizationData)
-        await authFunctions.registrationConfirmation("body.items[0].emailConfirmation.confirmationCode")
+        await authFunctions.registrationConfirmation(getUser!.emailConfirmation.confirmationCode)
 
     });
 

@@ -35,7 +35,7 @@ export const createdUserWithPagination = {
 export const userCreateData = {
     login: "nazim",
     password:"123456",
-    email: "fuadson86@@gmail.com"
+    email: "nazim@gmail.com"
 }
 
 export const userCreatedData = {

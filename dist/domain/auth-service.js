@@ -19,6 +19,7 @@ const auth_db_repository_1 = require("../repositories/auth-db-repository");
 const uuid_1 = require("uuid");
 const add_1 = __importDefault(require("date-fns/add"));
 const email_manager_1 = require("../managers/email-manager");
+const db_1 = require("../db/db");
 exports.authService = {
     createNewUser(login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -44,7 +45,7 @@ exports.authService = {
             };
             const createUser = yield auth_db_repository_1.authRepository.createNewUser(newUser);
             try {
-                yield email_manager_1.emailManager.sendConfirmationEmail(createUser);
+                yield email_manager_1.emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode, createUser.accountData.email);
             }
             catch (e) {
                 return null;
@@ -80,8 +81,11 @@ exports.authService = {
                 return false;
             if (user.emailConfirmation.emailExpiration < new Date())
                 return false;
+            const newCode = (0, uuid_1.v4)();
+            console.log(newCode);
+            yield db_1.usersAccountsCollection.updateOne({ _id: user._id }, { $set: { "emailConfirmation.confirmationCode": newCode } });
             try {
-                yield email_manager_1.emailManager.sendConfirmationEmail(user);
+                yield email_manager_1.emailManager.sendConfirmationEmail(newCode, user.accountData.email);
             }
             catch (e) {
                 return false;

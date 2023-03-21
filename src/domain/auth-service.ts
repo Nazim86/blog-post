@@ -38,7 +38,8 @@ export const authService = {
         const createUser = await authRepository.createNewUser(newUser)
 
         try {
-            await emailManager.sendConfirmationEmail(createUser)
+            await emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
+                createUser.accountData.email)
         }
         catch (e){
             return null
@@ -74,10 +75,11 @@ export const authService = {
         if (user.emailConfirmation.emailExpiration < new Date()) return false
 
         const newCode = uuid()
+        console.log(newCode)
         await usersAccountsCollection.updateOne({_id:user._id},{$set:{"emailConfirmation.confirmationCode":newCode}})
 
         try {
-            await emailManager.sendConfirmationEmail(user)
+            await emailManager.sendConfirmationEmail(newCode,user.accountData.email)
         }
         catch (e){
             return false
