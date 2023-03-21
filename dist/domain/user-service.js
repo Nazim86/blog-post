@@ -18,7 +18,6 @@ const mongodb_1 = require("mongodb");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const uuid_1 = require("uuid");
 const add_1 = __importDefault(require("date-fns/add"));
-const auth_db_repository_1 = require("../repositories/auth-db-repository");
 exports.userService = {
     createNewUser(login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -42,7 +41,7 @@ exports.userService = {
                     isConfirmed: false
                 }
             };
-            return yield auth_db_repository_1.authRepository.createNewUser(newUser);
+            return yield user_in_db_repository_1.userRepository.createNewUser(newUser);
         });
     },
     _generateHash(password, passwordSalt) {

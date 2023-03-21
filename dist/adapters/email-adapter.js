@@ -21,12 +21,12 @@ exports.emailAdapter = {
             let transporter = nodemailer_1.default.createTransport({
                 service: "gmail",
                 auth: {
-                    user: "fuadson86@gmail.com ",
+                    user: process.env.gmailEmail,
                     pass: process.env.gmailPass, // generated ethereal password
                 },
             });
             // send mail with defined transport object
-            let info = yield transporter.sendMail({
+            yield transporter.sendMail({
                 from: '"Jan Cloude Vandamme 👻" <fuadson86@gmail.com>',
                 to: email,
                 subject: "Email Confirmation",
@@ -36,7 +36,6 @@ exports.emailAdapter = {
       </p>
      `, // html body
             });
-            return info;
         });
     },
 };
