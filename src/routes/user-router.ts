@@ -6,6 +6,7 @@ import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares"
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {userQueryRepo} from "../query-repositories/user-query-repo";
 import {checkUserCredentialsMiddleware} from "../middlewares/check-user-credentials-middleware";
+import {authService} from "../domain/auth-service";
 
 export const userRouter = Router({})
 
@@ -25,7 +26,7 @@ const login = req.body.login
     const email = req.body.email
 
 
-    const newUser = await userService.createNewUser(login,password,email)
+    const newUser = await authService.createNewUser(login,password,email)
     if (newUser){
         res.status(201).send(newUser)
     }
