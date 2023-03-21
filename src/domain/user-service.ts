@@ -1,16 +1,16 @@
 import {userRepository} from "../repositories/user-in-db-repository";
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
-import {UserViewType} from "../repositories/types/user-view-type";
 import {UserByIdType} from "../repositories/types/user-by-id-type";
 import {v4 as uuid} from "uuid";
 import add from "date-fns/add";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
+import {authRepository} from "../repositories/auth-db-repository";
 
 
 export const userService = {
 
-    async createNewUser(login: string, password: string, email: string): Promise<UserViewType> {
+    async createNewUser(login: string, password: string, email: string): Promise<UserAccountDbType> {
 
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
@@ -34,7 +34,8 @@ export const userService = {
             }
         }
 
-        return await userRepository.createNewUser(newUser)
+
+        return await authRepository.createNewUser(newUser)
 
     },
 
