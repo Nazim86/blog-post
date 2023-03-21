@@ -1,6 +1,5 @@
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
-import {UserByIdType} from "../repositories/types/user-by-id-type";
 import {authRepository} from "../repositories/auth-db-repository";
 import { v4 as uuid } from 'uuid';
 import add from "date-fns/add"
@@ -90,9 +89,10 @@ export const authService = {
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDbType | null> {
 
-        const user = await authRepository.checkCredentials(loginOrEmail)
+        const user: UserAccountDbType | null = await authRepository.checkCredentials(loginOrEmail)
 
         if (!user) return null
+
         if(!user.emailConfirmation.isConfirmed) return null
 
         const passwordSalt = user.accountData.passwordSalt;
@@ -103,10 +103,6 @@ export const authService = {
 
         return user
     },
-
-    async findUserById (userId:string):Promise<UserByIdType |null>{
-        return await authRepository.findUserById(userId)
-    }
 
 
 }

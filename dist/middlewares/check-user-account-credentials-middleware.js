@@ -11,45 +11,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkUsersAccountsCredentialsMiddleware = void 0;
 const db_1 = require("../db/db");
+const error_handler_1 = require("../error-handler/error-handler");
 const checkUsersAccountsCredentialsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const login = req.body.login;
     const email = req.body.email;
     const checkCredentials = yield db_1.usersAccountsCollection.findOne({ $or: [{ "accountData.login": login }, { "accountData.email": email }] });
-    // const errorsMessages = validationResult(req);
-    // if (!errorsMessages.isEmpty()) {
-    //     const errorsResponse =
-    //         errorsMessages.array({onlyFirstError:true}).map(err=>({
-    //             message: err.msg,
-    //             field: err.param
-    //         }))
-    //     if (checkCredentials){ return res.status(400).json({errorsMessages: errorsResponse})};
-    // } else{
-    //     next()
-    // }
     if (checkCredentials) {
-        res.status(400).send({
-            errorsMessages: [{
-                    message: "Existing users",
-                    field: "email"
-                }]
-        });
+        let msg = "Existing email or login";
+        let field;
+        if (login === checkCredentials.accountData.login) {
+            field = "login";
+        }
+        else {
+            field = "email";
+        }
+        res.status(400).send((0, error_handler_1.errorMessage)(msg, field));
     }
     else {
         next();
     }
 });
 exports.checkUsersAccountsCredentialsMiddleware = checkUsersAccountsCredentialsMiddleware;
-//
-// try {
-//     if (checkCredentials) {
-//         throw new Error("msg");
-//
-//     }
-// } catch (e) {
-//     console.log("for new Error()");
-//     console.log(e);
-//     res.sendStatus(400)
-// }
-//
-// next()
 //# sourceMappingURL=check-user-account-credentials-middleware.js.map

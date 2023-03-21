@@ -1,7 +1,6 @@
-import {usersAccountsCollection, usersCollection} from "../db/db";
+import {usersAccountsCollection} from "../db/db";
 
 import {ObjectId} from "mongodb";
-import {UserByIdType} from "./types/user-by-id-type";
 import {UserAccountDbType} from "./types/user-account-db-type";
 
 export const authRepository = {
@@ -32,7 +31,7 @@ export const authRepository = {
 
     async deleteUser(id: string): Promise<boolean> {
         try {
-            const result = await usersCollection.deleteOne({_id: new ObjectId(id)});
+            const result = await usersAccountsCollection.deleteOne({_id: new ObjectId(id)});
             return result.deletedCount === 1;
         } catch (e) {
             return false
@@ -44,16 +43,5 @@ export const authRepository = {
         return await usersAccountsCollection.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
     },
 
-    async findUserById(userId: string): Promise<UserByIdType | null> {
-        const result = await usersCollection.findOne({_id: new ObjectId(userId)})
-        if (result) {
-            return {
-                email: result.email,
-                login: result.login,
-                userId: result._id.toString()
-            }
-        } else {
-            return null
-        }
-    }
+
 }

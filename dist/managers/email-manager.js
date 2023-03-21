@@ -14,6 +14,7 @@ const email_adapter_1 = require("../adapters/email-adapter");
 exports.emailManager = {
     sendConfirmationEmail(user) {
         return __awaiter(this, void 0, void 0, function* () {
+            //generate new confirmation code
             yield email_adapter_1.emailAdapter.sendConfirmationEmail(user.emailConfirmation.confirmationCode, user.accountData.email);
         });
     }

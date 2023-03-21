@@ -5,9 +5,9 @@ const userMapping = (newUser) => {
     return newUser.map((user) => {
         return {
             id: user._id.toString(),
-            login: user.login,
-            email: user.email,
-            createdAt: user.createdAt
+            login: user.accountData.login,
+            email: user.accountData.email,
+            createdAt: user.accountData.createdAt
         };
     });
 };

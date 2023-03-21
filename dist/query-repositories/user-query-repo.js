@@ -10,20 +10,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userQueryRepo = void 0;
-const db_1 = require("../db/db");
 const user_mapping_1 = require("../mapping/user-mapping");
+const db_1 = require("../db/db");
 exports.userQueryRepo = {
     getUsers(sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm) {
         return __awaiter(this, void 0, void 0, function* () {
             const skipSize = (pageNumber - 1) * pageSize;
             const filter = {
-                $or: [{ login: { $regex: searchLoginTerm !== null && searchLoginTerm !== void 0 ? searchLoginTerm : "", $options: 'i' } },
-                    { email: { $regex: searchEmailTerm !== null && searchEmailTerm !== void 0 ? searchEmailTerm : "", $options: "i" } }
+                $or: [{ "accountData.login": { $regex: searchLoginTerm !== null && searchLoginTerm !== void 0 ? searchLoginTerm : "", $options: 'i' } },
+                    { "accountData.email": { $regex: searchEmailTerm !== null && searchEmailTerm !== void 0 ? searchEmailTerm : "", $options: "i" } }
                 ]
             };
-            const totalCount = yield db_1.usersCollection.countDocuments(filter);
+            const totalCount = yield db_1.usersAccountsCollection.countDocuments(filter);
             const pagesCount = Math.ceil(totalCount / pageSize);
-            const getUsers = yield db_1.usersCollection.find(filter)
+            const getUsers = yield db_1.usersAccountsCollection.find(filter)
                 .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
                 .skip(skipSize)
                 .limit(pageSize)

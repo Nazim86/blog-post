@@ -9,30 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authRepository = void 0;
+exports.userRepository = void 0;
 const db_1 = require("../db/db");
 const mongodb_1 = require("mongodb");
-exports.authRepository = {
+exports.userRepository = {
     createNewUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
             yield db_1.usersAccountsCollection.insertOne(newUser);
-            return newUser;
-        });
-    },
-    findUserByConfirmationCode(code) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersAccountsCollection.findOne({ "emailConfirmation.confirmationCode": code });
-        });
-    },
-    findUserByEmail(email) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersAccountsCollection.findOne({ "accountData.email": email });
-        });
-    },
-    updateConfirmation(userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.usersAccountsCollection.updateOne({ _id: userId }, { $set: { "emailConfirmation.isConfirmed": true } });
-            return result.modifiedCount === 1;
+            return {
+                id: newUser._id.toString(),
+                login: newUser.accountData.login,
+                email: newUser.accountData.email,
+                createdAt: newUser.accountData.createdAt
+            };
         });
     },
     deleteUser(id) {
@@ -48,8 +37,23 @@ exports.authRepository = {
     },
     checkCredentials(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersAccountsCollection.findOne({ $or: [{ "accountData.login": loginOrEmail }, { "accountData.email": loginOrEmail }] });
+            return yield db_1.usersAccountsCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
         });
     },
+    findUserById(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield db_1.usersAccountsCollection.findOne({ _id: new mongodb_1.ObjectId(userId) });
+            if (result) {
+                return {
+                    email: result.accountData.email,
+                    login: result.accountData.login,
+                    userId: result._id.toString()
+                };
+            }
+            else {
+                return null;
+            }
+        });
+    }
 };
-//# sourceMappingURL=auth-db-repository.js.map
+//# sourceMappingURL=user-in-db-repository.js.map

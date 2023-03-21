@@ -1,5 +1,7 @@
 import request from "supertest";
 import {app} from "../../src";
+import {TestResultType} from "./post-functions";
+import {PostsViewType} from "../../src/repositories/types/posts-view-type";
 
 export const authFunctions = {
 
@@ -17,6 +19,21 @@ export const authFunctions = {
             .send()
             .set("Authorization", `Bearer ${token}`)
 
-    }
+    },
 
+    async registerUser(newPostData:object):Promise<TestResultType<PostsViewType>>{
+
+        return  request(app)
+            .post('/auth/registration')
+            .send(newPostData)
+
+
+    },
+
+    async registrationConfirmation(code:string){
+        return  request(app)
+            .post('/auth/registration-confirmation')
+            .send(code)
+
+    }
 }

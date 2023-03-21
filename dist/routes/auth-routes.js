@@ -18,6 +18,7 @@ const auth_middleware_1 = require("../middlewares/auth-middleware");
 const user_validations_1 = require("../validations/user-validations");
 const auth_service_1 = require("../domain/auth-service");
 const check_user_account_credentials_middleware_1 = require("../middlewares/check-user-account-credentials-middleware");
+const error_handler_1 = require("../error-handler/error-handler");
 exports.authRoutes = (0, express_1.Router)({});
 exports.authRoutes.post('/login', auth_validations_1.authValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { loginOrEmail, password } = req.body;
@@ -35,7 +36,7 @@ exports.authRoutes.post('/registration', user_validations_1.userInputValidations
     const newUser = yield auth_service_1.authService.createNewUser(login, password, email);
     console.log(newUser.emailConfirmation.confirmationCode);
     if (newUser) {
-        res.status(204).send(newUser);
+        res.sendStatus(204);
     }
 }));
 exports.authRoutes.post('/registration-confirmation', auth_validations_1.confirmationCodeValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -45,12 +46,7 @@ exports.authRoutes.post('/registration-confirmation', auth_validations_1.confirm
         res.sendStatus(204);
     }
     else {
-        res.status(400).send({
-            errorsMessages: [{
-                    message: "Wrong code",
-                    field: "code"
-                }]
-        });
+        res.status(400).send((0, error_handler_1.errorMessage)("Wrong code", "code"));
     }
 }));
 exports.authRoutes.post('/registration-email-resending', user_validations_1.emailValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -60,12 +56,7 @@ exports.authRoutes.post('/registration-email-resending', user_validations_1.emai
         res.sendStatus(204);
     }
     else {
-        res.status(400).send({
-            errorsMessages: [{
-                    message: "Wrong email",
-                    field: "email"
-                }]
-        });
+        res.status(400).send((0, error_handler_1.errorMessage)("wrong email", "email"));
     }
 }));
 //TODO also fix get here

@@ -3,7 +3,6 @@ import {BlogsDbType} from "../repositories/types/blogs-db-type";
 import {PostsDbType} from "../repositories/types/posts-db-type";
 
 import * as dotenv from 'dotenv'
-import {UserDbType} from "../repositories/types/user-db-type";
 import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 
@@ -21,7 +20,7 @@ const db = client.db('blogPost')
 
 export const blogsCollection = db.collection<BlogsDbType>("blogs")
 export const postsCollection = db.collection<PostsDbType>("posts")
-export const usersCollection = db.collection<UserDbType>("users")
+// export const usersCollection = db.collection<UserDbType>("users")
 export const commentsCollection = db.collection<CommentsDbType>("comments")
 export const usersAccountsCollection = db.collection<UserAccountDbType>("usersAccounts")
 

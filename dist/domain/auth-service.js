@@ -108,10 +108,5 @@ exports.authService = {
             return user;
         });
     },
-    findUserById(userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield auth_db_repository_1.authRepository.findUserById(userId);
-        });
-    }
 };
 //# sourceMappingURL=auth-service.js.map

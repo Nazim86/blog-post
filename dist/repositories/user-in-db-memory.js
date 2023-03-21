@@ -15,19 +15,19 @@ const mongodb_1 = require("mongodb");
 exports.userRepository = {
     createNewUser(newUser) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield db_1.usersCollection.insertOne(newUser);
+            yield db_1.usersAccountsCollection.insertOne(newUser);
             return {
                 id: newUser._id.toString(),
-                login: newUser.login,
-                email: newUser.email,
-                createdAt: newUser.createdAt
+                login: newUser.accountData.login,
+                email: newUser.accountData.email,
+                createdAt: newUser.accountData.createdAt
             };
         });
     },
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield db_1.usersCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
+                const result = yield db_1.usersAccountsCollection.deleteOne({ _id: new mongodb_1.ObjectId(id) });
                 return result.deletedCount === 1;
             }
             catch (e) {
@@ -37,16 +37,16 @@ exports.userRepository = {
     },
     checkCredentials(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
+            return yield db_1.usersAccountsCollection.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] });
         });
     },
     findUserById(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield db_1.usersCollection.findOne({ _id: new mongodb_1.ObjectId(userId) });
+            const result = yield db_1.usersAccountsCollection.findOne({ _id: new mongodb_1.ObjectId(userId) });
             if (result) {
                 return {
-                    email: result.email,
-                    login: result.login,
+                    email: result.accountData.email,
+                    login: result.accountData.login,
                     userId: result._id.toString()
                 };
             }

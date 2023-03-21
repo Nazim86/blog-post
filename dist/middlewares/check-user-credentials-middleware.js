@@ -14,7 +14,7 @@ const db_1 = require("../db/db");
 const checkUserCredentialsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const login = req.body.login;
     const email = req.body.email;
-    const checkCredentials = yield db_1.usersCollection.findOne({ $or: [{ login: login }, { email: email }] });
+    const checkCredentials = yield db_1.usersAccountsCollection.findOne({ $or: [{ "accountData.login": login }, { "accountData.email": email }] });
     if (checkCredentials) {
         res.status(400).send("This user exists in the system");
     }

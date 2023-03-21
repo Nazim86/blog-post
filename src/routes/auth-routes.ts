@@ -8,6 +8,7 @@ import {authService} from "../domain/auth-service";
 import {
     checkUsersAccountsCredentialsMiddleware
 } from "../middlewares/check-user-account-credentials-middleware";
+import {errorMessage} from "../error-handler/error-handler";
 
 export const authRoutes = Router({});
 
@@ -37,7 +38,7 @@ authRoutes.post('/registration',userInputValidations,checkUsersAccountsCredentia
         const newUser = await authService.createNewUser(login,password,email)
         console.log(newUser!.emailConfirmation.confirmationCode)
         if (newUser){
-            res.status(204).send(newUser)
+            res.sendStatus(204)
         }
 
     });
@@ -53,12 +54,7 @@ authRoutes.post('/registration-confirmation',confirmationCodeValidation,inputVal
         if (registrationConfirmation) {
             res.sendStatus(204)
         }else{
-            res.status(400).send({
-                errorsMessages: [{
-                    message: "Wrong code",
-                    field: "code"
-                }]
-            })
+            res.status(400).send(errorMessage("Wrong code", "code"))
         }
     });
 
@@ -74,13 +70,10 @@ authRoutes.post('/registration-email-resending',emailValidation,inputValidationE
         if (emailResending) {
             res.sendStatus(204)
         }else{
-            res.status(400).send({
-                errorsMessages: [{
-                    message: "Wrong email",
-                    field: "email"
-                }]
-            })
+            res.status(400).send(errorMessage("wrong email","email"))
         }
+
+
     });
 
 

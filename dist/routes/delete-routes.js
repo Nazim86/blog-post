@@ -16,7 +16,7 @@ exports.deleteRoute = (0, express_1.Router)({});
 exports.deleteRoute.delete('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield db_1.blogsCollection.deleteMany({});
     yield db_1.postsCollection.deleteMany({});
-    yield db_1.usersCollection.deleteMany({});
+    // await usersCollection.deleteMany({})
     yield db_1.commentsCollection.deleteMany({});
     yield db_1.usersAccountsCollection.deleteMany({});
     return res.sendStatus(204);

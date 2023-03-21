@@ -13,9 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userService = void 0;
-const user_in_db_memory_1 = require("../repositories/user-in-db-memory");
+const user_in_db_repository_1 = require("../repositories/user-in-db-repository");
 const mongodb_1 = require("mongodb");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const uuid_1 = require("uuid");
+const add_1 = __importDefault(require("date-fns/add"));
 exports.userService = {
     createNewUser(login, password, email) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -23,13 +25,23 @@ exports.userService = {
             const passwordHash = yield this._generateHash(password, passwordSalt);
             const newUser = {
                 _id: new mongodb_1.ObjectId(),
-                login: login,
-                passwordHash,
-                passwordSalt,
-                email: email,
-                createdAt: new Date().toISOString()
+                accountData: {
+                    login: login,
+                    passwordHash,
+                    passwordSalt,
+                    email: email,
+                    createdAt: new Date().toISOString()
+                },
+                emailConfirmation: {
+                    confirmationCode: (0, uuid_1.v4)(),
+                    emailExpiration: (0, add_1.default)(new Date(), {
+                        hours: 1,
+                        minutes: 3
+                    }),
+                    isConfirmed: false
+                }
             };
-            return yield user_in_db_memory_1.userRepository.createNewUser(newUser);
+            return yield user_in_db_repository_1.userRepository.createNewUser(newUser);
         });
     },
     _generateHash(password, passwordSalt) {
@@ -39,17 +51,17 @@ exports.userService = {
     },
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield user_in_db_memory_1.userRepository.deleteUser(id);
+            return yield user_in_db_repository_1.userRepository.deleteUser(id);
         });
     },
     checkCredentials(loginOrEmail, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield user_in_db_memory_1.userRepository.checkCredentials(loginOrEmail);
+            const user = yield user_in_db_repository_1.userRepository.checkCredentials(loginOrEmail);
             if (!user)
                 return null;
-            const passwordSalt = user.passwordSalt;
+            const passwordSalt = user.accountData.passwordSalt;
             const passwordHash = yield this._generateHash(password, passwordSalt);
-            if (passwordHash !== user.passwordHash) {
+            if (passwordHash !== user.accountData.passwordHash) {
                 return null;
             }
             return user;
@@ -57,7 +69,7 @@ exports.userService = {
     },
     findUserById(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield user_in_db_memory_1.userRepository.findUserById(userId);
+            return yield user_in_db_repository_1.userRepository.findUserById(userId);
         });
     }
 };
