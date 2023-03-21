@@ -41,7 +41,7 @@ export const authRepository = {
     },
 
     async checkCredentials(loginOrEmail: string): Promise<UserAccountDbType | null> {
-        return await usersAccountsCollection.findOne( {"accountDate.login": loginOrEmail})
+        return await usersAccountsCollection.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
     },
 
     async findUserById(userId: string): Promise<UserByIdType | null> {

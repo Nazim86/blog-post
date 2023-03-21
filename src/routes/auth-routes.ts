@@ -5,7 +5,6 @@ import {jwtService} from "../domain/jwt-service";
 import {authMiddleware} from "../middlewares/auth-middleware";
 import {emailValidation, userInputValidations} from "../validations/user-validations";
 import {authService} from "../domain/auth-service";
-import {userService} from "../domain/user-service";
 import {
     checkUsersAccountsCredentialsMiddleware
 } from "../middlewares/check-user-account-credentials-middleware";
@@ -16,7 +15,7 @@ authRoutes.post('/login',authValidations,inputValidationErrorsMiddleware,async (
 
     const {loginOrEmail, password} = req.body;
 
-    const user = await userService.checkCredentials(loginOrEmail, password)
+    const user = await authService.checkCredentials(loginOrEmail, password)
 
     if (!user) {
         res.sendStatus(401)
@@ -54,9 +53,15 @@ authRoutes.post('/registration-confirmation',confirmationCodeValidation,inputVal
         if (registrationConfirmation) {
             res.sendStatus(204)
         }else{
-            res.sendStatus(400)
+            res.status(400).send({
+                errorsMessages: [{
+                    message: "Wrong code",
+                    field: "code"
+                }]
+            })
         }
     });
+
 
 authRoutes.post('/registration-email-resending',emailValidation,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
@@ -69,7 +74,12 @@ authRoutes.post('/registration-email-resending',emailValidation,inputValidationE
         if (emailResending) {
             res.sendStatus(204)
         }else{
-            res.sendStatus(400)
+            res.status(400).send({
+                errorsMessages: [{
+                    message: "Wrong email",
+                    field: "email"
+                }]
+            })
         }
     });
 

@@ -17,12 +17,11 @@ const jwt_service_1 = require("../domain/jwt-service");
 const auth_middleware_1 = require("../middlewares/auth-middleware");
 const user_validations_1 = require("../validations/user-validations");
 const auth_service_1 = require("../domain/auth-service");
-const user_service_1 = require("../domain/user-service");
 const check_user_account_credentials_middleware_1 = require("../middlewares/check-user-account-credentials-middleware");
 exports.authRoutes = (0, express_1.Router)({});
 exports.authRoutes.post('/login', auth_validations_1.authValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { loginOrEmail, password } = req.body;
-    const user = yield user_service_1.userService.checkCredentials(loginOrEmail, password);
+    const user = yield auth_service_1.authService.checkCredentials(loginOrEmail, password);
     if (!user) {
         res.sendStatus(401);
     }
@@ -46,7 +45,12 @@ exports.authRoutes.post('/registration-confirmation', auth_validations_1.confirm
         res.sendStatus(204);
     }
     else {
-        res.sendStatus(400);
+        res.status(400).send({
+            errorsMessages: [{
+                    message: "Wrong code",
+                    field: "code"
+                }]
+        });
     }
 }));
 exports.authRoutes.post('/registration-email-resending', user_validations_1.emailValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -56,7 +60,12 @@ exports.authRoutes.post('/registration-email-resending', user_validations_1.emai
         res.sendStatus(204);
     }
     else {
-        res.sendStatus(400);
+        res.status(400).send({
+            errorsMessages: [{
+                    message: "Wrong email",
+                    field: "email"
+                }]
+        });
     }
 }));
 //TODO also fix get here

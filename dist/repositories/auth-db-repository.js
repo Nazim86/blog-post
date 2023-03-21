@@ -48,7 +48,7 @@ exports.authRepository = {
     },
     checkCredentials(loginOrEmail) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield db_1.usersAccountsCollection.findOne({ "accountDate.login": loginOrEmail });
+            return yield db_1.usersAccountsCollection.findOne({ $or: [{ "accountData.login": loginOrEmail }, { "accountData.email": loginOrEmail }] });
         });
     },
     findUserById(userId) {
