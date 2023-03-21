@@ -6,8 +6,6 @@ import {UserByIdType} from "../repositories/types/user-by-id-type";
 import {v4 as uuid} from "uuid";
 import add from "date-fns/add";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
-import {emailManager} from "../managers/email-manager";
-import {authRepository} from "../repositories/auth-db-repository";
 
 
 export const userService = {
@@ -32,7 +30,7 @@ export const userService = {
                     hours:1,
                     minutes:3
                 }),
-                isConfirmed:false
+                isConfirmed:true
             }
         }
 
