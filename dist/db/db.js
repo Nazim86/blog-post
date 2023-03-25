@@ -32,7 +32,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runDb = exports.usersAccountsCollection = exports.commentsCollection = exports.postsCollection = exports.blogsCollection = exports.client = void 0;
+exports.runDb = exports.tokensCollection = exports.usersAccountsCollection = exports.commentsCollection = exports.postsCollection = exports.blogsCollection = exports.client = void 0;
 const mongodb_1 = require("mongodb");
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
@@ -41,13 +41,13 @@ if (!url) {
     throw new Error("Url does not found!");
 }
 exports.client = new mongodb_1.MongoClient(url);
-// process.env.mongoURI ||
 const db = exports.client.db('blogPost');
 exports.blogsCollection = db.collection("blogs");
 exports.postsCollection = db.collection("posts");
 // export const usersCollection = db.collection<UserDbType>("users")
 exports.commentsCollection = db.collection("comments");
 exports.usersAccountsCollection = db.collection("usersAccounts");
+exports.tokensCollection = db.collection("tokenBlackList");
 function runDb() {
     return __awaiter(this, void 0, void 0, function* () {
         try {

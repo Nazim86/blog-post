@@ -13,8 +13,10 @@ exports.checkRefreshTokenMiddleware = void 0;
 const jwt_service_1 = require("../domain/jwt-service");
 const settings_1 = require("../settings");
 const auth_service_1 = require("../domain/auth-service");
+const db_1 = require("../db/db");
 const checkRefreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.cookies.refreshToken) {
+    const expiredTokens = yield db_1.tokensCollection.findOne({ refreshToken: req.cookies.refreshToken });
+    if (!req.cookies.refreshToken || expiredTokens) {
         res.sendStatus(401);
         return;
     }

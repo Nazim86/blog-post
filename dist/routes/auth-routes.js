@@ -20,6 +20,7 @@ const check_user_account_credentials_middleware_1 = require("../middlewares/chec
 const error_handler_1 = require("../error-handler/error-handler");
 const settings_1 = require("../settings");
 const check_refreshToken_middleware_1 = require("../middlewares/check-refreshToken-middleware");
+const db_1 = require("../db/db");
 exports.authRoutes = (0, express_1.Router)({});
 exports.authRoutes.post('/login', auth_validations_1.authValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { loginOrEmail, password } = req.body;
@@ -29,9 +30,9 @@ exports.authRoutes.post('/login', auth_validations_1.authValidations, input_vali
     }
     else {
         const accessToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.ACCESS_TOKEN_SECRET, "10s");
-        const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20d");
+        const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20s");
         res.cookie('refreshToken', refreshToken, { httpOnly: true,
-            sameSite: 'strict',
+            sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000 });
         res.status(200).send({ accessToken: accessToken });
     }
@@ -39,13 +40,15 @@ exports.authRoutes.post('/login', auth_validations_1.authValidations, input_vali
 exports.authRoutes.post('/refresh-token', check_refreshToken_middleware_1.checkRefreshTokenMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.context.user;
     const accessToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.ACCESS_TOKEN_SECRET, "10s");
-    const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20d");
+    const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20s");
     res.cookie('refreshToken', refreshToken, { httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'strict', secure: true,
         maxAge: 24 * 60 * 60 * 1000 });
     res.status(200).send({ accessToken: accessToken });
 }));
 exports.authRoutes.post('/logout', check_refreshToken_middleware_1.checkRefreshTokenMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const refreshToken = req.cookies.refreshToken;
+    yield db_1.tokensCollection.insertOne({ refreshToken: refreshToken });
     res.clearCookie("refreshToken");
     res.sendStatus(204);
 }));
@@ -53,6 +56,7 @@ exports.authRoutes.post('/registration', user_validations_1.userInputValidations
     const { login, password, email } = req.body;
     const newUser = yield auth_service_1.authService.createNewUser(login, password, email);
     if (newUser) {
+        console.log(newUser.emailConfirmation.confirmationCode); //TODO delete
         res.sendStatus(204);
     }
 }));

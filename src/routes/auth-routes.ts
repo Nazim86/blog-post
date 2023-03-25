@@ -11,6 +11,7 @@ import {errorMessage} from "../error-handler/error-handler";
 import {settings} from "../settings";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
+import {tokensCollection} from "../db/db";
 
 export const authRoutes = Router({});
 
@@ -57,6 +58,8 @@ authRoutes.post('/refresh-token',checkRefreshTokenMiddleware,
 authRoutes.post('/logout',checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
 
+const refreshToken = req.cookies.refreshToken
+    await tokensCollection.insertOne({refreshToken:refreshToken})
  res.clearCookie("refreshToken")
         res.sendStatus(204)
 
@@ -73,6 +76,7 @@ authRoutes.post('/registration',userInputValidations,checkUsersAccountsCredentia
         const newUser = await authService.createNewUser(login,password,email)
 
         if (newUser){
+            console.log(newUser.emailConfirmation.confirmationCode) //TODO delete
             res.sendStatus(204)
         }
 

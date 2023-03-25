@@ -2,10 +2,13 @@ import {Request, Response, NextFunction} from "express";
 import {jwtService} from "../domain/jwt-service";
 import {settings} from "../settings";
 import {authService} from "../domain/auth-service";
+import {tokensCollection} from "../db/db";
 
 export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-    if (!req.cookies.refreshToken) {
+    const expiredTokens = await tokensCollection.findOne({refreshToken:req.cookies.refreshToken})
+
+    if (!req.cookies.refreshToken || expiredTokens ) {
         res.sendStatus(401)
         return
     }

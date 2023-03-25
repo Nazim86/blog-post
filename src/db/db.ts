@@ -15,7 +15,6 @@ if (!url){
     throw new Error("Url does not found!")
 }
 export const client = new MongoClient(url)
-// process.env.mongoURI ||
 const db = client.db('blogPost')
 
 export const blogsCollection = db.collection<BlogsDbType>("blogs")
@@ -23,6 +22,7 @@ export const postsCollection = db.collection<PostsDbType>("posts")
 // export const usersCollection = db.collection<UserDbType>("users")
 export const commentsCollection = db.collection<CommentsDbType>("comments")
 export const usersAccountsCollection = db.collection<UserAccountDbType>("usersAccounts")
+export const tokensCollection = db.collection<any>("tokenBlackList")
 
 export async function runDb (){
 
