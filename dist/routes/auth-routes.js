@@ -32,7 +32,7 @@ exports.authRoutes.post('/login', auth_validations_1.authValidations, input_vali
         const accessToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.ACCESS_TOKEN_SECRET, "10s");
         const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20s");
         res.cookie('refreshToken', refreshToken, { httpOnly: true,
-            sameSite: 'strict',
+            sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000 });
         res.status(200).send({ accessToken: accessToken });
     }
@@ -42,9 +42,13 @@ exports.authRoutes.post('/refresh-token', check_refreshToken_middleware_1.checkR
     const accessToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.ACCESS_TOKEN_SECRET, "10s");
     const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20s");
     res.cookie('refreshToken', refreshToken, { httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'strict', secure: true,
         maxAge: 24 * 60 * 60 * 1000 });
     res.status(200).send({ accessToken: accessToken });
+}));
+exports.authRoutes.post('/logout', check_refreshToken_middleware_1.checkRefreshTokenMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.clearCookie("refreshToken");
+    res.sendStatus(204);
 }));
 exports.authRoutes.post('/registration', user_validations_1.userInputValidations, check_user_account_credentials_middleware_1.checkUsersAccountsCredentialsMiddleware, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { login, password, email } = req.body;

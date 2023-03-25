@@ -54,6 +54,15 @@ authRoutes.post('/refresh-token',checkRefreshTokenMiddleware,
 
     });
 
+authRoutes.post('/logout',checkRefreshTokenMiddleware,
+    async (req: Request, res: Response) => {
+
+ res.clearCookie("refreshToken")
+        res.sendStatus(204)
+
+    });
+
+
 
 authRoutes.post('/registration',userInputValidations,checkUsersAccountsCredentialsMiddleware,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
