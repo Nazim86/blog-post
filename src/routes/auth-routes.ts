@@ -65,14 +65,9 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 authRoutes.post('/logout', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
 
-    try {
         await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken})
         res.clearCookie("refreshToken")
         res.sendStatus(204)
-    } catch (e){
-        res.sendStatus(401)
-    }
-
 
     });
 

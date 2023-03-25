@@ -19,6 +19,7 @@ const checkRefreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0
     const expiredTokens = yield db_1.tokensCollection.findOne({ refreshToken: refreshToken });
     if (!req.cookies.refreshToken || expiredTokens) {
         res.sendStatus(401);
+        return;
     }
     const userId = yield jwt_service_1.jwtService.getUserIdByToken(refreshToken, settings_1.settings.REFRESH_TOKEN_SECRET);
     if (!userId) {
