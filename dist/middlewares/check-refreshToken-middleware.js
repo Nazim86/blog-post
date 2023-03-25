@@ -14,8 +14,7 @@ const jwt_service_1 = require("../domain/jwt-service");
 const settings_1 = require("../settings");
 const auth_service_1 = require("../domain/auth-service");
 const checkRefreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    if (!((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken)) {
+    if (!req.cookies.refreshToken) {
         res.sendStatus(401);
         return;
     }

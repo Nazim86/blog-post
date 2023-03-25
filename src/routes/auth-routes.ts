@@ -2,7 +2,6 @@ import {Request,Response, Router} from "express";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {authValidations, confirmationCodeValidation} from "../validations/auth-validations";
 import {jwtService} from "../domain/jwt-service";
-import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 import {emailValidation, userInputValidations} from "../validations/user-validations";
 import {authService} from "../domain/auth-service";
 import {
@@ -26,11 +25,11 @@ authRoutes.post('/login',authValidations,inputValidationErrorsMiddleware,async (
 
     }else{
         const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET,"10s")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20d" )
+        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20s" )
 
 
         res.cookie('refreshToken', refreshToken, { httpOnly: true,
-            sameSite: 'strict', //secure: true,
+            sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000 });
 
     res.status(200).send({accessToken:accessToken})
@@ -44,11 +43,11 @@ authRoutes.post('/refresh-token',checkRefreshTokenMiddleware,
     const user = req.context.user!
 
         const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET,"10s")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20d" )
+        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20s" )
 
 
         res.cookie('refreshToken', refreshToken, { httpOnly: true,
-            sameSite: 'strict', //secure: true,
+            sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000 });
 
         res.status(200).send({accessToken:accessToken})
