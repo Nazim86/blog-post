@@ -9,6 +9,7 @@ import {usersAccountsCollection} from "../db/db";
 
 
 
+
 export const authService = {
 
     async createNewUser(login: string, password: string, email: string): Promise<UserAccountDbType |null> {
@@ -36,7 +37,9 @@ export const authService = {
             }
         }
 
+
         const createUser = await authRepository.createNewUser(newUser)
+
 
         try {
             await emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
@@ -119,7 +122,9 @@ export const authService = {
         return user
     },
 
-
+    async findUserById (userId:string):Promise<UserAccountDbType |null>{
+        return await authRepository.findUserById(userId)
+    }
 }
 
 

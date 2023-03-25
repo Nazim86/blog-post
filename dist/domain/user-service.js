@@ -38,7 +38,8 @@ exports.userService = {
                         hours: 1,
                         minutes: 3
                     }),
-                    isConfirmed: true
+                    isConfirmed: true,
+                    sentEmailsByDate: new Date()
                 }
             };
             return yield user_in_db_repository_1.userRepository.createNewUser(newUser);

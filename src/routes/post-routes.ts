@@ -12,7 +12,7 @@ import {postService} from "../domain/posts-service";
 import {getPaginationValues} from "../functions/pagination-values";
 import {postQueryRepo} from "../query-repositories/posts-query-repo";
 import {PostQueryType} from "../repositories/types/post-query-type";
-import {authMiddleware} from "../middlewares/auth-middleware";
+import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 import {commentService} from "../domain/comment-service";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
@@ -81,13 +81,13 @@ postRoutes.post('/', baseAuthorizationMiddleware, createPostValidation,
 
     })
 
-postRoutes.post('/:postId/comments', authMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
+postRoutes.post('/:postId/comments', checkUserByAccessTokenMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const postId = req.params.postId
         const content = req.body.content
-        const userId = req.context.user!.userId
-        const userLogin = req.context.user!.login
+        const userId = req.context.user!._id.toString()
+        const userLogin = req.context.user!.accountData.login
 
 
         const postComment: CommentsViewType|null=  await commentService.createPostComment(postId,content,userId,userLogin)

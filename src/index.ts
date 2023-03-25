@@ -6,13 +6,14 @@ import {deleteRoute} from "./routes/delete-routes";
 import {userRouter} from "./routes/user-router";
 import {authRoutes} from "./routes/auth-routes";
 import {commentRouter} from "./routes/comment-router";
+import cookieParser from 'cookie-parser';
+
 
 export const app = express()
 
-// const parserMiddleware = bodyParser({})
-// app.use(parserMiddleware)
-
 app.use(express.json());
+app.use(cookieParser());
+
 
 const port = process.env.PORT || 5000
 

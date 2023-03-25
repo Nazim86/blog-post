@@ -9,11 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authMiddleware = void 0;
-const user_service_1 = require("../domain/user-service");
+exports.checkUserByAccessTokenMiddleware = void 0;
 const jwt_service_1 = require("../domain/jwt-service");
 const settings_1 = require("../settings");
-const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const auth_service_1 = require("../domain/auth-service");
+const checkUserByAccessTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.headers.authorization) {
         res.sendStatus(401);
         return;
@@ -25,9 +25,9 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
     else {
         req.context = {};
-        req.context.user = yield user_service_1.userService.findUserById(userId);
+        req.context.user = yield auth_service_1.authService.findUserById(userId);
         next();
     }
 });
-exports.authMiddleware = authMiddleware;
-//# sourceMappingURL=auth-middleware.js.map
+exports.checkUserByAccessTokenMiddleware = checkUserByAccessTokenMiddleware;
+//# sourceMappingURL=check-user-by-accessToken-middleware.js.map

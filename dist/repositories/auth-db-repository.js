@@ -51,5 +51,13 @@ exports.authRepository = {
             return yield db_1.usersAccountsCollection.findOne({ $or: [{ "accountData.login": loginOrEmail }, { "accountData.email": loginOrEmail }] });
         });
     },
+    findUserById(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield db_1.usersAccountsCollection.findOne({ _id: new mongodb_1.ObjectId(userId) });
+            if (!user)
+                return null;
+            return user;
+        });
+    }
 };
 //# sourceMappingURL=auth-db-repository.js.map

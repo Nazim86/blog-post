@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {authMiddleware} from "../middlewares/auth-middleware";
+import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 import {postCommentContentValidation} from "../validations/post-validations";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {commentService} from "../domain/comment-service";
@@ -9,7 +9,7 @@ import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-cr
 
 export const commentRouter = Router({})
 
-commentRouter.put('/:commentId', authMiddleware,checkCommentCredentialsMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
+commentRouter.put('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const content = req.body.content;
@@ -25,7 +25,7 @@ commentRouter.put('/:commentId', authMiddleware,checkCommentCredentialsMiddlewar
         }
     })
 
-commentRouter.delete('/:commentId', authMiddleware,checkCommentCredentialsMiddleware,
+commentRouter.delete('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware,
     async (req: Request, res: Response) => {
 
         const deleteComment:boolean = await commentService.deleteComment(req.params.commentId)

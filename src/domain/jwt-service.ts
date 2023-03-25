@@ -1,20 +1,19 @@
 import jwt from 'jsonwebtoken';
-import {settings} from "../settings";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 
 export const jwtService = {
 
-    async createJWT(user:UserAccountDbType){
+    async createJWT(user:UserAccountDbType, secretKey:string,expirationTime:string){
 
-        return jwt.sign({userId: user._id}, settings.JWT_SECRET, {expiresIn: "7d"})
+        return jwt.sign({userId: user._id}, secretKey, {expiresIn: expirationTime})
 
     },
 
-    //TODO need to finish this
-    async getUserIdByToken (token:string){
+
+    async getUserIdByToken (token:string,secretKey:string):Promise<string|null>{
 
         try {
-            const decoded:any = jwt.verify(token,settings.JWT_SECRET)
+            const decoded:any = jwt.verify(token,secretKey)
             return decoded.userId
         }
         catch (e){
@@ -22,3 +21,4 @@ export const jwtService = {
         }
     }
 }
+

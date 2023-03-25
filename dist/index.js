@@ -21,10 +21,10 @@ const delete_routes_1 = require("./routes/delete-routes");
 const user_router_1 = require("./routes/user-router");
 const auth_routes_1 = require("./routes/auth-routes");
 const comment_router_1 = require("./routes/comment-router");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 exports.app = (0, express_1.default)();
-// const parserMiddleware = bodyParser({})
-// app.use(parserMiddleware)
 exports.app.use(express_1.default.json());
+exports.app.use((0, cookie_parser_1.default)());
 const port = process.env.PORT || 5000;
 exports.app.use("/blogs", blog_routes_1.blogRoutes);
 exports.app.use("/posts", post_routes_1.postRoutes);

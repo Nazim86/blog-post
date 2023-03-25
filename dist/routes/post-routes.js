@@ -17,7 +17,7 @@ const post_validations_1 = require("../validations/post-validations");
 const posts_service_1 = require("../domain/posts-service");
 const pagination_values_1 = require("../functions/pagination-values");
 const posts_query_repo_1 = require("../query-repositories/posts-query-repo");
-const auth_middleware_1 = require("../middlewares/auth-middleware");
+const check_user_by_accessToken_middleware_1 = require("../middlewares/check-user-by-accessToken-middleware");
 const comment_service_1 = require("../domain/comment-service");
 const comments_query_repo_1 = require("../query-repositories/comments-query-repo");
 exports.postRoutes = (0, express_1.Router)({});
@@ -59,11 +59,11 @@ exports.postRoutes.post('/', base_auth_middlewares_1.baseAuthorizationMiddleware
         res.sendStatus(404);
     }
 }));
-exports.postRoutes.post('/:postId/comments', auth_middleware_1.authMiddleware, post_validations_1.postCommentContentValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.postRoutes.post('/:postId/comments', check_user_by_accessToken_middleware_1.checkUserByAccessTokenMiddleware, post_validations_1.postCommentContentValidation, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const postId = req.params.postId;
     const content = req.body.content;
-    const userId = req.context.user.userId;
-    const userLogin = req.context.user.login;
+    const userId = req.context.user._id.toString();
+    const userLogin = req.context.user.accountData.login;
     const postComment = yield comment_service_1.commentService.createPostComment(postId, content, userId, userLogin);
     if (postComment) {
         res.status(201).send(postComment);

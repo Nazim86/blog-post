@@ -9,25 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authMiddleware = void 0;
-const user_service_1 = require("../domain/user-service");
+exports.checkRefreshTokenMiddleware = void 0;
 const jwt_service_1 = require("../domain/jwt-service");
 const settings_1 = require("../settings");
-const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!req.headers.authorization) {
+const auth_service_1 = require("../domain/auth-service");
+const checkRefreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    if (!((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken)) {
         res.sendStatus(401);
         return;
     }
-    const token = req.headers.authorization.split(" ")[1];
-    const userId = yield jwt_service_1.jwtService.getUserIdByToken(token, settings_1.settings.ACCESS_TOKEN_SECRET);
+    const refreshToken = req.cookies.refreshToken;
+    const userId = yield jwt_service_1.jwtService.getUserIdByToken(refreshToken, settings_1.settings.REFRESH_TOKEN_SECRET);
     if (!userId) {
         res.sendStatus(401);
     }
     else {
         req.context = {};
-        req.context.user = yield user_service_1.userService.findUserById(userId);
+        req.context.user = yield auth_service_1.authService.findUserById(userId);
         next();
     }
 });
-exports.authMiddleware = authMiddleware;
-//# sourceMappingURL=auth-middleware.js.map
+exports.checkRefreshTokenMiddleware = checkRefreshTokenMiddleware;
+//# sourceMappingURL=check-refreshToken-middleware.js.map

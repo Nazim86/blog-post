@@ -11,16 +11,16 @@ export const authRepository = {
 
     },
 
-    async findUserByConfirmationCode(code: string):Promise<UserAccountDbType|null> {
+    async findUserByConfirmationCode(code: string): Promise<UserAccountDbType | null> {
 
         return await usersAccountsCollection.findOne(
             {"emailConfirmation.confirmationCode": code})
 
     },
 
-    async findUserByEmail(email:string){
+    async findUserByEmail(email: string) {
 
-        return await usersAccountsCollection.findOne({"accountData.email":email})
+        return await usersAccountsCollection.findOne({"accountData.email": email})
     },
 
     async updateConfirmation(userId: ObjectId): Promise<boolean> {
@@ -43,5 +43,11 @@ export const authRepository = {
         return await usersAccountsCollection.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
     },
 
+    async findUserById(userId: string): Promise<UserAccountDbType | null> {
+        const user = await usersAccountsCollection.findOne({_id: new ObjectId(userId)})
+        if (!user) return null
+        return user
 
+
+    }
 }

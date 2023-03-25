@@ -1,11 +1,11 @@
-import {UserByIdType} from "../repositories/types/user-by-id-type";
+import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 
 
 declare global{
     declare namespace Express{
         export interface Request{
             context:{
-                user?:UserByIdType|null
+                user?:UserAccountDbType|null
             }
         }
     }
