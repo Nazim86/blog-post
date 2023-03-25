@@ -7,7 +7,7 @@ export const checkCommentCredentialsMiddleware = async (req:Request, res:Respons
     const findComment = await commentsCollection.findOne({_id:new ObjectId(req.params.commentId)})
 
     if (findComment){
-        if (findComment.commentatorInfo.userLogin === req.context.user!.login && findComment.commentatorInfo.userId === req.context.user!.userId ){
+        if (findComment.commentatorInfo.userLogin === req.context.user!.accountData.login && findComment.commentatorInfo.userId === req.context.user!._id.toString() ){
             next()
         }
         else{

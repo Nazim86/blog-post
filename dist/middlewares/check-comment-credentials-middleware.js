@@ -15,7 +15,7 @@ const mongodb_1 = require("mongodb");
 const checkCommentCredentialsMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const findComment = yield db_1.commentsCollection.findOne({ _id: new mongodb_1.ObjectId(req.params.commentId) });
     if (findComment) {
-        if (findComment.commentatorInfo.userLogin === req.context.user.login && findComment.commentatorInfo.userId === req.context.user.userId) {
+        if (findComment.commentatorInfo.userLogin === req.context.user.accountData.login && findComment.commentatorInfo.userId === req.context.user._id.toString()) {
             next();
         }
         else {
