@@ -11,6 +11,7 @@ import {
 import {errorMessage} from "../error-handler/error-handler";
 import {settings} from "../settings";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
+import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 
 export const authRoutes = Router({});
 
@@ -25,11 +26,11 @@ authRoutes.post('/login',authValidations,inputValidationErrorsMiddleware,async (
 
     }else{
         const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET,"10s")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20s" )
+        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20d" )
 
 
         res.cookie('refreshToken', refreshToken, { httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000 });
 
     res.status(200).send({accessToken:accessToken})
@@ -43,11 +44,11 @@ authRoutes.post('/refresh-token',checkRefreshTokenMiddleware,
     const user = req.context.user!
 
         const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET,"10s")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20s" )
+        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20d" )
 
 
         res.cookie('refreshToken', refreshToken, { httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000 });
 
         res.status(200).send({accessToken:accessToken})
@@ -114,9 +115,9 @@ authRoutes.post('/registration-email-resending',emailValidation,inputValidationE
     });
 
 
-authRoutes.get('/me', checkUserByAccessTokenMiddleware,async (req:Request, res: Response)=>{
+authRoutes.get('/me', checkRefreshTokenMiddleware,async (req:Request, res: Response)=>{
 
-    const getCurrentUser = req.context.user
+    const getCurrentUser:UserAccountViewType = await authService.getCurrentUser(req.context.user!)
 
     res.status(200).send(getCurrentUser)
 

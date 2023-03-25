@@ -6,6 +6,7 @@ import add from "date-fns/add"
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {emailManager} from "../managers/email-manager";
 import {usersAccountsCollection} from "../db/db";
+import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 
 
 
@@ -124,6 +125,14 @@ export const authService = {
 
     async findUserById (userId:string):Promise<UserAccountDbType |null>{
         return await authRepository.findUserById(userId)
+    },
+
+    async getCurrentUser (user:UserAccountDbType):Promise<UserAccountViewType>{
+
+        return{
+            email:user.accountData.email,
+            login:user.accountData.login,
+            userId:user._id.toString(),        }
     }
 }
 

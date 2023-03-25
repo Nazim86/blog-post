@@ -122,6 +122,15 @@ exports.authService = {
         return __awaiter(this, void 0, void 0, function* () {
             return yield auth_db_repository_1.authRepository.findUserById(userId);
         });
+    },
+    getCurrentUser(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return {
+                email: user.accountData.email,
+                login: user.accountData.login,
+                userId: user._id.toString(),
+            };
+        });
     }
 };
 //# sourceMappingURL=auth-service.js.map
