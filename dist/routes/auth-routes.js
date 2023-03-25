@@ -34,7 +34,7 @@ exports.authRoutes.post('/login', auth_validations_1.authValidations, input_vali
         const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20s");
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict',
+            sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
         res.status(200).send({ accessToken: accessToken });
@@ -47,7 +47,7 @@ exports.authRoutes.post('/refresh-token', check_refreshToken_middleware_1.checkR
     const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20s");
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'strict', secure: true,
         maxAge: 24 * 60 * 60 * 1000
     });
     res.status(200).send({ accessToken: accessToken });
