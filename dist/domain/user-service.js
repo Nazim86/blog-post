@@ -38,7 +38,7 @@ exports.userService = {
                         hours: 1,
                         minutes: 3
                     }),
-                    isConfirmed: false
+                    isConfirmed: true
                 }
             };
             return yield user_in_db_repository_1.userRepository.createNewUser(newUser);

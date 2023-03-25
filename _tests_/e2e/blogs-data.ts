@@ -34,8 +34,8 @@ export const paginationValues = {
     searchName: "",
     sortBy: "createdAt",
     sortDirection: 'desc',
-    pageNumber: 1,
-    pageSize: 10
+    pageNumber: expect.any(Number),
+    pageSize: expect.any(Number)
 }
 
 export const emptyBlogData = {

@@ -16,7 +16,7 @@ export const authService = {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newUser = {
+        const newUser: UserAccountDbType = {
             _id: new ObjectId(),
             accountData: {
                 login: login,
@@ -31,7 +31,8 @@ export const authService = {
                     hours:1,
                     minutes:3
                 }),
-                isConfirmed:false
+                isConfirmed:false,
+                sentEmailsByDate:new Date()
             }
         }
 
@@ -40,6 +41,7 @@ export const authService = {
         try {
             await emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
                 createUser.accountData.email)
+
         }
         catch (e){
             return null
@@ -66,7 +68,7 @@ export const authService = {
         return await authRepository.updateConfirmation(user._id)
     },
 
-    async resendEmail(email:string):Promise<UserAccountDbType|boolean>{
+    async resendEmail(email:string):Promise<string|boolean>{
 
         const user:UserAccountDbType | null = await authRepository.findUserByEmail(email)
 
@@ -74,18 +76,25 @@ export const authService = {
         if(user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.emailExpiration < new Date()) return false
 
-        const newCode = uuid()
-        console.log(newCode)
-        await usersAccountsCollection.updateOne({_id:user._id},{$set:{"emailConfirmation.confirmationCode":newCode}})
+
 
         try {
+            //Checking time difference between last email sent date. Should be more than 10 sec. to send again
+            if(new Date().getTime()-user.emailConfirmation.sentEmailsByDate.getTime()<10000 ) {
+                return "Try"
+            }
+            const newCode = uuid()
+            console.log(user.emailConfirmation.sentEmailsByDate)
+            await usersAccountsCollection.updateMany({_id:user._id},[{$set:{"emailConfirmation.confirmationCode":newCode}},
+                {$set:{"emailConfirmation.sentEmailsByDate":new Date()}}])
+
             await emailManager.sendConfirmationEmail(newCode,user.accountData.email)
         }
         catch (e){
             return false
         }
 
-        return user
+        return true
 
     },
 
@@ -112,3 +121,6 @@ export const authService = {
 
 
 }
+
+
+

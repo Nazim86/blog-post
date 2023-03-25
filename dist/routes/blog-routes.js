@@ -22,11 +22,6 @@ const posts_service_1 = require("../domain/posts-service");
 exports.blogRoutes = (0, express_1.Router)({});
 const createPostValidations = [blog_validations_1.nameValidation, blog_validations_1.description, blog_validations_1.websiteUrl, input_validation_errors_middleware_1.inputValidationErrorsMiddleware];
 exports.blogRoutes.get('/', blog_validations_1.queryValidations, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // const searchName = req.query.searchName | undefined | null
-    // const sortBy = req.query.sortBy
-    // const sortDirection = req.query.sortDirection
-    // const pageNumber = req.query.pageNumber
-    // const pageSize = req.query.pageSize
     const { searchName, sortBy, sortDirection, pageNumber, pageSize } = (0, pagination_values_1.getPaginationValues)(req.query);
     const getBlog = yield blog_query_repo_1.blogQueryRepo.getBlog(searchName, sortBy, sortDirection, pageNumber, pageSize);
     res.status(200).send(getBlog);

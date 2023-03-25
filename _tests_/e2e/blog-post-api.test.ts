@@ -363,13 +363,17 @@ let newBlogData
             newBlogData = {...baseBlog, name: `Testing pagination ${i}`}
             const createBlog = await blogFunctions.createBlog(newBlogData, authorizationData)
             createdBlog.push(createBlog)
-
         }
+const paginationData = {...paginationValues,pageSize:4,pageNumber:3}
 
+        const result = await blogFunctions.getBlog(paginationData)
+
+        expect(result.body.page).toBe(5)
+
+        expect(result.body.totalCount).toBe(20)
+        expect(result.body.pagesCount).toBe(5)
 
     })
-
-
 });
 
 

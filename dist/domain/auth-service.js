@@ -40,7 +40,8 @@ exports.authService = {
                         hours: 1,
                         minutes: 3
                     }),
-                    isConfirmed: false
+                    isConfirmed: false,
+                    sentEmailsByDate: new Date()
                 }
             };
             const createUser = yield auth_db_repository_1.authRepository.createNewUser(newUser);
@@ -81,16 +82,21 @@ exports.authService = {
                 return false;
             if (user.emailConfirmation.emailExpiration < new Date())
                 return false;
-            const newCode = (0, uuid_1.v4)();
-            console.log(newCode);
-            yield db_1.usersAccountsCollection.updateOne({ _id: user._id }, { $set: { "emailConfirmation.confirmationCode": newCode } });
             try {
+                //Checking time difference between last email sent date. Should be more than 10 sec. to send again
+                if (new Date().getTime() - user.emailConfirmation.sentEmailsByDate.getTime() < 10000) {
+                    return "Try";
+                }
+                const newCode = (0, uuid_1.v4)();
+                console.log(user.emailConfirmation.sentEmailsByDate);
+                yield db_1.usersAccountsCollection.updateMany({ _id: user._id }, [{ $set: { "emailConfirmation.confirmationCode": newCode } },
+                    { $set: { "emailConfirmation.sentEmailsByDate": new Date() } }]);
                 yield email_manager_1.emailManager.sendConfirmationEmail(newCode, user.accountData.email);
             }
             catch (e) {
                 return false;
             }
-            return user;
+            return true;
         });
     },
     deleteUser(id) {

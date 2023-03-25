@@ -24,11 +24,6 @@ const createPostValidations = [nameValidation, description, websiteUrl, inputVal
 
 
 blogRoutes.get('/', queryValidations, async (req: Request, res: Response) => {
-    // const searchName = req.query.searchName | undefined | null
-    // const sortBy = req.query.sortBy
-    // const sortDirection = req.query.sortDirection
-    // const pageNumber = req.query.pageNumber
-    // const pageSize = req.query.pageSize
 
     const {searchName, sortBy, sortDirection, pageNumber, pageSize} = getPaginationValues(req.query)
 
@@ -89,7 +84,6 @@ blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware, postForBlogValida
     })
 
 blogRoutes.get('/:id', async (req: Request, res: Response) => {
-
 
     const getBlog: BlogsViewType | boolean = await blogQueryRepo.getBlogById(req.params.id)
 

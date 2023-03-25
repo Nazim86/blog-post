@@ -36,7 +36,7 @@ authRoutes.post('/registration',userInputValidations,checkUsersAccountsCredentia
 
 
         const newUser = await authService.createNewUser(login,password,email)
-        console.log(newUser!.emailConfirmation.confirmationCode)
+
         if (newUser){
             res.sendStatus(204)
         }
@@ -65,10 +65,12 @@ authRoutes.post('/registration-email-resending',emailValidation,inputValidationE
         const email = req.body.email
 
 
-        const emailResending = await authService.resendEmail(email)
+        const emailResending:string|boolean = await authService.resendEmail(email)
 
-        if (emailResending) {
+        if (emailResending===true) {
             res.sendStatus(204)
+        }else if (emailResending ==="Try"){
+            res.status(400).send("Please try again after 10 seconds")
         }else{
             res.status(400).send(errorMessage("wrong email","email"))
         }

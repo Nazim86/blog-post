@@ -7,8 +7,11 @@ type EmailConfirmationType={
     confirmationCode:string
     emailExpiration: Date
     isConfirmed:boolean
+    sentEmailsByDate:Date
 
 }
+
+
 
 type UserType = {
     login: string
