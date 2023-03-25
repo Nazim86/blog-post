@@ -12,6 +12,7 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
 
     if (!req.cookies.refreshToken || expiredTokens ) {
         res.sendStatus(401)
+        return
     }
 
 
