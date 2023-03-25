@@ -10,7 +10,6 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
         return
     }
 
-
     const refreshToken = req.cookies.refreshToken
 
     const userId:string|null = await jwtService.getUserIdByToken(refreshToken,settings.REFRESH_TOKEN_SECRET)
