@@ -6,13 +6,15 @@ import {tokensCollection} from "../db/db";
 
 export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-    const expiredTokens = await tokensCollection.findOne({refreshToken:req.cookies.refreshToken})
+    const refreshToken = req.cookies.refreshToken
+
+    const expiredTokens = await tokensCollection.findOne({refreshToken:refreshToken})
 
     if (!req.cookies.refreshToken || expiredTokens ) {
         res.sendStatus(401)
     }
 
-    const refreshToken = req.cookies.refreshToken
+
 
     const userId:string|null = await jwtService.getUserIdByToken(refreshToken,settings.REFRESH_TOKEN_SECRET)
 

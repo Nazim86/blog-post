@@ -32,7 +32,7 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -54,7 +54,7 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -65,9 +65,14 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 authRoutes.post('/logout', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
 
+    try {
         await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken})
         res.clearCookie("refreshToken")
         res.sendStatus(204)
+    } catch (e){
+        res.sendStatus(401)
+    }
+
 
     });
 
