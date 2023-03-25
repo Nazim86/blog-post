@@ -21,6 +21,7 @@ const error_handler_1 = require("../error-handler/error-handler");
 const settings_1 = require("../settings");
 const check_refreshToken_middleware_1 = require("../middlewares/check-refreshToken-middleware");
 const db_1 = require("../db/db");
+const check_user_by_accessToken_middleware_1 = require("../middlewares/check-user-by-accessToken-middleware");
 exports.authRoutes = (0, express_1.Router)({});
 exports.authRoutes.post('/login', auth_validations_1.authValidations, input_validation_errors_middleware_1.inputValidationErrorsMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { loginOrEmail, password } = req.body;
@@ -31,24 +32,28 @@ exports.authRoutes.post('/login', auth_validations_1.authValidations, input_vali
     else {
         const accessToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.ACCESS_TOKEN_SECRET, "10s");
         const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20s");
-        res.cookie('refreshToken', refreshToken, { httpOnly: true,
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
             sameSite: 'strict', secure: true,
-            maxAge: 24 * 60 * 60 * 1000 });
+            maxAge: 24 * 60 * 60 * 1000
+        });
         res.status(200).send({ accessToken: accessToken });
     }
 }));
 exports.authRoutes.post('/refresh-token', check_refreshToken_middleware_1.checkRefreshTokenMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.context.user;
+    yield db_1.tokensCollection.insertOne({ refreshToken: req.cookies.refreshToken });
     const accessToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.ACCESS_TOKEN_SECRET, "10s");
     const refreshToken = yield jwt_service_1.jwtService.createJWT(user, settings_1.settings.REFRESH_TOKEN_SECRET, "20s");
-    res.cookie('refreshToken', refreshToken, { httpOnly: true,
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
         sameSite: 'strict', secure: true,
-        maxAge: 24 * 60 * 60 * 1000 });
+        maxAge: 24 * 60 * 60 * 1000
+    });
     res.status(200).send({ accessToken: accessToken });
 }));
 exports.authRoutes.post('/logout', check_refreshToken_middleware_1.checkRefreshTokenMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const refreshToken = req.cookies.refreshToken;
-    yield db_1.tokensCollection.insertOne({ refreshToken: refreshToken });
+    yield db_1.tokensCollection.insertOne({ refreshToken: req.cookies.refreshToken });
     res.clearCookie("refreshToken");
     res.sendStatus(204);
 }));
@@ -76,14 +81,14 @@ exports.authRoutes.post('/registration-email-resending', user_validations_1.emai
     if (emailResending === true) {
         res.sendStatus(204);
     }
-    else if (emailResending === "Try") {
+    else if (emailResending === "Try") { //Limiting user email resending by time
         res.status(400).send("Please try again after 10 seconds");
     }
     else {
         res.status(400).send((0, error_handler_1.errorMessage)("wrong email", "email"));
     }
 }));
-exports.authRoutes.get('/me', check_refreshToken_middleware_1.checkRefreshTokenMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.authRoutes.get('/me', check_user_by_accessToken_middleware_1.checkUserByAccessTokenMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const getCurrentUser = yield auth_service_1.authService.getCurrentUser(req.context.user);
     res.status(200).send(getCurrentUser);
 }));
