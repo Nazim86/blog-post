@@ -5,7 +5,7 @@ import {authService} from "../domain/auth-service";
 
 export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-    if (!req.cookies?.refreshToken) {
+    if (!req.cookies.refreshToken) {
         res.sendStatus(401)
         return
     }
