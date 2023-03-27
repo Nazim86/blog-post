@@ -1,5 +1,5 @@
 import {postFunctions} from "./post-functions";
-import {createdPostWithPagination, postPaginationValues} from "./posts-data";
+import {createdPostWithPagination, postPaginationValues} from "../data/posts-data";
 
 
 

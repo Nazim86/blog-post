@@ -1,7 +1,7 @@
-import {getEmptyUsersData, userPaginationValues} from "./user-data";
+import {getEmptyUsersData, userPaginationValues} from "../data/user-data";
 import {userFunctions} from "./user-functions";
 
-import {authorizationData} from "./blogs-data";
+import {authorizationData} from "../data/blogs-data";
 
 export const notCreateUser = async (userData: object, authorizationValue: string,statusNumber?:number)=>{
 

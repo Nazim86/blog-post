@@ -1,6 +1,6 @@
 import request from "supertest";
-import {app} from "../../src";
-import {PostsViewType} from "../../src/repositories/types/posts-view-type";
+import {app} from "../../../src";
+import {PostsViewType} from "../../../src/repositories/types/posts-view-type";
 
 export type TestResultType<T> = {
     body: T,

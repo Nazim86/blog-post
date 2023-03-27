@@ -1,7 +1,7 @@
 import request from "supertest"
 import {app} from "../../src";
 import {cloneDeep} from 'lodash';
-import {blogFunctions} from "./blog-functions";
+import {blogFunctions} from "./functions/blog-functions";
 import {
     authorizationData,
     baseBlog,
@@ -10,35 +10,38 @@ import {
     returnedUnchangedBlog,
     updateBlog,
     updatedBlog
-} from "./blogs-data";
+} from "./data/blogs-data";
 import {
     createdPostWithPagination,
     emptyPostData, newPostByBlogIdData, newPostCreatingData,
 
     postPaginationValues,
     returnedCreatedPost, updatedPostData, updatedPostWithPagination
-} from "./posts-data";
-import {postFunctions} from "./post-functions";
+} from "./data/posts-data";
+import {postFunctions} from "./functions/post-functions";
 import {PostsViewType} from "../../src/repositories/types/posts-view-type";
-import {notUpdate} from "./post-should-not-functions";
-import {userFunctions} from "./user-functions";
+import {notUpdate} from "./functions/post-should-not-functions";
+import {userFunctions} from "./functions/user-functions";
 import {
     createdUserWithPagination,
     getEmptyUsersData,
     userCreateData,
     userCreatedData,
     userPaginationValues
-} from "./user-data";
-import {notCreateUser} from "./user-should-not-functions";
+} from "./data/user-data";
+import {notCreateUser} from "./functions/user-should-not-functions";
 import {client, usersAccountsCollection} from "../../src/db/db";
-import {authFunctions} from "./auth-functions";
-import {commentFunctions} from "./comment-functions";
+import {authFunctions} from "./functions/auth-functions";
+import {commentFunctions} from "./functions/comment-functions";
 import {
     commentCreatingData, commentUpdated,
     commentUpdatingData,
     commentWithPagination,
     createdComment
-} from "./comments-data";
+} from "./data/comments-data";
+import {newUserData} from "./data/auth-data";
+import {MailBoxImap} from "./imap.service";
+import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 
 
 afterAll(async () => {
@@ -47,6 +50,7 @@ afterAll(async () => {
 
 describe("blogs SHOULD NOT CRUD testing", () => {
     let createdBlog: Array<any> = []
+
     beforeAll(async () => {
         await request(app)
             .delete('/testing/all-data')
@@ -351,26 +355,28 @@ describe("blogs SHOULD NOT CRUD testing", () => {
 
 
 describe("Blogs pagination testing", () => {
-    let createdBlog: Array<any> = []
+    let createdBlog: BlogsViewType[]= []
+    const countOfBlogs = 50
     beforeAll(async () => {
         await request(app)
             .delete('/testing/all-data')
     });
 
     it(`should return right pagination values `, async () => {
+        console.log('create')
 let newBlogData
-        for (let i=0; i<=30;i++){
-            newBlogData = {...baseBlog, name: `Testing pagination ${i}`}
+        for (let i=0; i<countOfBlogs;i++){
+            newBlogData = {...baseBlog, name: `Testing pag${i}`}
             const createBlog = await blogFunctions.createBlog(newBlogData, authorizationData)
-            createdBlog.push(createBlog)
+            createdBlog.push(createBlog.body)
         }
 const paginationData = {...paginationValues,pageSize:4,pageNumber:3}
 
         const result = await blogFunctions.getBlog(paginationData)
 
-        expect(result.body.page).toBe(5)
 
-        expect(result.body.totalCount).toBe(20)
+
+        expect(result.body.totalCount).toBe(countOfBlogs)
         expect(result.body.pagesCount).toBe(5)
 
     })
@@ -457,7 +463,6 @@ describe("blogs CRUD testing", () => {
     });
 
 });
-
 
 describe("post testing", () => {
     let createdPost: Array<PostsViewType> = [];
@@ -931,11 +936,15 @@ describe("user testing", () => {
 
 });
 
-
 describe("auth testing", () => {
+    jest.setTimeout(3 * 60 * 1000)
+
     //TODO should replace any with type
     let newUser: any //TODO choose right type for newUser
     let token: string;
+
+    const imapService = new MailBoxImap()
+
 
     beforeAll(async () => {
 
@@ -948,7 +957,7 @@ describe("auth testing", () => {
         const getUser  = await usersAccountsCollection.findOne({"accountData.email":"nazim@gmail.com"})
         // const {body} = await userFunctions.getUsers(paginationValues,authorizationData)
         await authFunctions.registrationConfirmation(getUser!.emailConfirmation.confirmationCode)
-
+        await imapService.connectToMail()
     });
 
     it('should login return 200', async () => {
@@ -981,6 +990,46 @@ describe("auth testing", () => {
         expect(loginUser.body).toEqual(currentUser)
 
     });
+
+    it('should create new user and send confirmation email and return 204', async () => {
+
+        //TODO build Should NOT for auth get user
+
+       const newUser = await authFunctions.registerUser(newUserData)
+
+        expect(newUser.status).toBe(204)
+
+        const sentMessage = await imapService.waitNewMessage(1)
+        expect(sentMessage).toBeDefined()
+
+        const html: string | null = await imapService.getMessageHtml(sentMessage)
+        console.log(html)
+        expect(html).toBeDefined()
+
+
+        const code = html!.split("?code=")[1].split("'")[0]
+        console.log(code)
+        expect(code).toBeDefined()
+
+        // const loginUser = await authFunctions.getCurrentUser(token)
+        // expect(loginUser.status).toBe(200)
+        // expect(loginUser.body).toEqual(currentUser)
+
+    });
+
+    it('should confirm registration and return 204', async () => {
+
+        //TODO build Should NOT for auth get user
+
+        const newUser = await authFunctions.registerUser(newUserData)
+        expect(newUser.status).toBe(204)
+
+        // const loginUser = await authFunctions.getCurrentUser(token)
+        // expect(loginUser.status).toBe(200)
+        // expect(loginUser.body).toEqual(currentUser)
+
+    });
+
 });
 
 describe("comments testing", () => {

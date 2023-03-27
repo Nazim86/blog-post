@@ -1,7 +1,7 @@
 import request from "supertest";
-import {app} from "../../src";
+import {app} from "../../../src";
 
-import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
+import {BlogsViewType} from "../../../src/repositories/types/blogs-view-type";
 export type TestResultType<T> = {
     body: T,
     status: number
@@ -41,8 +41,9 @@ export const blogFunctions = {
 
         return request(app)
             .post('/blogs')
-            .send(newBlog)
             .set("Authorization", authorizationData)
+            .send(newBlog)
+
 
 
 

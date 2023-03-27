@@ -7,6 +7,7 @@ import {userRouter} from "./routes/user-router";
 import {authRoutes} from "./routes/auth-routes";
 import {commentRouter} from "./routes/comment-router";
 import cookieParser from 'cookie-parser';
+import {securityRouter} from "./routes/security-routes";
 
 
 export const app = express()
@@ -23,6 +24,7 @@ app.use("/testing/all-data", deleteRoute)
 app.use("/users", userRouter)
 app.use("/auth", authRoutes)
 app.use("/comments",commentRouter)
+app.use("security",securityRouter)
 
 
 const startApp = async ()=>

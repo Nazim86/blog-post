@@ -1,8 +1,8 @@
-import {PostsViewType} from "../../src/repositories/types/posts-view-type";
+import {PostsViewType} from "../../../src/repositories/types/posts-view-type";
 import request from "supertest";
-import {app} from "../../src";
+import {app} from "../../../src";
 import {TestResultType} from "./post-functions";
-import {UserViewType} from "../../src/repositories/types/user-view-type";
+import {UserViewType} from "../../../src/repositories/types/user-view-type";
 
 export const userFunctions = {
     async getUsers(paginationData:object,authorizationData:string):Promise<TestResultType<UserViewType>>{
