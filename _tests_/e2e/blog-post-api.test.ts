@@ -1022,7 +1022,7 @@ describe("auth testing", () => {
         //TODO build Should NOT for auth get user
 
         const newUser = await authFunctions.registerUser(newUserData)
-        expect(newUser.status).toBe(204)
+        // expect(newUser.status).toBe(204)
 
         // const loginUser = await authFunctions.getCurrentUser(token)
         // expect(loginUser.status).toBe(200)

@@ -9,8 +9,8 @@ export class MailBoxImap {
     //TODO: сделать яндекс почту и создать пароль приложений
     this.imap = new ImapClient('imap.yandex.com', 993, {
       auth: {
-        user: 'hleb.lukashonak@yandex.ru',
-        pass: 'nexmukvvkqdqfftk',
+        user: 'nazim86mammadov@yandex.ru',
+        pass: 'tzymfhpfwhlpsouk',
       },
       useSecureTransport: true,
       logLevel: 'LOG_LEVEL_NONE',
