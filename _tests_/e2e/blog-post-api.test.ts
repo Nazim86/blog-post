@@ -40,7 +40,7 @@ import {
     createdComment
 } from "./data/comments-data";
 import {newUserData} from "./data/auth-data";
-import {MailBoxImap} from "./imap.service";
+import {MailBoxImap} from "./functions/imap.service";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 
 
