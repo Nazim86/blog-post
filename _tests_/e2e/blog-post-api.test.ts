@@ -30,7 +30,7 @@ import {
     userPaginationValues
 } from "./data/user-data";
 import {notCreateUser} from "./functions/user-should-not-functions";
-import {client, usersAccountsCollection} from "../../src/db/db";
+import {client} from "../../src/db/db";
 import {authFunctions} from "./functions/auth-functions";
 import {commentFunctions} from "./functions/comment-functions";
 import {
@@ -39,7 +39,7 @@ import {
     commentWithPagination,
     createdComment
 } from "./data/comments-data";
-import {newUserData} from "./data/auth-data";
+import {currentUser, newUserData, newUserEmail} from "./data/auth-data";
 import {MailBoxImap} from "./functions/imap.service";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 
@@ -65,7 +65,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, wrongAuthorizationData)
         expect(createBlog.status).toBe(401)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
     })
@@ -76,7 +76,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
     })
@@ -88,7 +88,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
     })
@@ -100,7 +100,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
 
@@ -113,7 +113,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
 
@@ -126,7 +126,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
 
@@ -139,7 +139,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
     })
@@ -151,7 +151,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
     })
@@ -164,7 +164,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
 
@@ -178,7 +178,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
     })
@@ -190,7 +190,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         const createBlog = await blogFunctions.createBlog(newBlog, authorizationData)
         expect(createBlog.status).toBe(400)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
     })
@@ -215,7 +215,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         expectedResult.items[0].id = createdBlog[0].id
         expectedResult.items[0].createdAt = createdBlog[0].createdAt
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(createdBlogData)
     });
@@ -330,7 +330,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         await blogFunctions.deleteBlog(createdBlog[0].id, wrongAuthorizationData)
         expect(401)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(createdBlogData)
 
@@ -345,7 +345,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
         await blogFunctions.deleteBlog("sdf", authorizationData)
         expect(404)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(createdBlogData)
 
@@ -355,7 +355,7 @@ describe("blogs SHOULD NOT CRUD testing", () => {
 
 
 describe("Blogs pagination testing", () => {
-    let createdBlog: BlogsViewType[]= []
+    let createdBlog: BlogsViewType[] = []
     const countOfBlogs = 50
     beforeAll(async () => {
         await request(app)
@@ -364,16 +364,15 @@ describe("Blogs pagination testing", () => {
 
     it(`should return right pagination values `, async () => {
         console.log('create')
-let newBlogData
-        for (let i=0; i<countOfBlogs;i++){
+        let newBlogData
+        for (let i = 0; i < countOfBlogs; i++) {
             newBlogData = {...baseBlog, name: `Testing pag${i}`}
             const createBlog = await blogFunctions.createBlog(newBlogData, authorizationData)
             createdBlog.push(createBlog.body)
         }
-const paginationData = {...paginationValues,pageSize:4,pageNumber:3}
+        const paginationData = {...paginationValues, pageSize: 4, pageNumber: 3}
 
         const result = await blogFunctions.getBlog(paginationData)
-
 
 
         expect(result.body.totalCount).toBe(countOfBlogs)
@@ -393,7 +392,7 @@ describe("blogs CRUD testing", () => {
     // Get Blogs
     it('should return 200 and empty array', async () => {
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
 
@@ -415,7 +414,7 @@ describe("blogs CRUD testing", () => {
         expectedResult.items[0].id = createdBlog[0].id
         expectedResult.items[0].createdAt = createdBlog[0].createdAt
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(createdBlogData)
     })
@@ -443,7 +442,7 @@ describe("blogs CRUD testing", () => {
 
         await blogFunctions.getUpdatedBlog(createdBlog[0].id, updatedBlog)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(getUpdatedBlog)
 
@@ -456,7 +455,7 @@ describe("blogs CRUD testing", () => {
         await blogFunctions.deleteBlog(createdBlog[0].id, authorizationData)
         expect(204)
 
-        const {status,body} = await blogFunctions.getBlog(paginationValues)
+        const {status, body} = await blogFunctions.getBlog(paginationValues)
         expect(status).toBe(200)
         expect(body).toEqual(emptyBlogData)
 
@@ -953,21 +952,62 @@ describe("auth testing", () => {
         await request(app)
             .delete('/testing/all-data')
 
-        newUser = await userFunctions.createUser(userCreateData, authorizationData)
-        const getUser  = await usersAccountsCollection.findOne({"accountData.email":"nazim@gmail.com"})
-        // const {body} = await userFunctions.getUsers(paginationValues,authorizationData)
-        await authFunctions.registrationConfirmation(getUser!.emailConfirmation.confirmationCode)
+
         await imapService.connectToMail()
     });
 
+
+    it('should create new user and send confirmation email and return 204', async () => {
+
+        //TODO build Should NOT for auth get user
+
+        newUser = await authFunctions.registerUser(newUserData)
+
+        expect(newUser.status).toBe(204)
+
+    });
+
+    it('should resend registration email and return 204', async () => {
+
+        setTimeout(async () => {
+            const result = await authFunctions.resendEmail({email: newUserEmail})
+            expect(result.status).toBe(204)
+        }, 10000)
+
+
+    });
+
+
+    it('should confirm registration and return 204', async () => {
+
+        //TODO build Should NOT for auth get user
+
+        const sentMessage = await imapService.waitNewMessage(1)
+        expect(sentMessage).toBeDefined()
+
+        const html: string | null = await imapService.getMessageHtml(sentMessage)
+
+        expect(html).toBeDefined()
+
+        const code = html!.split("?code=")[1].split("'")[0]
+
+        expect(code).toBeDefined()
+
+        const result = await authFunctions.registrationConfirmation({code: code})
+
+        expect(result.status).toBe(204)
+
+    });
+
+
     it('should login return 200', async () => {
 
-        //TODO build Should NOT for auth login
-
         const loginUserData = {
-            loginOrEmail: newUser.body.login,
+            loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "123456"
         }
+
+        console.log(loginUserData)
 
         const loginUser = await authFunctions.loginUser(loginUserData)
         token = loginUser.body.accessToken
@@ -977,58 +1017,12 @@ describe("auth testing", () => {
 
     it('should get current user return 200', async () => {
 
-        //TODO build Should NOT for auth get user
-
-        const currentUser = {
-            email: newUser.body.email,
-            login: newUser.body.login,
-            userId: newUser.body.id
-        }
-
         const loginUser = await authFunctions.getCurrentUser(token)
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual(currentUser)
 
     });
 
-    it('should create new user and send confirmation email and return 204', async () => {
-
-        //TODO build Should NOT for auth get user
-
-       const newUser = await authFunctions.registerUser(newUserData)
-
-        expect(newUser.status).toBe(204)
-
-        const sentMessage = await imapService.waitNewMessage(1)
-        expect(sentMessage).toBeDefined()
-
-        const html: string | null = await imapService.getMessageHtml(sentMessage)
-        console.log(html)
-        expect(html).toBeDefined()
-
-
-        const code = html!.split("?code=")[1].split("'")[0]
-        console.log(code)
-        expect(code).toBeDefined()
-
-        // const loginUser = await authFunctions.getCurrentUser(token)
-        // expect(loginUser.status).toBe(200)
-        // expect(loginUser.body).toEqual(currentUser)
-
-    });
-
-    it('should confirm registration and return 204', async () => {
-
-        //TODO build Should NOT for auth get user
-
-        const newUser = await authFunctions.registerUser(newUserData)
-        // expect(newUser.status).toBe(204)
-
-        // const loginUser = await authFunctions.getCurrentUser(token)
-        // expect(loginUser.status).toBe(200)
-        // expect(loginUser.body).toEqual(currentUser)
-
-    });
 
 });
 
@@ -1038,7 +1032,7 @@ describe("comments testing", () => {
     let post: any
     let user: any
     let loginUser: any
-    let comment:any
+    let comment: any
     beforeAll(async () => {
 
         //clearAllData()
@@ -1100,10 +1094,9 @@ describe("comments testing", () => {
     });
 
 
-
     it('should update comment by comment id and return 204', async () => {
 
-        const updatedComment = await commentFunctions.updateComment(comment.body.id,commentUpdatingData, loginUser.body.accessToken)
+        const updatedComment = await commentFunctions.updateComment(comment.body.id, commentUpdatingData, loginUser.body.accessToken)
         expect(updatedComment.status).toBe(204)
 
     });
@@ -1119,7 +1112,7 @@ describe("comments testing", () => {
 
     it('should delete comment by comment id and return 204', async () => {
 
-        const deleteComment = await commentFunctions.deleteCommentByCommentId(comment.body.id,loginUser.body.accessToken)
+        const deleteComment = await commentFunctions.deleteCommentByCommentId(comment.body.id, loginUser.body.accessToken)
         expect(deleteComment.status).toBe(204)
 
         const {status, body} = await commentFunctions.getCommentByCommentId(comment.body.id)
@@ -1127,9 +1120,7 @@ describe("comments testing", () => {
         expect(body).toEqual({})
 
 
-
     });
-
 
 
 });

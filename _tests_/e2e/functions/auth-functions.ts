@@ -30,10 +30,17 @@ export const authFunctions = {
 
     },
 
-    async registrationConfirmation(code:string){
+    async registrationConfirmation(code:object){
         return  request(app)
             .post('/auth/registration-confirmation')
             .send(code)
+
+    },
+
+    async resendEmail(email:object){
+        return  request(app)
+            .post('/auth/registration-email-resending')
+            .send(email)
 
     }
 }
