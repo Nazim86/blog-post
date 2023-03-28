@@ -939,7 +939,7 @@ describe("auth testing", () => {
     jest.setTimeout(3 * 60 * 1000)
 
     //TODO should replace any with type
-    let newUser: any //TODO choose right type for newUser
+    let newUser: any
     let token: string;
     let loginUser: any
 
@@ -963,8 +963,6 @@ describe("auth testing", () => {
 
     it('should create new user and send confirmation email and return 204', async () => {
 
-        //TODO build Should NOT for auth get user
-
         newUser = await authFunctions.registerUser(newUserData)
 
         expect(newUser.status).toBe(204)
@@ -973,11 +971,23 @@ describe("auth testing", () => {
 
     it('should resend registration email and return 204', async () => {
 
-        setTimeout(async () => {
+        // setTimeout(async () => {
+        //     const result = await authFunctions.resendEmail({email: newUserEmail})
+        //     expect(result.status).toBe(204)
+        // }, 10000)
+
+        async function delay(ms: number) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function myAsyncFunction() {
+            await delay(10000); // Wait for 1 second
             const result = await authFunctions.resendEmail({email: newUserEmail})
             expect(result.status).toBe(204)
-        }, 10000)
 
+        }
+
+        myAsyncFunction();
 
     });
 
