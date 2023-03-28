@@ -941,6 +941,7 @@ describe("auth testing", () => {
     //TODO should replace any with type
     let newUser: any //TODO choose right type for newUser
     let token: string;
+    let loginUser: any
 
     const imapService = new MailBoxImap()
 
@@ -951,6 +952,9 @@ describe("auth testing", () => {
 
         await request(app)
             .delete('/testing/all-data')
+
+        await request(app)
+            .post('/logout')
 
 
         await imapService.connectToMail()
@@ -1007,13 +1011,26 @@ describe("auth testing", () => {
             password: "123456"
         }
 
-        console.log(loginUserData)
-
-        const loginUser = await authFunctions.loginUser(loginUserData)
+        loginUser = await authFunctions.loginUser(loginUserData)
         token = loginUser.body.accessToken
+        // const refreshToken = loginUser.header['set-cookie'].split(";")[0]
+
+        //      const refreshToken = loginUser.header['set-cookie'][0].split(";")[0]
+        // console.log(refreshToken)
+
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual({accessToken: expect.any(String)})
     });
+
+    it('should get new access token and refresh token by refresh token and return 200',
+        async () => {
+
+            const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
+            const result = await authFunctions.refreshToken(refreshToken)
+            expect(result.status).toBe(200)
+
+
+        });
 
     it('should get current user return 200', async () => {
 

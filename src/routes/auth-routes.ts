@@ -26,13 +26,13 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
         res.sendStatus(401)
 
     } else {
-        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "10s")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20s")
+        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "10d")
+        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20d")
 
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -48,13 +48,13 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken})
 
-        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "10s")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20s")
+        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "10d")
+        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20d")
 
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 

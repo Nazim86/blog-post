@@ -9,8 +9,6 @@ export const authFunctions = {
         return request(app)
             .post("/auth/login")
             .send(loginUserData)
-
-
     },
 
     async getCurrentUser(token:string){
@@ -41,6 +39,15 @@ export const authFunctions = {
         return  request(app)
             .post('/auth/registration-email-resending')
             .send(email)
+
+    },
+
+    async refreshToken(refreshToken:object){
+        return  request(app)
+            .post('/auth/refresh-token')
+            .set('Cookie', `${refreshToken}`)
+            .send()
+
 
     }
 }
