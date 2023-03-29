@@ -43,6 +43,9 @@ import {currentUser, newUserData, newUserEmail} from "./data/auth-data";
 import {MailBoxImap} from "./functions/imap.service";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 
+async function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 afterAll(async () => {
     await client.close();
@@ -950,13 +953,11 @@ describe("auth testing", () => {
     beforeAll(async () => {
 
         //clearAllData()
-
         await request(app)
             .delete('/testing/all-data')
 
         await request(app)
             .post('/logout')
-
 
         await imapService.connectToMail()
     });
@@ -977,9 +978,7 @@ describe("auth testing", () => {
         //     expect(result.status).toBe(204)
         // }, 10000)
 
-        async function delay(ms: number) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+
 
         async function myAsyncFunction() {
             await delay(10000); // Wait for 1 second
@@ -988,7 +987,7 @@ describe("auth testing", () => {
 
         }
 
-        myAsyncFunction();
+        await myAsyncFunction();
 
     });
 
@@ -1039,6 +1038,8 @@ describe("auth testing", () => {
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
 
+        //await delay(1000)
+
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
             console.log(refreshToken)
             console.log(loginUser.body.accessToken)
@@ -1073,9 +1074,6 @@ describe("auth testing", () => {
             // expect(result.status).toBe(204)
 
         });
-
-
-
 
 });
 

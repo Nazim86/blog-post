@@ -13,6 +13,7 @@ import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-mid
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 import {tokensCollection} from "../db/db";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
+import jwt from "jsonwebtoken";
 
 export const authRoutes = Router({});
 
@@ -26,11 +27,12 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
         res.sendStatus(401)
 
     } else {
-        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "20s")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "40s")
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
 
 
-        res.cookie('refreshToken', refreshToken, {
+
+            res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000
@@ -47,10 +49,11 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
         const user = req.context.user!
 
         await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken})
-
-        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "20s")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "40s")
-
+        const oldRefreshTokenData = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
+        console.log(oldRefreshTokenData)
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
+        console.log(jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
