@@ -26,8 +26,8 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
         res.sendStatus(401)
 
     } else {
-        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "10d")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20d")
+        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "20s")
+        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "40s")
 
 
         res.cookie('refreshToken', refreshToken, {
@@ -48,8 +48,8 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken})
 
-        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "10d")
-        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "20d")
+        const accessToken = await jwtService.createJWT(user, settings.ACCESS_TOKEN_SECRET, "20s")
+        const refreshToken = await jwtService.createJWT(user, settings.REFRESH_TOKEN_SECRET, "40s")
 
 
         res.cookie('refreshToken', refreshToken, {
@@ -86,7 +86,6 @@ authRoutes.post('/registration', userInputValidations, checkUsersAccountsCredent
         const newUser = await authService.createNewUser(login, password, email)
 
         if (newUser) {
-            console.log(newUser.emailConfirmation.confirmationCode) //TODO delete
             res.sendStatus(204)
         }
 

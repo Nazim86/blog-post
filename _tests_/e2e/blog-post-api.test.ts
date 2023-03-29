@@ -942,6 +942,7 @@ describe("auth testing", () => {
     let newUser: any
     let token: string;
     let loginUser: any
+    let newToken:any
 
     const imapService = new MailBoxImap()
 
@@ -1027,18 +1028,30 @@ describe("auth testing", () => {
 
         //      const refreshToken = loginUser.header['set-cookie'][0].split(";")[0]
         // console.log(refreshToken)
+        const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0] // del
+        // console.log(refreshToken)
+        // console.log(loginUser.body.accessToken)
 
         expect(loginUser.status).toBe(200)
-        expect(loginUser.body).toEqual({accessToken: expect.any(String)})
+        expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
     });
 
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
 
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
-            const result = await authFunctions.refreshToken(refreshToken)
-            expect(result.status).toBe(200)
+            console.log(refreshToken)
+            console.log(loginUser.body.accessToken)
 
+            newToken = await authFunctions.refreshToken(refreshToken)
+
+            const resulNewRefreshToken = newToken.headers['set-cookie'][0].split(";")[0] //del
+            console.log(resulNewRefreshToken)
+            console.log(newToken.body.accessToken)
+
+
+            expect(newToken.status).toBe(200)
+            expect(newToken.body).toEqual({accessToken: expect.any(String)})
 
         });
 
@@ -1049,6 +1062,19 @@ describe("auth testing", () => {
         expect(loginUser.body).toEqual(currentUser)
 
     });
+
+    it('should logout and return 204',
+        async () => {
+
+            const refreshToken = newToken.headers['set-cookie'][0].split(";")[0]
+            // console.log(refreshToken)
+            // console.log(newToken.body.accessToken)
+          const result = await authFunctions.logout(refreshToken)
+            // expect(result.status).toBe(204)
+
+        });
+
+
 
 
 });

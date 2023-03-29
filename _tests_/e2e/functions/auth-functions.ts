@@ -49,5 +49,13 @@ export const authFunctions = {
             .send()
 
 
+    },
+
+    async logout(refreshToken:object){
+        return  request(app)
+            .post('/auth/logout')
+            .set('Cookie', `${refreshToken}`)
+            .send()
+
     }
 }
