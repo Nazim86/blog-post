@@ -30,7 +30,10 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
 
+        const ipAddress = req.header('x-forwarded-for');
 
+
+        await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,req.headers['user-agent']!,user._id.toString() )
 
             res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -48,12 +51,16 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         const user = req.context.user!
 
-        await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken})
-        const oldRefreshTokenData = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
-        console.log(oldRefreshTokenData)
+
+        const oldRefreshTokenData = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET) //del
+        console.log(oldRefreshTokenData) //del
+
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
-        console.log(jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))
+
+        console.log(refreshToken)
+
+        console.log(jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -69,7 +76,7 @@ authRoutes.post('/logout', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
 
     try {
-        await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken})
+        await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken}) //TODO not good to send database from router, change this through auth service and auth repository
         res.clearCookie("refreshToken")
         res.sendStatus(204)
     } catch (e){

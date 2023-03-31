@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import {ObjectId} from "mongodb";
+import {settings} from "../settings";
 
 export const jwtService = {
 
@@ -19,6 +20,11 @@ export const jwtService = {
         catch (e){
             return null
         }
+    },
+
+    async getRefreshTokenIssuedDate(refreshToken:string):Promise<number>{
+        const decoded:any = jwt.verify(refreshToken,settings.REFRESH_TOKEN_SECRET)
+        return decoded.iat
     }
 }
 

@@ -1,12 +1,14 @@
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
-import {authRepository} from "../repositories/auth-db-repository";
+import {authRepository} from "../repositories/auth-in-db-repository";
 import { v4 as uuid } from 'uuid';
 import add from "date-fns/add"
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {emailManager} from "../managers/email-manager";
 import {usersAccountsCollection} from "../db/db";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
+import {tokenInDbRepository} from "../repositories/token-in-db-repository";
+import {jwtService} from "./jwt-service";
 
 
 
@@ -135,6 +137,21 @@ export const authService = {
             email:user.accountData.email,
             login:user.accountData.login,
             userId:user._id.toString(),        }
+    },
+
+    async insertRefreshTokenMetaData (refreshToken:string, ip:string,deviceName:string, userId:string){
+        const refreshTokenIssuedDate:number = await jwtService.getRefreshTokenIssuedDate(refreshToken)
+
+        const refreshTokenMeta = {
+            issuedDate: refreshTokenIssuedDate,
+            deviceId: uuid(),
+            ip:ip,
+            deviceName:deviceName,
+            userId:userId
+        }
+
+        await tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)//TODO not good to send database from router, change this through auth service and auth repository
+
     }
 }
 

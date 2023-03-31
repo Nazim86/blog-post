@@ -979,9 +979,8 @@ describe("auth testing", () => {
         // }, 10000)
 
 
-
         async function myAsyncFunction() {
-            await delay(10000); // Wait for 1 second
+            await delay(10000); // Wait for 10 second
             const result = await authFunctions.resendEmail({email: newUserEmail})
             expect(result.status).toBe(204)
 
@@ -1038,17 +1037,17 @@ describe("auth testing", () => {
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
 
-        //await delay(1000)
+        await delay(1000)
 
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
-            console.log(refreshToken)
-            console.log(loginUser.body.accessToken)
+            console.log(refreshToken) //del
+            console.log(loginUser.body.accessToken) //del
 
             newToken = await authFunctions.refreshToken(refreshToken)
 
             const resulNewRefreshToken = newToken.headers['set-cookie'][0].split(";")[0] //del
-            console.log(resulNewRefreshToken)
-            console.log(newToken.body.accessToken)
+            console.log(resulNewRefreshToken)//del
+            console.log(newToken.body.accessToken)//del
 
 
             expect(newToken.status).toBe(200)
@@ -1058,7 +1057,7 @@ describe("auth testing", () => {
 
     it('should get current user return 200', async () => {
 
-        const loginUser = await authFunctions.getCurrentUser(token)
+        const loginUser = await authFunctions.getCurrentUser(newToken.body.accessToken)
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual(currentUser)
 
@@ -1071,7 +1070,7 @@ describe("auth testing", () => {
             // console.log(refreshToken)
             // console.log(newToken.body.accessToken)
           const result = await authFunctions.logout(refreshToken)
-            // expect(result.status).toBe(204)
+            expect(result.status).toBe(204)
 
         });
 

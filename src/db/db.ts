@@ -22,7 +22,7 @@ export const postsCollection = db.collection<PostsDbType>("posts")
 // export const usersCollection = db.collection<UserDbType>("users")
 export const commentsCollection = db.collection<CommentsDbType>("comments")
 export const usersAccountsCollection = db.collection<UserAccountDbType>("usersAccounts")
-export const tokensCollection = db.collection<any>("tokenBlackList")
+export const tokensCollection = db.collection<any>("validTokenList")
 
 export async function runDb (){
 
