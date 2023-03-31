@@ -10,9 +10,9 @@ export const checkUserByAccessTokenMiddleware = async (req: Request, res: Respon
         return
     }
 
-    const token = req.headers.authorization.split(" ")[1]
+    const accessToken = req.headers.authorization.split(" ")[1]
 
-    const userId = await jwtService.getUserIdByToken(token,settings.ACCESS_TOKEN_SECRET)
+    const userId = await jwtService.getRefreshTokenMetaData(accessToken,settings.ACCESS_TOKEN_SECRET)
 
     if (!userId) {
         res.sendStatus(401)

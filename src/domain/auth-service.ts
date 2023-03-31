@@ -139,18 +139,18 @@ export const authService = {
             userId:user._id.toString(),        }
     },
 
-    async insertRefreshTokenMetaData (refreshToken:string, ip:string,deviceName:string, userId:string){
-        const refreshTokenIssuedDate:number = await jwtService.getRefreshTokenIssuedDate(refreshToken)
+    async insertRefreshTokenMetaData (refreshToken:string, ip:string,deviceName:string){
+        const {deviceId,iat,userId} = await jwtService.getRefreshTokenMetaData(refreshToken)
 
         const refreshTokenMeta = {
-            issuedDate: refreshTokenIssuedDate,
-            deviceId: uuid(),
+            iat: iat,
+            deviceId: deviceId,
             ip:ip,
             deviceName:deviceName,
             userId:userId
         }
 
-        await tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)//TODO not good to send database from router, change this through auth service and auth repository
+        await tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)
 
     }
 }

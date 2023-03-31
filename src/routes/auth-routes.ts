@@ -13,7 +13,6 @@ import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-mid
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 import {tokensCollection} from "../db/db";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
-import jwt from "jsonwebtoken";
 
 export const authRoutes = Router({});
 
@@ -31,9 +30,10 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
 
         const ipAddress = req.header('x-forwarded-for');
+        const deviceName = req.headers['user-agent']
 
 
-        await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,req.headers['user-agent']!,user._id.toString() )
+        await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName!) //TODO validation of IP address and deviceName
 
             res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -52,15 +52,22 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
         const user = req.context.user!
 
 
-        const oldRefreshTokenData = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET) //del
-        console.log(oldRefreshTokenData) //del
+        // const oldRefreshTokenData = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET) //del
+        // console.log(oldRefreshTokenData) //del
 
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
 
-        console.log(refreshToken)
+        const ipAddress = req.header('x-forwarded-for');
+        const deviceName = req.headers['user-agent']
 
-        console.log(jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
+
+        await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName!) //TODO validation of IP address and deviceName
+
+
+        // console.log(refreshToken)
+        //
+        // console.log(jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,

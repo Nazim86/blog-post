@@ -8,22 +8,27 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
 
     const refreshToken = req.cookies.refreshToken
 
-    const expiredTokens = await tokensCollection.findOne({refreshToken:refreshToken})
 
-    if (!req.cookies.refreshToken || expiredTokens ) {
-        res.sendStatus(401)
-        return
+    if (!req.cookies.refreshToken ) {
+        return res.sendStatus(401)
+
     }
 
+    const {deviceId,iat,userId}:any = await jwtService.getRefreshTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
 
-
-    const userId:string|null = await jwtService.getUserIdByToken(refreshToken,settings.REFRESH_TOKEN_SECRET)
 
     if (!userId) {
-        res.sendStatus(401)
-    } else {
+        return res.sendStatus(401)
+    }
+
+    const getTokenDataFromDb = await tokensCollection.findOne({deviceId:deviceId,iat:iat})
+
+    if (!getTokenDataFromDb){
+        return res.sendStatus(401)
+    }
+
         req.context = {}
         req.context.user = await authService.findUserById(userId)
         next()
-    }
+
 }
