@@ -23,9 +23,9 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
     const user = await authService.checkCredentials(loginOrEmail, password)
 
     if (!user) {
-        res.sendStatus(401)
+        return res.sendStatus(401)
+    }
 
-    } else {
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
 
@@ -42,7 +42,7 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
         });
 
         res.status(200).send({accessToken: accessToken})
-    }
+
 
 });
 
@@ -113,14 +113,14 @@ authRoutes.post('/registration-confirmation', confirmationCodeValidation, inputV
 
         const confirmationCode = req.body.code
 
-
         const registrationConfirmation: boolean = await authService.registrationConfirmation(confirmationCode)
 
-        if (registrationConfirmation) {
-            res.sendStatus(204)
-        } else {
-            res.status(400).send(errorMessage("Wrong code", "code"))
+        if (!registrationConfirmation){
+            return res.status(400).send(errorMessage("Wrong code", "code"))
         }
+
+            res.sendStatus(204)
+
     });
 
 
