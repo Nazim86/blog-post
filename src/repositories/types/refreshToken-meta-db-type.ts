@@ -1,9 +1,9 @@
 
 export type refreshTokenMetaDbType ={
 
-    iat: number,
+    issuedAt: number,
     deviceId: string,
-    ip:string,
+    deviceIp:string,
     deviceName:string,
     userId:string
 

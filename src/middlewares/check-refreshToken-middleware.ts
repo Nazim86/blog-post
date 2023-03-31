@@ -14,14 +14,14 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
 
     }
 
-    const {deviceId,iat,userId}:any = await jwtService.getRefreshTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
+    const {deviceId,issuedAt,userId}:any = await jwtService.getRefreshTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
 
 
     if (!userId) {
         return res.sendStatus(401)
     }
 
-    const getTokenDataFromDb = await tokensCollection.findOne({deviceId:deviceId,iat:iat})
+    const getTokenDataFromDb = await tokensCollection.findOne({deviceId:deviceId,issuedAt:issuedAt})
 
     if (!getTokenDataFromDb){
         return res.sendStatus(401)
