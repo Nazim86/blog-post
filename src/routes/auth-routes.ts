@@ -11,12 +11,13 @@ import {errorMessage} from "../error-handler/error-handler";
 import {settings} from "../settings";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
-import {clearExpiredTokens, tokensCollection} from "../db/db";
+import {clearExpiredTokens} from "../db/db";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
+import {checkIpLimitMiddleware} from "../middlewares/check-ip-limit-middleware";
 
 export const authRoutes = Router({});
 
-authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
+authRoutes.post('/login', authValidations,checkIpLimitMiddleware, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
 
     const {loginOrEmail, password} = req.body;
 
