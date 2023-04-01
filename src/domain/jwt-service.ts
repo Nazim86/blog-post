@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import {ObjectId} from "mongodb";
 import {settings} from "../settings";
 import {randomUUID} from "crypto";
+import {refreshTokenMetaDbType} from "../repositories/types/refreshToken-meta-db-type";
 
 export const jwtService = {
 

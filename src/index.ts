@@ -25,6 +25,8 @@ app.use("/users", userRouter)
 app.use("/auth", authRoutes)
 app.use("/comments",commentRouter)
 app.use("security",securityRouter)
+app.set('trust proxy', true)
+
 
 
 const startApp = async ()=>

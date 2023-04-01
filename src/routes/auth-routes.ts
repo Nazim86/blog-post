@@ -11,7 +11,7 @@ import {errorMessage} from "../error-handler/error-handler";
 import {settings} from "../settings";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
-import {tokensCollection} from "../db/db";
+import {clearExpiredTokens, tokensCollection} from "../db/db";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 
 export const authRoutes = Router({});
@@ -19,6 +19,7 @@ export const authRoutes = Router({});
 authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
 
     const {loginOrEmail, password} = req.body;
+
 
     const user = await authService.checkCredentials(loginOrEmail, password)
 
@@ -32,7 +33,7 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
         const ipAddress = req.header('x-forwarded-for');
         const deviceName = req.headers['user-agent']
 
-
+    console.log(deviceName)
         await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName!) //TODO validation of IP address and deviceName
 
             res.cookie('refreshToken', refreshToken, {
@@ -48,6 +49,7 @@ authRoutes.post('/login', authValidations, inputValidationErrorsMiddleware, asyn
 
 authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
+        clearExpiredTokens.start();
 
         const user = req.context.user!
 
@@ -59,10 +61,10 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
 
         const ipAddress = req.header('x-forwarded-for');
-        const deviceName = req.headers['user-agent']
+        const deviceName = req.headers['user-agent'] ?? "chrome";
 
 
-        await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName!) //TODO validation of IP address and deviceName
+        await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName) //TODO validation of IP address and deviceName
 
 
         // console.log(refreshToken)
@@ -83,7 +85,6 @@ authRoutes.post('/logout', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
 
     try {
-        await tokensCollection.insertOne({refreshToken: req.cookies.refreshToken}) //TODO not good to send database from router, change this through auth service and auth repository
         res.clearCookie("refreshToken")
         res.sendStatus(204)
     } catch (e){

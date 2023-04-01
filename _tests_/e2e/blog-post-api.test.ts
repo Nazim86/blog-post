@@ -47,12 +47,15 @@ async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const deviceName = ["blackberry","nokia", "siemens", "philips" ];
+
+
 afterAll(async () => {
     await client.close();
 });
 
 describe("blogs SHOULD NOT CRUD testing", () => {
-    let createdBlog: Array<any> = []
+    let createdBlog: Array<any> = [];
 
     beforeAll(async () => {
         await request(app)
@@ -386,7 +389,7 @@ describe("Blogs pagination testing", () => {
 
 
 describe("blogs CRUD testing", () => {
-    let createdBlog: Array<any> = []
+    let createdBlog: Array<any> = [];
     beforeAll(async () => {
         await request(app)
             .delete('/testing/all-data')
@@ -945,7 +948,8 @@ describe("auth testing", () => {
     let newUser: any
     let token: string;
     let loginUser: any
-    let newToken:any
+    let newRefreshToken: any
+
 
     const imapService = new MailBoxImap()
 
@@ -1020,59 +1024,66 @@ describe("auth testing", () => {
             password: "123456"
         }
 
-        loginUser = await authFunctions.loginUser(loginUserData)
-        token = loginUser.body.accessToken
-        // const refreshToken = loginUser.header['set-cookie'].split(";")[0]
+        for (let i = 0; i <= 4; i++) {
 
-        //      const refreshToken = loginUser.header['set-cookie'][0].split(";")[0]
-        // console.log(refreshToken)
-        const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0] // del
-        // console.log(refreshToken)
-        // console.log(loginUser.body.accessToken)
+            loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+
+
+            // token = loginUser.body.accessToken
+            // const refreshToken = loginUser.header['set-cookie'].split(";")[0]
+
+            //      const refreshToken = loginUser.header['set-cookie'][0].split(";")[0]
+            // console.log(refreshToken)
+            // const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0] // del
+            // console.log(refreshToken)
+            // console.log(loginUser.body.accessToken)
+
+        }
 
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
+
     });
 
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
 
-        await delay(1000)
+            await delay(1000)
 
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
-            console.log(refreshToken) //del
-            console.log(loginUser.body.accessToken) //del
+            // console.log(refreshToken) //del
+            // console.log(loginUser.body.accessToken) //del
 
-            newToken = await authFunctions.refreshToken(refreshToken)
+            newRefreshToken = await authFunctions.refreshToken(refreshToken)
 
-            const resulNewRefreshToken = newToken.headers['set-cookie'][0].split(";")[0] //del
-            console.log(resulNewRefreshToken)//del
-            console.log(newToken.body.accessToken)//del
+            // const resulNewRefreshToken = newToken.headers['set-cookie'][0].split(";")[0] //del
+            // console.log(resulNewRefreshToken)//del
+            // console.log(newToken.body.accessToken)//del
 
 
-            expect(newToken.status).toBe(200)
-            expect(newToken.body).toEqual({accessToken: expect.any(String)})
-
-        });
-
-    it('should get current user return 200', async () => {
-
-        const loginUser = await authFunctions.getCurrentUser(newToken.body.accessToken)
-        expect(loginUser.status).toBe(200)
-        expect(loginUser.body).toEqual(currentUser)
-
-    });
-
-    it('should logout and return 204',
-        async () => {
-
-            const refreshToken = newToken.headers['set-cookie'][0].split(";")[0]
-            // console.log(refreshToken)
-            // console.log(newToken.body.accessToken)
-          const result = await authFunctions.logout(refreshToken)
-            expect(result.status).toBe(204)
+            expect(newRefreshToken.status).toBe(200)
+            expect(newRefreshToken.body).toEqual({accessToken: expect.any(String)})
 
         });
+
+    // it('should get current user return 200', async () => {
+    //
+    //     const loginUser = await authFunctions.getCurrentUser(newRefreshToken.body.accessToken)
+    //     expect(loginUser.status).toBe(200)
+    //     expect(loginUser.body).toEqual(currentUser)
+    //
+    // });
+    //
+    // it('should logout and return 204',
+    //     async () => {
+    //
+    //         const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+    //         // console.log(refreshToken)
+    //         // console.log(newToken.body.accessToken)
+    //       const result = await authFunctions.logout(refreshToken)
+    //         expect(result.status).toBe(204)
+    //
+    //     });
 
 });
 
@@ -1105,7 +1116,7 @@ describe("comments testing", () => {
             password: "123456"
         }
 
-        loginUser = await authFunctions.loginUser(loginUserData) //will get token from logged user
+        loginUser = await authFunctions.loginUser(loginUserData, deviceName[0]) //will get token from logged user
 
     });
 

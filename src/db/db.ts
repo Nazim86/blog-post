@@ -4,7 +4,9 @@ import {PostsDbType} from "../repositories/types/posts-db-type";
 
 import * as dotenv from 'dotenv'
 import {CommentsDbType} from "../repositories/types/comments-db-type";
-import {UserAccountDbType} from "../repositories/types/user-account-db-type"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import {UserAccountDbType} from "../repositories/types/user-account-db-type";
+import {refreshTokenMetaDbType} from "../repositories/types/refreshToken-meta-db-type"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import { CronJob } from 'cron';
 
 
 dotenv.config()
@@ -23,6 +25,24 @@ export const postsCollection = db.collection<PostsDbType>("posts")
 export const commentsCollection = db.collection<CommentsDbType>("comments")
 export const usersAccountsCollection = db.collection<UserAccountDbType>("usersAccounts")
 export const tokensCollection = db.collection<any>("validTokenList")
+
+
+export const clearExpiredTokens = new CronJob('0 * * * * *', async () => {
+    try {
+
+        const query = { expiration: { $lte: new Date().getTime() } };
+        if(!query){
+            return
+        }
+        const result = await tokensCollection.deleteMany(query);
+        console.log(`${result.deletedCount} expired tokens deleted`);
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+
+
 
 export async function runDb (){
 

@@ -5,10 +5,11 @@ import {PostsViewType} from "../../../src/repositories/types/posts-view-type";
 
 export const authFunctions = {
 
-    async loginUser(loginUserData:object){
+    async loginUser(loginUserData:object, deviceName:string){
         return request(app)
             .post("/auth/login")
             .send(loginUserData)
+            .set("User-Agent", deviceName)
     },
 
     async getCurrentUser(token:string){
