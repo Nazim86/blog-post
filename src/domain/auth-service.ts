@@ -87,10 +87,7 @@ export const authService = {
 
 
         try {
-            //Checking time difference between last email sent date. Should be more than 10 sec. to send again
-            if(new Date().getTime()-user.emailConfirmation.sentEmailsByDate.getTime()<10000 ) {
-                return "Try"
-            }
+
             const newCode = uuid()
             console.log(user.emailConfirmation.sentEmailsByDate)
             await usersAccountsCollection.updateMany({_id:user._id},[{$set:{"emailConfirmation.confirmationCode":newCode}},

@@ -17,7 +17,7 @@ import {checkIpLimitMiddleware} from "../middlewares/check-ip-limit-middleware";
 
 export const authRoutes = Router({});
 
-authRoutes.post('/login', authValidations,checkIpLimitMiddleware, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
+authRoutes.post('/login', checkIpLimitMiddleware,authValidations, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
 
     const {loginOrEmail, password} = req.body;
 
@@ -96,7 +96,7 @@ authRoutes.post('/logout', checkRefreshTokenMiddleware,
     });
 
 
-authRoutes.post('/registration', userInputValidations, checkUsersAccountsCredentialsMiddleware, inputValidationErrorsMiddleware,
+authRoutes.post('/registration', checkIpLimitMiddleware,userInputValidations, checkUsersAccountsCredentialsMiddleware, inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const {login, password, email} = req.body
@@ -110,7 +110,7 @@ authRoutes.post('/registration', userInputValidations, checkUsersAccountsCredent
 
     });
 
-authRoutes.post('/registration-confirmation', confirmationCodeValidation, inputValidationErrorsMiddleware,
+authRoutes.post('/registration-confirmation', checkIpLimitMiddleware,confirmationCodeValidation, inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const confirmationCode = req.body.code
@@ -126,7 +126,7 @@ authRoutes.post('/registration-confirmation', confirmationCodeValidation, inputV
     });
 
 
-authRoutes.post('/registration-email-resending', emailValidation, inputValidationErrorsMiddleware,
+authRoutes.post('/registration-email-resending',checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const email = req.body.email
@@ -134,14 +134,11 @@ authRoutes.post('/registration-email-resending', emailValidation, inputValidatio
 
         const emailResending: string | boolean = await authService.resendEmail(email)
 
-        if (emailResending === true) {
-            res.sendStatus(204)
-        } else if (emailResending === "Try") { //Limiting user email resending by time
-            res.status(400).send("Please try again after 10 seconds")
-        } else {
-            res.status(400).send(errorMessage("wrong email", "email"))
+        if (!emailResending) {
+            return res.status(400).send(errorMessage("wrong email", "email"))
         }
 
+        res.sendStatus(204)
 
     });
 
