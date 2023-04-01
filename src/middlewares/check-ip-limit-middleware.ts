@@ -26,6 +26,8 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
 
         }
 
+
+
         if (ipDataByIpAddress.attempts > 5) {
             return res.sendStatus(429)
         }
