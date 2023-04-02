@@ -19,11 +19,11 @@ export const tokenInDbRepository = {
     },
 
 
-    async updateDevice(deviceId: string, lastActiveDate: string): Promise<boolean> {
-
-        const result = await tokensCollection.updateOne({deviceId: deviceId}, {$set: {lastActiveDate: lastActiveDate}})
-        return result.modifiedCount === 1
-    },
+    // async updateDevice(deviceId: string, lastActiveDate: string): Promise<boolean> {
+    //
+    //     const result = await tokensCollection.updateOne({deviceId: deviceId}, {$set: {lastActiveDate: lastActiveDate}})
+    //     return result.modifiedCount === 1
+    // },
 
     async deleteDevices(deviceId: string) {
         const result = await tokensCollection.deleteMany({deviceId: {$not: {$eq: deviceId}}});

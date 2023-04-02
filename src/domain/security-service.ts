@@ -11,10 +11,10 @@ export const securityService = {
     },
 
 
-   async updateDevice(deviceId:string,lastActiveDate:string):Promise<boolean>{
-      return await tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
-
-   },
+   // async updateDevice(deviceId:string,lastActiveDate:string):Promise<boolean>{
+   //    return await tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
+   //
+   // },
 
     async deleteDevices(deviceId:string){
 

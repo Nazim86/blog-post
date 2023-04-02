@@ -137,9 +137,10 @@ export const authService = {
     async insertRefreshTokenMetaData (refreshToken:string, ip:string,deviceName:string){
         const {deviceId,lastActiveDate,userId,expiration} = await jwtService.getRefreshTokenMetaData(refreshToken)
 
-const updateResult = await tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
+// const updateResult = await tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
+//
+//         if(!updateResult) {
 
-        if(!updateResult) {
             const refreshTokenMeta = {
                 lastActiveDate: lastActiveDate,
                 deviceId: deviceId,
@@ -150,7 +151,7 @@ const updateResult = await tokenInDbRepository.updateDevice(deviceId,lastActiveD
             }
 
             await tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)
-        }
+
     },
 
 
