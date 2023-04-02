@@ -34,7 +34,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
             ipDataByIpAddress.attempts = ipDataByIpAddress.attempts + 1
         }
     }
-    console.log(ipCollection)
+    // console.log(ipCollection) dell
 
     next()
 
