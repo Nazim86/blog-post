@@ -31,11 +31,15 @@ authRoutes.post('/login', checkIpLimitMiddleware,authValidations, inputValidatio
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
 
-        const ipAddress = req.header('x-forwarded-for');
-        const deviceName = req.headers['user-agent']
+        const ipAddress = req.ip;
+        const deviceName = req.headers['user-agent']?? "menimki"
 
-    console.log(deviceName)
+    // console.log(deviceName) del
+
+
         await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName!) //TODO validation of IP address and deviceName
+
+
 
             res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -61,11 +65,11 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
 
-        const ipAddress = req.header('x-forwarded-for');
+        const ipAddress = req.ip;
         const deviceName = req.headers['user-agent'] ?? "chrome";
 
 
-        await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName) //TODO validation of IP address and deviceName
+            await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName!) //TODO validation of IP address and deviceName
 
 
         // console.log(refreshToken)
@@ -92,7 +96,6 @@ authRoutes.post('/logout', checkRefreshTokenMiddleware,
         res.sendStatus(401)
     }
 
-
     });
 
 
@@ -100,7 +103,6 @@ authRoutes.post('/registration', checkIpLimitMiddleware,userInputValidations, ch
     async (req: Request, res: Response) => {
 
         const {login, password, email} = req.body
-
 
         const newUser = await authService.createNewUser(login, password, email)
 
@@ -120,9 +122,7 @@ authRoutes.post('/registration-confirmation', checkIpLimitMiddleware,confirmatio
         if (!registrationConfirmation){
             return res.status(400).send(errorMessage("Wrong code", "code"))
         }
-
             res.sendStatus(204)
-
     });
 
 

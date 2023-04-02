@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import {ObjectId} from "mongodb";
 import {settings} from "../settings";
 import {randomUUID} from "crypto";
-import {refreshTokenMetaDbType} from "../repositories/types/refreshToken-meta-db-type";
 
 export const jwtService = {
 
@@ -28,7 +27,7 @@ export const jwtService = {
 
         try {
             const decoded:any = jwt.verify(refreshToken,secretKey)
-            return {deviceId:decoded.deviceId,issuedAt:decoded.iat, userId:decoded.userId,expiration:decoded.exp}
+            return {deviceId:decoded.deviceId,lastActiveDate:decoded.iat, userId:decoded.userId,expiration:decoded.exp}
         }
         catch (e){
             return null

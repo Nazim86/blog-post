@@ -7,9 +7,9 @@ import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-credentials-middleware";
 
-export const commentRouter = Router({})
+export const commentRoutes = Router({})
 
-commentRouter.put('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
+commentRoutes.put('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const content = req.body.content;
@@ -25,7 +25,7 @@ commentRouter.put('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCr
         }
     })
 
-commentRouter.delete('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware,
+commentRoutes.delete('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware,
     async (req: Request, res: Response) => {
 
         const deleteComment:boolean = await commentService.deleteComment(req.params.commentId)
@@ -37,7 +37,7 @@ commentRouter.delete('/:commentId', checkUserByAccessTokenMiddleware,checkCommen
         }
     })
 
-commentRouter.get('/:commentId',
+commentRoutes.get('/:commentId',
     async (req: Request, res: Response) => {
 
         const getComment:CommentsViewType|null = await commentsQueryRepo.getComment(req.params.commentId)

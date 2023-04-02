@@ -5,7 +5,6 @@ import {PostsDbType} from "../repositories/types/posts-db-type";
 import * as dotenv from 'dotenv'
 import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
-import {refreshTokenMetaDbType} from "../repositories/types/refreshToken-meta-db-type"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import { CronJob } from 'cron';
 
 

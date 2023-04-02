@@ -5,6 +5,6 @@ export type IpDataType = {
     attempts: number
 }
 
-export let attempt = 0;
+
 
 export const ipCollection: IpDataType[] = [];

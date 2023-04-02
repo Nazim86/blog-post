@@ -41,8 +41,6 @@ export const authService = {
         }
 
 
-
-
         const createUser = await authRepository.createNewUser(newUser)
 
 
@@ -137,20 +135,24 @@ export const authService = {
     },
 
     async insertRefreshTokenMetaData (refreshToken:string, ip:string,deviceName:string){
-        const {deviceId,issuedAt,userId,expiration} = await jwtService.getRefreshTokenMetaData(refreshToken)
+        const {deviceId,lastActiveDate,userId,expiration} = await jwtService.getRefreshTokenMetaData(refreshToken)
 
-        const refreshTokenMeta = {
-            issuedAt: issuedAt,
-            deviceId: deviceId,
-            deviceIp:ip,
-            deviceName:deviceName,
-            userId:userId,
-            expiration:expiration
-        }
 
-        await tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)
 
-    }
+            const refreshTokenMeta = {
+                lastActiveDate: lastActiveDate,
+                deviceId: deviceId,
+                ip: ip,
+                title: deviceName,
+                userId: userId,
+                expiration: expiration
+            }
+
+            await tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)
+
+    },
+
+
 }
 
 

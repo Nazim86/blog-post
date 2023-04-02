@@ -7,9 +7,9 @@ import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-e
 import {userQueryRepo} from "../query-repositories/user-query-repo";
 import {checkUserCredentialsMiddleware} from "../middlewares/check-user-credentials-middleware";
 
-export const userRouter = Router({})
+export const userRoutes = Router({})
 
-userRouter.get("/", baseAuthorizationMiddleware,async (req:Request,res:Response)=>{
+userRoutes.get("/", baseAuthorizationMiddleware,async (req:Request, res:Response)=>{
 
 const {sortBy,sortDirection,pageNumber,pageSize,searchLoginTerm,searchEmailTerm} = getPaginationValues(req.query)
 
@@ -18,7 +18,7 @@ const {sortBy,sortDirection,pageNumber,pageSize,searchLoginTerm,searchEmailTerm}
        res.status(200).send(getUsers)
 })
 
-userRouter.post("/", baseAuthorizationMiddleware,userInputValidations,checkUserCredentialsMiddleware,inputValidationErrorsMiddleware,async (req:Request, res:Response)=>{
+userRoutes.post("/", baseAuthorizationMiddleware,userInputValidations,checkUserCredentialsMiddleware,inputValidationErrorsMiddleware,async (req:Request, res:Response)=>{
 
 const login = req.body.login
     const password = req.body.password
@@ -31,7 +31,7 @@ const login = req.body.login
     }
 })
 
-userRouter.delete("/:id", baseAuthorizationMiddleware,async (req:Request,res:Response)=>{
+userRoutes.delete("/:id", baseAuthorizationMiddleware,async (req:Request, res:Response)=>{
 
     const id = req.params.id
 

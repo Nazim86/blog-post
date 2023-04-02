@@ -2,12 +2,12 @@ import express from "express";
 import {blogRoutes} from "./routes/blog-routes";
 import {postRoutes} from "./routes/post-routes";
 import { runDb} from "./db/db";
-import {deleteRoute} from "./routes/delete-routes";
-import {userRouter} from "./routes/user-router";
+import {deleteRoutes} from "./routes/delete-routes";
+import {userRoutes} from "./routes/user-routes";
 import {authRoutes} from "./routes/auth-routes";
-import {commentRouter} from "./routes/comment-router";
+import {commentRoutes} from "./routes/comment-routes";
 import cookieParser from 'cookie-parser';
-import {securityRouter} from "./routes/security-routes";
+import {securityRoutes} from "./routes/security-routes";
 
 
 export const app = express()
@@ -20,11 +20,11 @@ const port = process.env.PORT || 5000
 
 app.use("/blogs", blogRoutes);
 app.use("/posts", postRoutes);
-app.use("/testing/all-data", deleteRoute)
-app.use("/users", userRouter)
+app.use("/testing/all-data", deleteRoutes)
+app.use("/users", userRoutes)
 app.use("/auth", authRoutes)
-app.use("/comments",commentRouter)
-app.use("security",securityRouter)
+app.use("/comments",commentRoutes)
+app.use("/security",securityRoutes)
 app.set('trust proxy', true)
 
 
