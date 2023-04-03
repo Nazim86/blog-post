@@ -28,11 +28,11 @@ authRoutes.post('/login', checkIpLimitMiddleware,authValidations, inputValidatio
         return res.sendStatus(401)
     }
 
-        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
-        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s")
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s")
 
         const ipAddress = req.ip;
-        const deviceName = req.headers['user-agent']?? "menimki"
+        const deviceName = req.headers['user-agent']?? "chrome"
 
     // console.log(deviceName) del
 
@@ -43,7 +43,7 @@ authRoutes.post('/login', checkIpLimitMiddleware,authValidations, inputValidatio
 
             res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', //secure: true,
+            sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -62,8 +62,8 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
         // const oldRefreshTokenData = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET) //del
         // console.log(oldRefreshTokenData) //del
 
-        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "1d")
-        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "2d")
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s")
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s")
 
         const ipAddress = req.ip;
         const deviceName = req.headers['user-agent'] ?? "chrome";
@@ -78,7 +78,7 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', //secure: true,
+            sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
