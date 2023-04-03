@@ -27,7 +27,7 @@ securityRoutes.delete("/devices/:id", deviceIdValidation,inputValidationErrorsMi
 
         const result = await securityService.deleteDeviceById(req.params.id,userId)
         if (!result){
-            res.sendStatus(404)
+            return res.sendStatus(404)
         }
 
     res.sendStatus(204)
