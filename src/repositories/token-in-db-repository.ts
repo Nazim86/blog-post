@@ -31,7 +31,7 @@ export const tokenInDbRepository = {
     },
 
     async deleteDeviceById(deviceId: string,userId:string) {
-        const result = await tokensCollection.deleteOne({deviceId: deviceId,userId:userId});
+        const result = await tokensCollection.deleteOne({deviceId: deviceId});
         return result.deletedCount === 1
     }
 }
