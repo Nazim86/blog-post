@@ -27,7 +27,7 @@ export const jwtService = {
 
         try {
             const decoded:any = jwt.verify(refreshToken,secretKey)
-            return {deviceId:decoded.deviceId,lastActiveDate:decoded.iat, userId:decoded.userId,expiration:decoded.exp}
+            return {deviceId:decoded.deviceId,lastActiveDate:new Date(decoded.iat), userId:decoded.userId,expiration:decoded.exp}
         }
         catch (e){
             return null
