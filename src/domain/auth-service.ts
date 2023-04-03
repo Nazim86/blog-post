@@ -87,7 +87,6 @@ export const authService = {
         try {
 
             const newCode = uuid()
-            console.log(user.emailConfirmation.sentEmailsByDate)
             await usersAccountsCollection.updateMany({_id:user._id},[{$set:{"emailConfirmation.confirmationCode":newCode}},
                 {$set:{"emailConfirmation.sentEmailsByDate":new Date()}}])
 

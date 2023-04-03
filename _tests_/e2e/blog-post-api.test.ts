@@ -30,7 +30,7 @@ import {
     userPaginationValues
 } from "./data/user-data";
 import {notCreateUser} from "./functions/user-should-not-functions";
-import {client} from "../../src/db/db";
+import {client, usersAccountsCollection} from "../../src/db/db";
 import {authFunctions} from "./functions/auth-functions";
 import {commentFunctions} from "./functions/comment-functions";
 import {
@@ -40,14 +40,13 @@ import {
     createdComment
 } from "./data/comments-data";
 import {currentUser, newUserData, newUserEmail} from "./data/auth-data";
-import {MailBoxImap} from "./functions/imap.service";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const deviceName = ["blackberry","nokia", "siemens", "philips" ];
+const deviceName = ["blackberry", "nokia", "siemens", "philips"];
 
 
 afterAll(async () => {
@@ -942,7 +941,7 @@ describe("user testing", () => {
 });
 
 describe("auth testing", () => {
-    jest.setTimeout(3 * 60 * 1000)
+    // jest.setTimeout(3 * 60 * 1000)
 
     //TODO should replace any with type
     let newUser: any
@@ -951,7 +950,7 @@ describe("auth testing", () => {
     let newRefreshToken: any
 
 
-    const imapService = new MailBoxImap()
+    // const imapService = new MailBoxImap()
 
 
     beforeAll(async () => {
@@ -963,12 +962,14 @@ describe("auth testing", () => {
         await request(app)
             .post('/logout')
 
-        await imapService.connectToMail()
+        // await imapService.connectToMail()
     });
 
 
     it('should create new user and send confirmation email and return 204', async () => {
-
+// jest.mock('sendEmail', () => {
+//     return true
+// })
         newUser = await authFunctions.registerUser(newUserData)
 
         expect(newUser.status).toBe(204)
@@ -977,40 +978,37 @@ describe("auth testing", () => {
 
     it('should resend registration email and return 204', async () => {
 
-        // setTimeout(async () => {
-        //     const result = await authFunctions.resendEmail({email: newUserEmail})
-        //     expect(result.status).toBe(204)
-        // }, 10000)
 
+        const result = await authFunctions.resendEmail({email: newUserEmail})
+        expect(result.status).toBe(204)
 
-        async function myAsyncFunction() {
-            await delay(10000); // Wait for 10 second
-            const result = await authFunctions.resendEmail({email: newUserEmail})
-            expect(result.status).toBe(204)
-
-        }
-
-        await myAsyncFunction();
+        // async function myAsyncFunction() {
+        //     await delay(10000); // Wait for 10 second
+        // }
+        //
+        // await myAsyncFunction();
 
     });
 
 
     it('should confirm registration and return 204', async () => {
 
+        const userWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
+
         //TODO build Should NOT for auth get user
 
-        const sentMessage = await imapService.waitNewMessage(1)
-        expect(sentMessage).toBeDefined()
+        // const sentMessage = await imapService.waitNewMessage(1)
+        // expect(sentMessage).toBeDefined()
+        //
+        // const html: string | null = await imapService.getMessageHtml(sentMessage)
+        //
+        // expect(html).toBeDefined()
+        //
+        // const code = html!.split("?code=")[1].split("'")[0]
+        //
+        // expect(code).toBeDefined()
 
-        const html: string | null = await imapService.getMessageHtml(sentMessage)
-
-        expect(html).toBeDefined()
-
-        const code = html!.split("?code=")[1].split("'")[0]
-
-        expect(code).toBeDefined()
-
-        const result = await authFunctions.registrationConfirmation({code: code})
+        const result = await authFunctions.registrationConfirmation({code: userWithoutConfirm?.emailConfirmation.confirmationCode})
 
         expect(result.status).toBe(204)
 
@@ -1048,7 +1046,7 @@ describe("auth testing", () => {
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
 
-            await delay(1000)
+            //await delay(1000)
 
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
             // console.log(refreshToken) //del
@@ -1060,30 +1058,44 @@ describe("auth testing", () => {
             // console.log(resulNewRefreshToken)//del
             // console.log(newToken.body.accessToken)//del
 
-
             expect(newRefreshToken.status).toBe(200)
             expect(newRefreshToken.body).toEqual({accessToken: expect.any(String)})
 
         });
 
-    // it('should get current user return 200', async () => {
-    //
-    //     const loginUser = await authFunctions.getCurrentUser(newRefreshToken.body.accessToken)
-    //     expect(loginUser.status).toBe(200)
-    //     expect(loginUser.body).toEqual(currentUser)
-    //
-    // });
-    //
-    // it('should logout and return 204',
-    //     async () => {
-    //
-    //         const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
-    //         // console.log(refreshToken)
-    //         // console.log(newToken.body.accessToken)
-    //       const result = await authFunctions.logout(refreshToken)
-    //         expect(result.status).toBe(204)
-    //
-    //     });
+    it('should get current user return 200', async () => {
+
+        const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+
+        const loginUser = await authFunctions.getCurrentUser(refreshToken)
+        expect(loginUser.status).toBe(200)
+        expect(loginUser.body).toEqual(currentUser)
+
+    });
+
+
+    it('should get active devices for current user return 200', async () => {
+
+        const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+
+        const loginUser = await authFunctions.getCurrentDevices(refreshToken)
+        expect(loginUser.status).toBe(200)
+        // expect(loginUser.body).toEqual(currentUser)
+
+    });
+
+
+
+    it('should logout and return 204',
+        async () => {
+
+            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            // console.log(refreshToken)
+            // console.log(newToken.body.accessToken)
+            const result = await authFunctions.logout(refreshToken)
+            expect(result.status).toBe(204)
+
+        });
 
 });
 

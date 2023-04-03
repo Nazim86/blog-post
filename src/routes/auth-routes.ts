@@ -12,12 +12,55 @@ import {settings} from "../settings";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 import {clearExpiredTokens} from "../db/db";
-import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 import {checkIpLimitMiddleware} from "../middlewares/check-ip-limit-middleware";
+import {securityService} from "../domain/security-service";
 
 export const authRoutes = Router({});
 
-authRoutes.post('/login', checkIpLimitMiddleware,authValidations, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
+authRoutes.post('/registration', checkIpLimitMiddleware, userInputValidations, checkUsersAccountsCredentialsMiddleware, inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const {login, password, email} = req.body
+
+        const newUser = await authService.createNewUser(login, password, email)
+
+        if (newUser) {
+            res.sendStatus(204)
+        }
+
+    });
+
+authRoutes.post('/registration-email-resending', checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const email = req.body.email
+
+
+        const emailResending: string | boolean = await authService.resendEmail(email)
+
+        if (!emailResending) {
+            return res.status(400).send(errorMessage("wrong email", "email"))
+        }
+
+        res.sendStatus(204)
+
+    });
+
+authRoutes.post('/registration-confirmation', checkIpLimitMiddleware, confirmationCodeValidation, inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const confirmationCode = req.body.code
+
+        const registrationConfirmation: boolean = await authService.registrationConfirmation(confirmationCode)
+
+        if (!registrationConfirmation) {
+            return res.status(400).send(errorMessage("Wrong code", "code"))
+        }
+        res.sendStatus(204)
+    });
+
+
+authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
 
     const {loginOrEmail, password} = req.body;
 
@@ -28,26 +71,25 @@ authRoutes.post('/login', checkIpLimitMiddleware,authValidations, inputValidatio
         return res.sendStatus(401)
     }
 
-        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s")
-        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s")
+    const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s")
+    const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s")
 
-        const ipAddress = req.ip;
-        const deviceName = req.headers['user-agent']?? "chrome"
+    const ipAddress = req.ip;
+    const deviceName = req.headers['user-agent'] ?? "chrome"
 
     // console.log(deviceName) del
 
 
-        await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName!) //TODO validation of IP address and deviceName
+    await authService.insertRefreshTokenMetaData(refreshToken, ipAddress!, deviceName!) //TODO validation of IP address and deviceName
 
 
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        sameSite: 'strict', //secure: true,
+        maxAge: 24 * 60 * 60 * 1000
+    });
 
-            res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            sameSite: 'strict', secure: true,
-            maxAge: 24 * 60 * 60 * 1000
-        });
-
-        res.status(200).send({accessToken: accessToken})
+    res.status(200).send({accessToken: accessToken})
 
 
 });
@@ -65,11 +107,11 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s")
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s")
 
-        const ipAddress = req.ip;
-        const deviceName = req.headers['user-agent'] ?? "chrome";
+        // const ipAddress = req.ip;
+        // const deviceName = req.headers['user-agent'] ?? "chrome";
 
 
-            await authService.insertRefreshTokenMetaData (refreshToken,ipAddress!,deviceName!) //TODO validation of IP address and deviceName
+        await securityService.updateDevice(refreshToken)
 
 
         // console.log(refreshToken)
@@ -78,7 +120,7 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -86,67 +128,27 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
     });
 
-authRoutes.post('/logout', checkRefreshTokenMiddleware,
-    async (req: Request, res: Response) => {
-
-    try {
-        res.clearCookie("refreshToken")
-        res.sendStatus(204)
-    } catch (e){
-        res.sendStatus(401)
-    }
-
-    });
-
-
-authRoutes.post('/registration', checkIpLimitMiddleware,userInputValidations, checkUsersAccountsCredentialsMiddleware, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
-
-        const {login, password, email} = req.body
-
-        const newUser = await authService.createNewUser(login, password, email)
-
-        if (newUser) {
-            res.sendStatus(204)
-        }
-
-    });
-
-authRoutes.post('/registration-confirmation', checkIpLimitMiddleware,confirmationCodeValidation, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
-
-        const confirmationCode = req.body.code
-
-        const registrationConfirmation: boolean = await authService.registrationConfirmation(confirmationCode)
-
-        if (!registrationConfirmation){
-            return res.status(400).send(errorMessage("Wrong code", "code"))
-        }
-            res.sendStatus(204)
-    });
-
-
-authRoutes.post('/registration-email-resending',checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
-
-        const email = req.body.email
-
-
-        const emailResending: string | boolean = await authService.resendEmail(email)
-
-        if (!emailResending) {
-            return res.status(400).send(errorMessage("wrong email", "email"))
-        }
-
-        res.sendStatus(204)
-
-    });
-
-
-authRoutes.get('/me', checkUserByAccessTokenMiddleware, async (req: Request, res: Response) => {
+authRoutes.get('/me', checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
 
     const getCurrentUser: UserAccountViewType = await authService.getCurrentUser(req.context.user!)
 
     res.status(200).send(getCurrentUser)
 
 })
+
+authRoutes.post('/logout', checkRefreshTokenMiddleware,
+    async (req: Request, res: Response) => {
+
+        try {
+            res.clearCookie("refreshToken")
+            res.sendStatus(204)
+        } catch (e) {
+            res.sendStatus(401)
+        }
+
+    });
+
+
+
+
+

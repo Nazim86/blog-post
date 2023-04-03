@@ -18,6 +18,16 @@ export const tokenInDbRepository = {
 
     },
 
+    async getDevicesByDeviceId(deviceId: string): Promise<RefreshTokenMetaDbType> {
+        return await tokensCollection.findOne({deviceId: deviceId})
+
+    },
+
+    async updateDevice(deviceId:string,lastActiveDate:string):Promise<boolean> {
+       const result= await tokensCollection.updateOne({deviceId:deviceId},{$set:{lastActiveDate:lastActiveDate}})
+   return result.modifiedCount === 1
+    },
+
 
     // async updateDevice(deviceId: string, lastActiveDate: string): Promise<boolean> {
     //
@@ -25,13 +35,13 @@ export const tokenInDbRepository = {
     //     return result.modifiedCount === 1
     // },
 
-    async deleteDevices(deviceId: string) {
+    async deleteDevices(deviceId: string):Promise<boolean> {
         const result = await tokensCollection.deleteMany({deviceId: {$not: {$eq: deviceId}}});
         return result.deletedCount === 1
     },
 
     async deleteDeviceById(deviceId: string,userId:string) {
-        const result = await tokensCollection.deleteOne({deviceId: deviceId});
+        const result = await tokensCollection.deleteOne({deviceId: deviceId,userId:userId});
         return result.deletedCount === 1
     }
 }

@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {DeviceViewType} from "../repositories/types/device-view-type";
-import {securityService} from "../domain/security-service";
+import {ResultCode, securityService} from "../domain/security-service";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {jwtService} from "../domain/jwt-service";
 import {deviceIdValidation} from "../validations/device-validations";
@@ -26,9 +26,21 @@ securityRoutes.delete("/devices/:id", deviceIdValidation,inputValidationErrorsMi
         const {userId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken)
 
         const result = await securityService.deleteDeviceById(req.params.id,userId)
-        if (!result){
-            return res.sendStatus(404)
+
+        if(result.code !== ResultCode.Success) {
+            return handleErrorResult(res, result.code)
+
         }
 
     res.sendStatus(204)
 })
+
+const handleErrorResult = (response: Response, code: ResultCode) => {
+    switch (code) {
+        case ResultCode.NotFound:
+            return response.status(404).send('not found')
+        //..
+        default:
+            return
+    }
+}

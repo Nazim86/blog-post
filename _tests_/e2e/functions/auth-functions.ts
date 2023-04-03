@@ -9,14 +9,14 @@ export const authFunctions = {
         return request(app)
             .post("/auth/login")
             .send(loginUserData)
-            .set("User-Agent", deviceName)
+            .set("User-Agent", "deviceName1")
     },
 
-    async getCurrentUser(token:string){
+    async getCurrentUser(refreshToken:string){
         return request(app)
             .get("/auth/me")
             .send()
-            .set("Authorization", `Bearer ${token}`)
+            .set('Cookie', `${refreshToken}`)
 
     },
 
@@ -51,6 +51,17 @@ export const authFunctions = {
 
 
     },
+
+    async getCurrentDevices(refreshToken:object){
+        return  request(app)
+            .get('/security/devices')
+            .set('Cookie', `${refreshToken}`)
+            .send()
+
+
+    },
+
+
 
     async logout(refreshToken:object){
         return  request(app)
