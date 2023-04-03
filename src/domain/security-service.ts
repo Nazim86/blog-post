@@ -17,9 +17,12 @@ export const securityService = {
    // },
 
     async deleteDevices(deviceId:string){
-
        return await tokenInDbRepository.deleteDevices(deviceId);
 
+    },
+
+    async deleteDeviceById(deviceId:string,userId:string){
+        return await tokenInDbRepository.deleteDeviceById(deviceId,userId);
 
     }
 }
