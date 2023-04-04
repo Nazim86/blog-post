@@ -42,7 +42,7 @@ import {
 import {currentUser, newUserData, newUserEmail} from "./data/auth-data";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
-import {DeviceViewType} from "../../src/repositories/types/device-view-type";
+
 
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -999,8 +999,23 @@ describe("auth testing", () => {
 
     });
 
+    it('should NOT login with incorrect values and return 400', async () => {
+        const loginUserData = {
+            loginOrEmail: 123,
+            password: "123456"
+        }
+        async function loginLoop() {
+            for (let i = 0; i <= 3; i++) {
+                loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+            }
+        }
+        await loginLoop();
+        expect(loginUser.status).toBe(400)
+    });
+
 
     it('should login return 200', async () => {
+        // ipCollection = []
 
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
@@ -1021,6 +1036,9 @@ describe("auth testing", () => {
         expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
 
     });
+
+
+
 
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
