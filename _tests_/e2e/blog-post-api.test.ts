@@ -983,7 +983,7 @@ describe("auth testing", () => {
 
     it('should NOT create new user with more than 5 attempts in 10 sec and return 429', async () => {
         let fakeUser: any;
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i < 6; i++) {
             fakeUser = await authFunctions.registerUser({...newUserData,login:"John",email:"john@gmail.com",password:"sasdaddd"})
         }
         expect(fakeUser.status).toBe(429)
@@ -1058,19 +1058,22 @@ describe("auth testing", () => {
     });
 
     it('should NOT login because more than 5 attempts in 10 sec and return 429', async () => {
-
+        // await ipCollection.deleteMany({});
+let x=1
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "123456"
         }
 
-        async function loginLoop() {
-            for (let i = 0; i <= 3; i++) {
-                loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+        // async function loginLoop() {
+            for (let i = 0; i < 6; i++) {
+                loginUser = await authFunctions.loginUser(loginUserData, "deviceName[i]")
+                console.log("testing increment in login",x++)
             }
-        }
+        // }
+        //
+        // await loginLoop();
 
-        await loginLoop();
         expect(loginUser.status).toBe(429)
     });
 

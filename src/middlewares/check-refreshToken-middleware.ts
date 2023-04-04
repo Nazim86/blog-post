@@ -8,7 +8,6 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
 
     const refreshToken = req.cookies.refreshToken
 
-    console.log(req.cookies)
 
     if (!req.cookies.refreshToken ) {
         return res.sendStatus(401)
