@@ -29,7 +29,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
             // ipDataByIpAddress.attempts = 1
             // ipDataByIpAddress.issuedAt = new Date().getTime()
 
-            console.log("resetting",await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]}))
+            // console.log("resetting",await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]}))
 
         }
 
@@ -40,7 +40,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
         if ((new Date().getTime() - ipDataByIpAddress.issuedAt) < 10000) {
             const result = await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]},{$inc:{attempts:1}})
 
-            console.log("increment",await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]}))
+            // console.log("increment",await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]}))
 
             // ipDataByIpAddress.attempts = ipDataByIpAddress.attempts + 1
         }
