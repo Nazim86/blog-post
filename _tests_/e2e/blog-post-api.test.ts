@@ -30,7 +30,7 @@ import {
     userPaginationValues
 } from "./data/user-data";
 import {notCreateUser} from "./functions/user-should-not-functions";
-import {client, usersAccountsCollection} from "../../src/db/db";
+import {client, ipCollection, usersAccountsCollection} from "../../src/db/db";
 import {authFunctions} from "./functions/auth-functions";
 import {commentFunctions} from "./functions/comment-functions";
 import {
@@ -47,7 +47,6 @@ import {deviceData} from "./data/device-data";
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
 
 
 afterAll(async () => {
@@ -952,7 +951,6 @@ describe("auth testing", () => {
     const deviceName = ["blackberry", "nokia", "siemens", "philips"];
 
 
-
     // const imapService = new MailBoxImap()
 
 
@@ -968,15 +966,43 @@ describe("auth testing", () => {
         // await imapService.connectToMail()
     });
 
+    it('should NOT create new user with incorrect email format and return 400', async () => {
+        newUser = await authFunctions.registerUser({...newUserData, email: "asdas"})
+        expect(newUser.status).toBe(400)
+    });
+
+    it('should NOT create new user with number in login and return 400', async () => {
+        newUser = await authFunctions.registerUser({...newUserData, login: 123})
+        expect(newUser.status).toBe(400)
+    });
+
+    it('should NOT create new user with number in password and return 400', async () => {
+        newUser = await authFunctions.registerUser({...newUserData, password: 123})
+        expect(newUser.status).toBe(400)
+    });
+
+    it('should NOT create new user with more than 5 attempts in 10 sec and return 429', async () => {
+        let fakeUser: any;
+        for (let i = 0; i < 7; i++) {
+            fakeUser = await authFunctions.registerUser({...newUserData,login:"John",email:"john@gmail.com",password:"sasdaddd"})
+        }
+        expect(fakeUser.status).toBe(429)
+
+    });
 
     it('should create new user and send confirmation email and return 204', async () => {
-// jest.mock('sendEmail', () => {
-//     return true
-// })
+        await ipCollection.deleteMany({})
+
         newUser = await authFunctions.registerUser(newUserData)
 
         expect(newUser.status).toBe(204)
 
+    });
+
+
+    it('should NOT create new user with the existing email pr password and return 400', async () => {
+        newUser = await authFunctions.registerUser(newUserData)
+        expect(newUser.status).toBe(400)
     });
 
     it('should resend registration email and return 204', async () => {
@@ -999,23 +1025,92 @@ describe("auth testing", () => {
 
     });
 
-    it('should NOT login with incorrect values and return 400', async () => {
+    it('should NOT login with number in loginOrEmail and return 400', async () => {
         const loginUserData = {
             loginOrEmail: 123,
             password: "123456"
         }
+
         async function loginLoop() {
             for (let i = 0; i <= 3; i++) {
                 loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
             }
         }
+
         await loginLoop();
         expect(loginUser.status).toBe(400)
     });
 
+    it('should NOT login with number in loginOrEmail and return 400', async () => {
+        const loginUserData = {
+            loginOrEmail: "nazim86mammadov@yandex.ru",
+            password: 123456
+        }
+
+        async function loginLoop() {
+            for (let i = 0; i <= 3; i++) {
+                loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+            }
+        }
+
+        await loginLoop();
+        expect(loginUser.status).toBe(400)
+    });
+
+    it('should NOT login because more than 5 attempts in 10 sec and return 429', async () => {
+
+        const loginUserData = {
+            loginOrEmail: "nazim86mammadov@yandex.ru",
+            password: "123456"
+        }
+
+        async function loginLoop() {
+            for (let i = 0; i <= 3; i++) {
+                loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+            }
+        }
+
+        await loginLoop();
+        expect(loginUser.status).toBe(429)
+    });
+
+    it('should NOT login with incorrect loginOrEmail and  return 401', async () => {
+        await ipCollection.deleteMany({});
+        const loginUserData = {
+            loginOrEmail: "nazim86mammadov",
+            password: "123456"
+        }
+
+        async function loginLoop() {
+            for (let i = 0; i <= 3; i++) {
+                loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+            }
+        }
+
+        await loginLoop();
+        expect(loginUser.status).toBe(401)
+
+    });
+
+    it('should NOT login with incorrect password and return 401', async () => {
+        await ipCollection.deleteMany({});
+        const loginUserData = {
+            loginOrEmail: "nazim86mammadov@yandex.ru",
+            password: "12345"
+        }
+
+        async function loginLoop() {
+            for (let i = 0; i <= 3; i++) {
+                loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+            }
+        }
+
+        await loginLoop();
+        expect(loginUser.status).toBe(401)
+    });
 
     it('should login return 200', async () => {
-        // ipCollection = []
+        await ipCollection.deleteMany({});
 
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
@@ -1037,29 +1132,20 @@ describe("auth testing", () => {
 
     });
 
+    it('should NOT get new access token and refresh with refreshToken missing or incorrect and return 401',
+        async () => {
+            const refreshToken = loginUser.headers['set-cookie'][0].split(";")
+            newRefreshToken = await authFunctions.refreshToken(refreshToken)
 
-
+            expect(newRefreshToken.status).toBe(401)
+        });
 
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
-
-            console.log(loginUser.headers['set-cookie'])
-
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
-            console.log(refreshToken) //del
-            // console.log(loginUser.body.accessToken) //del
-            // await delay(1000)
-
-
-                await delay(1000); // Wait for 0 second
-
-
+            await delay(1000); // Wait for 0 second
 
             newRefreshToken = await authFunctions.refreshToken(refreshToken)
-
-            // const resulNewRefreshToken = newToken.headers['set-cookie'][0].split(";")[0] //del
-            console.log(newRefreshToken)//del
-            // console.log(newToken.body.accessToken)//del
 
             expect(newRefreshToken.status).toBe(200)
             expect(newRefreshToken.body).toEqual({accessToken: expect.any(String)})
@@ -1086,7 +1172,6 @@ describe("auth testing", () => {
         expect(loginUser.body).toEqual(deviceData)
 
     });
-
 
 
     it('should logout and return 204',

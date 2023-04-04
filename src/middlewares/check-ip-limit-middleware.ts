@@ -1,10 +1,11 @@
 import {NextFunction, Request, Response} from "express";
-import {ipCollection, IpDataType} from "../repositories/ip-in-memory-repository";
+import {IpDataType} from "../repositories/types/ip-type";
+import {ipCollection} from "../db/db";
 
 
 export const checkIpLimitMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-    const ipDataByIpAddress: IpDataType | undefined = ipCollection.find(i => i.ipAddress === req.ip && i.endPoint === req.originalUrl)
+    const ipDataByIpAddress: IpDataType|null= await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]})
 
     if (!ipDataByIpAddress) {
 
@@ -15,7 +16,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
             attempts: 2
         }
 
-        ipCollection.push(ipData)
+        await ipCollection.insertOne(ipData)
     }
 
     if (ipDataByIpAddress) {

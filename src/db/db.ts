@@ -6,6 +6,7 @@ import * as dotenv from 'dotenv'
 import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-db-type";
+import {IpDataType} from "../repositories/types/ip-type";
 
 
 dotenv.config()
@@ -24,6 +25,7 @@ export const postsCollection = db.collection<PostsDbType>("posts")
 export const commentsCollection = db.collection<CommentsDbType>("comments")
 export const usersAccountsCollection = db.collection<UserAccountDbType>("usersAccounts")
 export const tokensCollection = db.collection<RefreshTokenMetaDbType>("validTokenList")
+export const ipCollection = db.collection<IpDataType>("ipAddresses")
 
 
 
