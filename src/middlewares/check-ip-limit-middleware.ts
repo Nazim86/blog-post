@@ -14,7 +14,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
             endPoint: req.originalUrl,
             ipAddress: req.ip,
             issuedAt: new Date().getTime(),
-            attempts: 1
+            attempts: 2
         }
 
         await ipCollection.insertOne(ipData)
