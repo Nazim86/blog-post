@@ -11,9 +11,10 @@ import {errorMessage} from "../error-handler/error-handler";
 import {settings} from "../settings";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
-import {clearExpiredTokens} from "../db/db";
 import {checkIpLimitMiddleware} from "../middlewares/check-ip-limit-middleware";
 import {securityService} from "../domain/security-service";
+import {clearExpiredTokens} from "../db/db-clearing-expired-tokens";
+import jwt from "jsonwebtoken";
 
 export const authRoutes = Router({});
 
@@ -100,23 +101,27 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         const user = req.context.user!
 
+//TODO get device Id from token
+        const oldRefreshTokenData:any = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET) //del
+        console.log(`oldRefreshTokenData`,oldRefreshTokenData) //del
 
-        // const oldRefreshTokenData = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET) //del
-        // console.log(oldRefreshTokenData) //del
 
-        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s")
-        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s")
+
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s",oldRefreshTokenData.deviceId)
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s",oldRefreshTokenData.deviceId)
 
         // const ipAddress = req.ip;
         // const deviceName = req.headers['user-agent'] ?? "chrome";
 
 
+
+
         await securityService.updateDevice(refreshToken)
 
 
-        // console.log(refreshToken)
+        // console.log("newrefreshtoken",refreshToken)
         //
-        // console.log(jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
+        console.log("newrefreshtoken",jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,

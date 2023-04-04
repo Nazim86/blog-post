@@ -8,6 +8,8 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
 
     const refreshToken = req.cookies.refreshToken
 
+    console.log(req.cookies)
+
     if (!req.cookies.refreshToken ) {
         return res.sendStatus(401)
     }
@@ -18,9 +20,9 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
         return res.sendStatus(401)
     }
 
-    const {deviceId,issuedAt,userId} = refreshTokenMetaData
+    const {deviceId,lastActiveDate,userId} = refreshTokenMetaData
 
-    const getTokenDataFromDb = await tokensCollection.findOne({deviceId:deviceId,issuedAt:issuedAt})
+    const getTokenDataFromDb = await tokensCollection.findOne({deviceId:deviceId,lastActiveDate:lastActiveDate})
 
     if (!getTokenDataFromDb){
         return res.sendStatus(401)

@@ -5,9 +5,13 @@ import {randomUUID} from "crypto";
 
 export const jwtService = {
 
-    async createJWT(userId: ObjectId, secretKey: string, expirationTime: string){
+    async createJWT(userId: ObjectId, secretKey: string, expirationTime: string,deviceId:string|null=null){
+        let newDeviceId = randomUUID()
+        if (deviceId !== null){
+            newDeviceId = deviceId
+        }
 
-        return jwt.sign({userId: userId, deviceId:randomUUID()}, secretKey, {expiresIn: expirationTime})
+        return jwt.sign({userId: userId, deviceId:newDeviceId}, secretKey, {expiresIn: expirationTime})
 
     },
 

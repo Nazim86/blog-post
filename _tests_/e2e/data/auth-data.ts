@@ -10,3 +10,4 @@ export const currentUser = {
     login: "Leo",
     userId: expect.any(String)
 }
+
