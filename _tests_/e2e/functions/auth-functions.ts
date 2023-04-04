@@ -9,7 +9,7 @@ export const authFunctions = {
         return request(app)
             .post("/auth/login")
             .send(loginUserData)
-            .set("User-Agent", "deviceName1")
+            .set("User-Agent", deviceName)
     },
 
     async getCurrentUser(refreshToken:string){

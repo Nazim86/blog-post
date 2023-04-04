@@ -25,10 +25,10 @@ export const securityService = {
 
     },
 
-    async deleteDeviceById(deviceId:string,userId:string): Promise<Result<boolean>> {
+    async deleteDeviceById(deviceId:string,userId:string): Promise<Result<boolean|null>> {
         const device = await tokenInDbRepository.getDevicesByDeviceId(deviceId)
 
-        if (device.userId!==userId){
+        if (device && device.userId!==userId){
             return {
                 data:false,
                 code:ResultCode.Forbidden

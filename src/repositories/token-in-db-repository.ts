@@ -18,7 +18,7 @@ export const tokenInDbRepository = {
 
     },
 
-    async getDevicesByDeviceId(deviceId: string): Promise<RefreshTokenMetaDbType> {
+    async getDevicesByDeviceId(deviceId: string): Promise<RefreshTokenMetaDbType|null> {
         return await tokensCollection.findOne({deviceId: deviceId})
 
     },

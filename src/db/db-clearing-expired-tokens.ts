@@ -8,7 +8,7 @@ export const clearExpiredTokens = new CronJob('0 * * * * *', async () => {
         if(!query){
             return
         }
-        const result = await tokensCollection.deleteMany(query);
+        const result = await tokensCollection.deleteMany({query});
         console.log(`${result.deletedCount} expired tokens deleted`);
     } catch (err) {
         console.error(err);

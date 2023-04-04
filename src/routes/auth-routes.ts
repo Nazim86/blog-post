@@ -14,7 +14,6 @@ import {UserAccountViewType} from "../repositories/types/user-account-view-type"
 import {checkIpLimitMiddleware} from "../middlewares/check-ip-limit-middleware";
 import {securityService} from "../domain/security-service";
 import {clearExpiredTokens} from "../db/db-clearing-expired-tokens";
-import jwt from "jsonwebtoken";
 
 export const authRoutes = Router({});
 
@@ -81,7 +80,7 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
     // console.log(deviceName) del
 
 
-    await authService.insertRefreshTokenMetaData(refreshToken, ipAddress!, deviceName!) //TODO validation of IP address and deviceName
+    await authService.insertRefreshTokenMetaData(refreshToken, ipAddress!, deviceName!)
 
 
     res.cookie('refreshToken', refreshToken, {
@@ -101,27 +100,19 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         const user = req.context.user!
 
-//TODO get device Id from token
-        const oldRefreshTokenData:any = jwt.verify(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET) //del
-        console.log(`oldRefreshTokenData`,oldRefreshTokenData) //del
+        const {deviceId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken,settings.REFRESH_TOKEN_SECRET)
 
-
-
-        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s",oldRefreshTokenData.deviceId)
-        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s",oldRefreshTokenData.deviceId)
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s",deviceId)
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s",deviceId)
 
         // const ipAddress = req.ip;
         // const deviceName = req.headers['user-agent'] ?? "chrome";
 
-
-
-
         await securityService.updateDevice(refreshToken)
-
 
         // console.log("newrefreshtoken",refreshToken)
         //
-        console.log("newrefreshtoken",jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
+        // console.log("newrefreshtoken",jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,

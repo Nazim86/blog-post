@@ -29,7 +29,6 @@ securityRoutes.delete("/devices/:id", deviceIdValidation,inputValidationErrorsMi
 
         if(result.code !== ResultCode.Success) {
             return handleErrorResult(res, result.code)
-
         }
 
     res.sendStatus(204)

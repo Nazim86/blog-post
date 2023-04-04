@@ -41,12 +41,13 @@ import {
 } from "./data/comments-data";
 import {currentUser, newUserData, newUserEmail} from "./data/auth-data";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
+import {deviceData} from "./data/device-data";
+import {DeviceViewType} from "../../src/repositories/types/device-view-type";
 
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const deviceName = ["blackberry", "nokia", "siemens", "philips"];
 
 
 afterAll(async () => {
@@ -948,6 +949,9 @@ describe("auth testing", () => {
     let loginUser: any
     let newRefreshToken: any
 
+    const deviceName = ["blackberry", "nokia", "siemens", "philips"];
+
+
 
     // const imapService = new MailBoxImap()
 
@@ -989,19 +993,6 @@ describe("auth testing", () => {
 
         const userWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
 
-        //TODO build Should NOT for auth get user
-
-        // const sentMessage = await imapService.waitNewMessage(1)
-        // expect(sentMessage).toBeDefined()
-        //
-        // const html: string | null = await imapService.getMessageHtml(sentMessage)
-        //
-        // expect(html).toBeDefined()
-        //
-        // const code = html!.split("?code=")[1].split("'")[0]
-        //
-        // expect(code).toBeDefined()
-
         const result = await authFunctions.registrationConfirmation({code: userWithoutConfirm?.emailConfirmation.confirmationCode})
 
         expect(result.status).toBe(204)
@@ -1016,21 +1007,15 @@ describe("auth testing", () => {
             password: "123456"
         }
 
-        for (let i = 0; i <= 4; i++) {
 
-            loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
-
-
-            // token = loginUser.body.accessToken
-            // const refreshToken = loginUser.header['set-cookie'].split(";")[0]
-
-            //      const refreshToken = loginUser.header['set-cookie'][0].split(";")[0]
-            // console.log(refreshToken)
-            // const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0] // del
-            // console.log(refreshToken)
-            // console.log(loginUser.body.accessToken)
-
+        async function loginLoop() {
+            for (let i = 0; i <= 3; i++) {
+                loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+            }
         }
+
+        await loginLoop();
+
 
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
@@ -1080,7 +1065,7 @@ describe("auth testing", () => {
 
         const loginUser = await authFunctions.getCurrentDevices(refreshToken)
         expect(loginUser.status).toBe(200)
-        // expect(loginUser.body).toEqual(deviceData)
+        expect(loginUser.body).toEqual(deviceData)
 
     });
 
@@ -1128,7 +1113,7 @@ describe("comments testing", () => {
             password: "123456"
         }
 
-        loginUser = await authFunctions.loginUser(loginUserData, deviceName[0]) //will get token from logged user
+        loginUser = await authFunctions.loginUser(loginUserData, "chrome") //will get token from logged user
 
     });
 
