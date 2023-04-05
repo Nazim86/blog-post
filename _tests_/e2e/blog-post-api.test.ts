@@ -966,21 +966,21 @@ describe("auth testing", () => {
 
         // await imapService.connectToMail()
     });
-    //
-    // it('should NOT create new user with incorrect email format and return 400', async () => {
-    //     newUser = await authFunctions.registerUser({...newUserData, email: "asdas"})
-    //     expect(newUser.status).toBe(400)
-    // });
-    //
-    // it('should NOT create new user with number in login and return 400', async () => {
-    //     newUser = await authFunctions.registerUser({...newUserData, login: 123})
-    //     expect(newUser.status).toBe(400)
-    // });
-    //
-    // it('should NOT create new user with number in password and return 400', async () => {
-    //     newUser = await authFunctions.registerUser({...newUserData, password: 123})
-    //     expect(newUser.status).toBe(400)
-    // });
+
+    it('should NOT create new user with incorrect email format and return 400', async () => {
+        newUser = await authFunctions.registerUser({...newUserData, email: "asdas"})
+        expect(newUser.status).toBe(400)
+    });
+
+    it('should NOT create new user with number in login and return 400', async () => {
+        newUser = await authFunctions.registerUser({...newUserData, login: 123})
+        expect(newUser.status).toBe(400)
+    });
+
+    it('should NOT create new user with number in password and return 400', async () => {
+        newUser = await authFunctions.registerUser({...newUserData, password: 123})
+        expect(newUser.status).toBe(400)
+    });
 
     it('should NOT create new user with more than 5 attempts in 10 sec and return 429', async () => {
         await ipCollection.deleteMany({})
@@ -1058,15 +1058,15 @@ describe("auth testing", () => {
     });
 
     it('should NOT login because more than 5 attempts in 10 sec and return 429', async () => {
-        // await ipCollection.deleteMany({});
-let x=1
+        await ipCollection.deleteMany({});
+// let x=1
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "123456"
         }
 
         // async function loginLoop() {
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i <=6; i++) {
                 loginUser = await authFunctions.loginUser(loginUserData, "deviceName[i]")
                 // console.log("testing increment in login",x++)
             }

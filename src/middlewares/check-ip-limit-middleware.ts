@@ -32,6 +32,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
 
             // console.log("resetting",await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]}))
             // console.log("reset",x++)
+            return next()
         }
 
         if (ipDataByIpAddress.attempts > 5) {
