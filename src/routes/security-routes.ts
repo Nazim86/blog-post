@@ -1,10 +1,12 @@
 import {Request, Response, Router} from "express";
 import {DeviceViewType} from "../repositories/types/device-view-type";
-import {ResultCode, securityService} from "../domain/security-service";
+import {securityService} from "../domain/security-service";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {jwtService} from "../domain/jwt-service";
 import {deviceIdValidation} from "../validations/device-validations";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
+import {handleErrorResult} from "../error-handler/handle-error-result";
+import {ResultCode} from "../error-handler/result-code-enum";
 
 export const securityRoutes = Router({})
 
@@ -34,14 +36,3 @@ securityRoutes.delete("/devices/:id", deviceIdValidation,inputValidationErrorsMi
     res.sendStatus(204)
 })
 
-const handleErrorResult = (response: Response, code: ResultCode) => {
-    switch (code) {
-        case ResultCode.NotFound:
-            return response.sendStatus(404)
-        case ResultCode.Forbidden:
-            return response.sendStatus(403)
-        //..
-        default:
-            return
-    }
-}

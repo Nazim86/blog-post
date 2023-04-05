@@ -93,8 +93,6 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
     });
 
     res.status(200).send({accessToken: accessToken})
-
-
 });
 
 authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
@@ -108,15 +106,7 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s", deviceId)
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s", deviceId)
 
-        // const ipAddress = req.ip;
-        // const deviceName = req.headers['user-agent'] ?? "chrome";
-
         await securityService.updateDevice(refreshToken)
-
-        // console.log("newrefreshtoken",refreshToken)
-        //
-        // console.log("newrefreshtoken",jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
-
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,

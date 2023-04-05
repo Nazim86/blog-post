@@ -2,6 +2,8 @@ import {DeviceViewType} from "../repositories/types/device-view-type";
 import {tokenInDbRepository} from "../repositories/token-in-db-repository";
 import {jwtService} from "./jwt-service";
 import {settings} from "../settings";
+import {ResultCode} from "../error-handler/result-code-enum";
+import {Result} from "../error-handler/result-type";
 
 export const securityService = {
 
@@ -43,16 +45,5 @@ export const securityService = {
     }
 }
 
-export enum ResultCode {
-    Success,
-    Unauthorized,
-    NotFound,
-    Forbidden
-}
 
-export type Result<T> = {
-    code: ResultCode
-    data: T,
-    message?: string
-}
 

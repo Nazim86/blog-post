@@ -12,7 +12,6 @@ export const tokenInDbRepository = {
 
     async getDevices(ip: string, userId: string): Promise<DeviceViewType[]> {
         const deviceDataByUserId = await tokensCollection.find({userId: userId}).toArray()
-        // console.log(deviceDataByUserId) //del
         const mappedDevices: DeviceViewType[] = deviceMapping(deviceDataByUserId, ip)
         return mappedDevices
 
@@ -27,13 +26,6 @@ export const tokenInDbRepository = {
        const result= await tokensCollection.updateOne({deviceId:deviceId},{$set:{lastActiveDate:lastActiveDate}})
    return result.modifiedCount === 1
     },
-
-
-    // async updateDevice(deviceId: string, lastActiveDate: string): Promise<boolean> {
-    //
-    //     const result = await tokensCollection.updateOne({deviceId: deviceId}, {$set: {lastActiveDate: lastActiveDate}})
-    //     return result.modifiedCount === 1
-    // },
 
     async deleteDevices(deviceId: string):Promise<boolean> {
         const result = await tokensCollection.deleteMany({deviceId: {$not: {$eq: deviceId}}});
