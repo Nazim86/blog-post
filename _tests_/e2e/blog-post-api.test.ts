@@ -999,7 +999,6 @@ describe("auth testing", () => {
 
     });
 
-
     it('should NOT create new user with the existing email pr password and return 400', async () => {
         newUser = await authFunctions.registerUser(newUserData)
         expect(newUser.status).toBe(400)
@@ -1007,13 +1006,11 @@ describe("auth testing", () => {
 
     it('should resend registration email and return 204', async () => {
 
-
         const result = await authFunctions.resendEmail({email: newUserEmail})
         expect(result.status).toBe(204)
 
 
     });
-
 
     it('should confirm registration and return 204', async () => {
 
@@ -1119,8 +1116,6 @@ let x=1
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "123456"
         }
-
-
         async function loginLoop() {
             for (let i = 0; i <= 3; i++) {
                 loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
@@ -1128,7 +1123,6 @@ let x=1
         }
 
         await loginLoop();
-
 
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
@@ -1165,7 +1159,6 @@ let x=1
 
     });
 
-
     it('should get active devices for current user return 200', async () => {
 
         const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
@@ -1175,6 +1168,21 @@ let x=1
         expect(loginUser.body).toEqual(deviceData)
 
     });
+
+    it('should terminate all devices sessions except current and return 204',
+        async () => {
+
+            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            // console.log(refreshToken)
+            // console.log(newToken.body.accessToken)
+            const result = await authFunctions.deleteDevices(refreshToken)
+            expect(result.status).toBe(204)
+
+            const loginUser = await authFunctions.getCurrentDevices(refreshToken)
+            expect(loginUser.status).toBe(200)
+            expect(loginUser.body).toEqual([deviceData[3]])
+
+        });
 
 
     it('should logout and return 204',
@@ -1187,6 +1195,11 @@ let x=1
             expect(result.status).toBe(204)
 
         });
+
+
+
+
+
 
 });
 

@@ -37,7 +37,9 @@ securityRoutes.delete("/devices/:id", deviceIdValidation,inputValidationErrorsMi
 const handleErrorResult = (response: Response, code: ResultCode) => {
     switch (code) {
         case ResultCode.NotFound:
-            return response.status(404).send('not found')
+            return response.sendStatus(404)
+        case ResultCode.Forbidden:
+            return response.sendStatus(403)
         //..
         default:
             return
