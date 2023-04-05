@@ -66,8 +66,13 @@ export const authFunctions = {
             .delete('/security/devices')
             .set('Cookie', `${refreshToken}`)
             .send()
+    },
 
-
+    async deleteDeviceByDeviceId(refreshToken:object,deviceId:string){
+        return  request(app)
+            .delete(`/security/devices/${deviceId}`)
+            .set('Cookie', `${refreshToken}`)
+            .send()
     },
 
 

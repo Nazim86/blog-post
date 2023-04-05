@@ -44,6 +44,7 @@ import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
 
 
+
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -1168,6 +1169,27 @@ let x=1
         expect(loginUser.body).toEqual(deviceData)
 
     });
+    it('should terminate session by device id and return 204',
+        async () => {
+
+            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+
+            const devices = await authFunctions.getCurrentDevices(refreshToken)
+
+            console.log("device Id",devices.body[0].deviceId)
+
+            // console.log(refreshToken)
+            // console.log(newToken.body.accessToken)
+            const result = await authFunctions.deleteDeviceByDeviceId(refreshToken,devices.body[0].deviceId)
+
+            console.log("Delete result",result.body)
+            expect(result.status).toBe(204)
+
+            const loginUser = await authFunctions.getCurrentDevices(refreshToken)
+            expect(loginUser.status).toBe(200)
+            expect(loginUser.body).toEqual([deviceData[1],deviceData[2],deviceData[3]])
+
+        });
 
     it('should terminate all devices sessions except current and return 204',
         async () => {
@@ -1183,6 +1205,8 @@ let x=1
             expect(loginUser.body).toEqual([deviceData[3]])
 
         });
+
+
 
 
     it('should logout and return 204',
