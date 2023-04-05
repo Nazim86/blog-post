@@ -148,9 +148,7 @@ export const authService = {
                 userId: userId,
                 expiration: expiration
             }
-
             await tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)
-
     },
 
 

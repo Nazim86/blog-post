@@ -22,11 +22,10 @@ export const securityService = {
 
     async deleteDevices(deviceId:string):Promise<boolean> {
        return await tokenInDbRepository.deleteDevices(deviceId);
-
     },
 
     async deleteDeviceById(deviceId:string,userId:string): Promise<Result<boolean|null>> {
-        const device = await tokenInDbRepository.getDevicesByDeviceId(deviceId)
+        const device = await tokenInDbRepository.getDevicesByDeviceId(deviceId);
 
         if (device && device.userId!==userId){
             return {

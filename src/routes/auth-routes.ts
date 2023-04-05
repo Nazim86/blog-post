@@ -100,10 +100,10 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         const user = req.context.user!
 
-        const {deviceId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken,settings.REFRESH_TOKEN_SECRET)
+        const {deviceId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
 
-        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s",deviceId)
-        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s",deviceId)
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s", deviceId)
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s", deviceId)
 
         // const ipAddress = req.ip;
         // const deviceName = req.headers['user-agent'] ?? "chrome";
@@ -113,6 +113,7 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
         // console.log("newrefreshtoken",refreshToken)
         //
         // console.log("newrefreshtoken",jwt.verify(refreshToken, settings.REFRESH_TOKEN_SECRET))//del
+
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -134,6 +135,10 @@ authRoutes.get('/me', checkRefreshTokenMiddleware, async (req: Request, res: Res
 
 authRoutes.post('/logout', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
+
+        const {deviceId,userId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
+
+        await securityService.deleteDeviceById(deviceId,userId)
 
         try {
             res.clearCookie("refreshToken")

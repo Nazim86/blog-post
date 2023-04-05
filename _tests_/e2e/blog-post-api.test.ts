@@ -1167,6 +1167,7 @@ let x=1
         const loginUser = await authFunctions.getCurrentDevices(refreshToken)
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual(deviceData)
+        expect(loginUser.body.length).toBe(4)
 
     });
     it('should terminate session by device id and return 204',
@@ -1188,8 +1189,12 @@ let x=1
             const loginUser = await authFunctions.getCurrentDevices(refreshToken)
             expect(loginUser.status).toBe(200)
             expect(loginUser.body).toEqual([deviceData[1],deviceData[2],deviceData[3]])
-
+            expect(loginUser.body.length).toBe(3)
         });
+
+
+
+
 
     it('should terminate all devices sessions except current and return 204',
         async () => {
@@ -1203,11 +1208,9 @@ let x=1
             const loginUser = await authFunctions.getCurrentDevices(refreshToken)
             expect(loginUser.status).toBe(200)
             expect(loginUser.body).toEqual([deviceData[3]])
+            expect(loginUser.body.length).toBe(1)
 
         });
-
-
-
 
     it('should logout and return 204',
         async () => {
@@ -1218,8 +1221,13 @@ let x=1
             const result = await authFunctions.logout(refreshToken)
             expect(result.status).toBe(204)
 
-        });
+            const loginUser = await authFunctions.getCurrentDevices(refreshToken)
+            expect(loginUser.status).toBe(200)
+            expect(loginUser.body.length).toBe(0)
+            expect(loginUser.body).toEqual([deviceData[2]])
 
+
+        });
 
 
 
