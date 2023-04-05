@@ -60,6 +60,8 @@ authRoutes.post('/registration-confirmation', checkIpLimitMiddleware, confirmati
     });
 
 
+
+
 authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
 
     const {loginOrEmail, password} = req.body;
