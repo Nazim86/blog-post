@@ -42,9 +42,11 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
 
         if ((new Date().getTime() - ipDataByIpAddress.issuedAt) < 10000) {
             const result = await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]},{$inc:{attempts:1}})
-            // console.log("counting attempt",y++)
-            const ipData = await ipCollection.findOne({$and: [{ipAddress: req.ip}, {endPoint: req.originalUrl}]})
-            console.log("Counting attempt",ipData?.attempts )
+
+            return next()
+            // // console.log("counting attempt",y++)
+            // const ipData = await ipCollection.findOne({$and: [{ipAddress: req.ip}, {endPoint: req.originalUrl}]})
+            // console.log("Counting attempt",ipData?.attempts )
 
             // ipDataByIpAddress.attempts = ipDataByIpAddress.attempts + 1
         }
