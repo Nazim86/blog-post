@@ -28,7 +28,7 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
     const getTokenDataFromDb = await tokensCollection.findOne({deviceId:deviceId,lastActiveDate:lastActiveDate})
 
     if (!getTokenDataFromDb){
-        console.log(`refreshTokenFromMiddleware ${x++}`)
+        // console.log(`refreshTokenFromMiddleware ${x++}`)
         return res.sendStatus(401)
 
     }
