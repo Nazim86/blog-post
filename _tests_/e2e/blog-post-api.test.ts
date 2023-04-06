@@ -970,19 +970,33 @@ describe("auth testing", () => {
     it('should NOT create new user with incorrect email format and return 400', async () => {
         newUser = await authFunctions.registerUser({...newUserData, email: "asdas"})
         expect(newUser.status).toBe(400)
+
+        //checking that user did not create
+        const users = await usersAccountsCollection.find({}).toArray()
+        expect(users).toEqual([])
     });
 
     it('should NOT create new user with number in login and return 400', async () => {
+
         newUser = await authFunctions.registerUser({...newUserData, login: 123})
         expect(newUser.status).toBe(400)
+
+        //checking that user did not create
+        const users = await usersAccountsCollection.find({}).toArray()
+        expect(users).toEqual([])
     });
 
     it('should NOT create new user with number in password and return 400', async () => {
+
         newUser = await authFunctions.registerUser({...newUserData, password: 123})
         expect(newUser.status).toBe(400)
+
+        //checking that user did not create
+        const users = await usersAccountsCollection.find({}).toArray()
+        expect(users).toEqual([])
     });
 
-    it('should NOT create new user with more than 5 attempts in 10 sec and return 429', async () => {
+    it('should LIMIT with more than 5 attempts in 10 sec and return 429', async () => {
 
         let fakeUser: any;
         for (let i = 0; i <=5; i++) {
@@ -1023,13 +1037,32 @@ describe("auth testing", () => {
     });
 
     it('should resend registration email and return 204', async () => {
-        // await delay(10000) real test
+        // await delay(10000) //real test
         await ipCollection.deleteMany({}) //imitation in order to run test faster
         const result = await authFunctions.resendEmail({email: newUserEmail})
         expect(result.status).toBe(204)
     });
 
+    it('should NOT confirm registration with wrong accessToken and return 400', async () => {
+
+        const result = await authFunctions.registrationConfirmation({code: "userWithoutConfirm?.emailConfirmation.confirmationCode"})
+        expect(result.status).toBe(400)
+
+    });
+
+    it('should NOT confirm registration with more than 5 attempts in 10s and return 429', async () => {
+        let result:any
+        for (let i = 0; i <= 6; i++) {
+            const userWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
+            result = await authFunctions.registrationConfirmation({code: "userWithoutConfirm?.emailConfirmation.confirmationCode"})
+        }
+        expect(result.status).toBe(429)
+
+    });
+
     it('should confirm registration and return 204', async () => {
+        // await delay(10000) //real test
+        await ipCollection.deleteMany({}) //imitation in order to run test faster
 
         const userWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
 
@@ -1038,6 +1071,7 @@ describe("auth testing", () => {
         expect(result.status).toBe(204)
 
     });
+
 
     it('should NOT login with number in loginOrEmail and return 400', async () => {
         const loginUserData = {
@@ -1072,27 +1106,20 @@ describe("auth testing", () => {
     });
 
     it('should NOT login because more than 5 attempts in 10 sec and return 429', async () => {
-        await ipCollection.deleteMany({});
-// let x=1
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "123456"
         }
-
-        // async function loginLoop() {
             for (let i = 0; i <=6; i++) {
                 loginUser = await authFunctions.loginUser(loginUserData, "deviceName[i]")
-                // console.log("testing increment in login",x++)
             }
-        // }
-        //
-        // await loginLoop();
 
         expect(loginUser.status).toBe(429)
     });
 
     it('should NOT login with incorrect loginOrEmail and  return 401', async () => {
-        await ipCollection.deleteMany({});
+        // await delay(10000) //real test
+        await ipCollection.deleteMany({}) //imitation in order to run test faster
         const loginUserData = {
             loginOrEmail: "nazim86mammadov",
             password: "123456"
@@ -1110,7 +1137,9 @@ describe("auth testing", () => {
     });
 
     it('should NOT login with incorrect password and return 401', async () => {
-        await ipCollection.deleteMany({});
+        // await delay(10000) //real test
+        await ipCollection.deleteMany({}) //imitation in order to run test faster
+
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "12345"
@@ -1127,7 +1156,8 @@ describe("auth testing", () => {
     });
 
     it('should login return 200', async () => {
-        await ipCollection.deleteMany({});
+        // await delay(10000) //real test
+        await ipCollection.deleteMany({}) //imitation in order to run test faster
 
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
@@ -1138,9 +1168,7 @@ describe("auth testing", () => {
                 loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
             }
         }
-
         await loginLoop();
-
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
 
