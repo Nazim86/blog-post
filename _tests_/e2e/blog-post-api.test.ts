@@ -30,7 +30,7 @@ import {
     userPaginationValues
 } from "./data/user-data";
 import {notCreateUser} from "./functions/user-should-not-functions";
-import {client, ipCollection, usersAccountsCollection} from "../../src/db/db";
+import {client, ipCollection, tokensCollection, usersAccountsCollection} from "../../src/db/db";
 import {authFunctions} from "./functions/auth-functions";
 import {commentFunctions} from "./functions/comment-functions";
 import {
@@ -42,6 +42,9 @@ import {
 import {createdUser, currentUser, newUserData, newUserEmail} from "./data/auth-data";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
+import jwt from "jsonwebtoken";
+import {settings} from "../../src/settings";
+import {RefreshTokenMetaDbType} from "../../src/repositories/types/refresh-token-meta-db-type";
 
 
 async function delay(ms: number) {
@@ -945,7 +948,7 @@ describe("auth testing", () => {
 
     let newUser: any
     let loginUser: any
-    let newRefreshToken: any
+    let getRefreshToken: any
 
     const deviceName = ["blackberry", "nokia", "siemens", "philips"];
 
@@ -1204,17 +1207,20 @@ describe("auth testing", () => {
         }
 
         await loginLoop();
+
+
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
+
 
     });
 
     it('should NOT get new access token and refresh with refreshToken missing or incorrect and return 401',
         async () => {
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")
-            newRefreshToken = await authFunctions.refreshToken(refreshToken)
+            getRefreshToken = await authFunctions.refreshToken(refreshToken)
 
-            expect(newRefreshToken.status).toBe(401)
+            expect(getRefreshToken.status).toBe(401)
 
             //checking did not get new refresh token
             expect(refreshToken).toEqual(loginUser.headers['set-cookie'][0].split(";"))
@@ -1224,13 +1230,21 @@ describe("auth testing", () => {
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
-            await delay(1000); // Wait for 0 second
+            await delay(1000); // Wait for 1 second
 
-            newRefreshToken = await authFunctions.refreshToken(refreshToken)
+            getRefreshToken = await authFunctions.refreshToken(refreshToken)
 
-            expect(newRefreshToken.status).toBe(200)
-            expect(newRefreshToken.body).toEqual({accessToken: expect.any(String)})
+            // const newRefreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
+            //
+            //
+            // //check lastActiveDate of token equal to device last Active Date
+            // const verifyRefreshToken:any = jwt.verify (newRefreshToken,settings.REFRESH_TOKEN_SECRET)
+            // const device:RefreshTokenMetaDbType|null = await tokensCollection.findOne({deviceId:verifyRefreshToken.deviceId})
+            //
 
+            expect(getRefreshToken.status).toBe(200)
+            expect(getRefreshToken.body).toEqual({accessToken: expect.any(String)})
+            // expect(device!.lastActiveDate).toEqual(verifyRefreshToken.iat)
         });
 
     it('should NOT get current user with wrong refreshToken dat return 401', async () => {
@@ -1242,7 +1256,7 @@ describe("auth testing", () => {
 
     it('should get current user return 200', async () => {
 
-        const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+        const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
         const loginUser = await authFunctions.getCurrentUser(refreshToken)
         expect(loginUser.status).toBe(200)
@@ -1260,7 +1274,7 @@ describe("auth testing", () => {
 
     it('should get active devices for current user return 200', async () => {
 
-        const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+        const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
         const loginUser = await authFunctions.getCurrentDevices(refreshToken)
         expect(loginUser.status).toBe(200)
@@ -1270,7 +1284,7 @@ describe("auth testing", () => {
 
     it('should NOT terminate session by device id with wrong refreshToken and return 401',
         async () => {
-            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             const devices = await authFunctions.getCurrentDevices(refreshToken)
 
@@ -1304,7 +1318,7 @@ describe("auth testing", () => {
             const NewUserWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": "testing403@yandex.ru"})
             await authFunctions.registrationConfirmation({code: NewUserWithoutConfirm?.emailConfirmation.confirmationCode})
 
-            const refreshTokenOfCurrentUser = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const refreshTokenOfCurrentUser = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             //creating new user in order to try delete other user device
             const newLogin = await authFunctions.loginUser(newLoginUserData, "testing403DeviceName")
@@ -1325,7 +1339,7 @@ describe("auth testing", () => {
 
     it('should NOT terminate session by device id with wrong device id and return 404',
         async () => {
-            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             const result = await authFunctions.deleteDeviceByDeviceId(refreshToken, "devices.body[0].deviceId")
 
@@ -1340,7 +1354,7 @@ describe("auth testing", () => {
 
     it('should terminate session by device id and return 204',
         async () => {
-            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             const devices = await authFunctions.getCurrentDevices(refreshToken)
 
@@ -1357,7 +1371,7 @@ describe("auth testing", () => {
     it('should NOT terminate all devices sessions except current with wrong refreshToken and return 401',
         async () => {
 
-            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             const result = await authFunctions.deleteDevices({refreshToken: "s"})
             expect(result.status).toBe(401)
@@ -1374,7 +1388,7 @@ describe("auth testing", () => {
     it('should terminate all devices sessions except current and return 204',
         async () => {
 
-            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             const result = await authFunctions.deleteDevices(refreshToken)
             expect(result.status).toBe(204)
@@ -1389,7 +1403,7 @@ describe("auth testing", () => {
     it('should NOT logout with wrong refreshToken and return 401',
         async () => {
 
-            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             const result = await authFunctions.logout({refreshToken:"sd"})
             expect(result.status).toBe(401)
@@ -1403,7 +1417,7 @@ describe("auth testing", () => {
     it('should logout and return 204',
         async () => {
 
-            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             const result = await authFunctions.logout(refreshToken)
             expect(result.status).toBe(204)
