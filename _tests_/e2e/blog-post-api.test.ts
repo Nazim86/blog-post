@@ -1213,6 +1213,10 @@ describe("auth testing", () => {
             newRefreshToken = await authFunctions.refreshToken(refreshToken)
 
             expect(newRefreshToken.status).toBe(401)
+
+            //checking did not get new refresh token
+            expect(refreshToken).toEqual(loginUser.headers['set-cookie'][0].split(";"))
+
         });
 
     it('should get new access token and refresh token by refresh token and return 200',
@@ -1226,6 +1230,13 @@ describe("auth testing", () => {
             expect(newRefreshToken.body).toEqual({accessToken: expect.any(String)})
 
         });
+
+    it('should NOT get current user with wrong refreshToken dat return 401', async () => {
+
+        const loginUser = await authFunctions.getCurrentUser("refreshToken")
+        expect(loginUser.status).toBe(401)
+
+    });
 
     it('should get current user return 200', async () => {
 
