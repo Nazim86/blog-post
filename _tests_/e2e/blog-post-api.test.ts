@@ -1029,15 +1029,13 @@ describe("auth testing", () => {
         expect(fakeUser.status).toBe(204)
     });
 
-
-
-    it('should NOT resend registration with email and return 2400', async () => {
+    it('should NOT resend registration with email and return 400', async () => {
 
         const result = await authFunctions.resendEmail({email: "newUserEmail"})
         expect(result.status).toBe(400)
     });
 
-    it('should NOT resend registration email with more than 5 attempts in 10s and return 429', async () => {
+    it('should LIMIT resend registration email with more than 5 attempts in 10s and return 429', async () => {
         let result:any
         for (let i = 0; i <= 6; i++) {
 
@@ -1058,9 +1056,13 @@ describe("auth testing", () => {
         const result = await authFunctions.registrationConfirmation({code: "userWithoutConfirm?.emailConfirmation.confirmationCode"})
         expect(result.status).toBe(400)
 
+        //checking user not confirmed
+        const user = await usersAccountsCollection.findOne({"accountData.email":newUserEmail})
+        expect(user!.emailConfirmation.isConfirmed).toEqual(false)
+
     });
 
-    it('should NOT confirm registration with more than 5 attempts in 10s and return 429', async () => {
+    it('should LIMIT confirm registration with more than 5 attempts in 10s and return 429', async () => {
         let result:any
         for (let i = 0; i <= 6; i++) {
             const userWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
@@ -1080,8 +1082,10 @@ describe("auth testing", () => {
 
         expect(result.status).toBe(204)
 
+        //checking user confirmed
+        const user = await usersAccountsCollection.findOne({"accountData.email":newUserEmail})
+        expect(user!.emailConfirmation.isConfirmed).toEqual(true)
     });
-
 
     it('should NOT login with number in loginOrEmail and return 400', async () => {
         const loginUserData = {
