@@ -1008,10 +1008,10 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(400)
     });
 
-    it('should LIMIT with more than 5 attempts in 10 sec and return 429', async () => {
+    it('should LIMIT create new user with more than 5 attempts in 10 sec and return 429', async () => {
 
         let fakeUser: any;
-        for (let i = 0; i <= 5; i++) {
+        for (let i = 0; i <= 6; i++) {
             fakeUser = await authFunctions.registerUser({
                 ...newUserData,
                 login: `John${i}`,
