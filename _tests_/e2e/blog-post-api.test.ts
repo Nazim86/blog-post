@@ -983,7 +983,6 @@ describe("auth testing", () => {
     });
 
     it('should NOT create new user with more than 5 attempts in 10 sec and return 429', async () => {
-        await ipCollection.deleteMany({})
 
         let fakeUser: any;
         for (let i = 0; i <=5; i++) {
@@ -994,7 +993,8 @@ describe("auth testing", () => {
     });
 
     it('should create new user and send confirmation email and return 204', async () => {
-        await ipCollection.deleteMany({})
+        // await delay(10000) //real test
+        await ipCollection.deleteMany({}) //imitation in order to run test faster
 
         newUser = await authFunctions.registerUser(newUserData)
 
@@ -1007,12 +1007,26 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(400)
     });
 
-    it('should resend registration email and return 204', async () => {
+    it('should NOT resend registration with email and return 2400', async () => {
 
+        const result = await authFunctions.resendEmail({email: "newUserEmail"})
+        expect(result.status).toBe(400)
+    });
+
+    it('should NOT resend registration email with more than 5 attempts in 10s and return 429', async () => {
+        let result:any
+        for (let i = 0; i <= 6; i++) {
+
+            result = await authFunctions.resendEmail({email: newUserEmail})
+        }
+        expect(result.status).toBe(429)
+    });
+
+    it('should resend registration email and return 204', async () => {
+        // await delay(10000) real test
+        await ipCollection.deleteMany({}) //imitation in order to run test faster
         const result = await authFunctions.resendEmail({email: newUserEmail})
         expect(result.status).toBe(204)
-
-
     });
 
     it('should confirm registration and return 204', async () => {

@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
-import {authRepository} from "../repositories/auth-in-db-repository";
+import {authRepository} from "../repositories/user-in-db-repository";
 import { v4 as uuid } from 'uuid';
 import add from "date-fns/add"
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";

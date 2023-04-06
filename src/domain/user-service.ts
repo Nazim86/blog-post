@@ -1,4 +1,4 @@
-import {userRepository} from "../repositories/user-in-db-repository";
+import {userRepository} from "../repositories/user-in-db-repository-old";
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
 import {UserViewType} from "../repositories/types/user-view-type";
