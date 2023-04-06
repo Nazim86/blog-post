@@ -1328,6 +1328,23 @@ describe("auth testing", () => {
             expect(loginUser.body.length).toBe(4)
         });
 
+    it('should NOT terminate session by device id with wrong device id and return 404',
+        async () => {
+            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+
+            const devices = await authFunctions.getCurrentDevices(refreshToken)
+
+            const result = await authFunctions.deleteDeviceByDeviceId(refreshToken, "devices.body[0].deviceId")
+
+            expect(result.status).toBe(404)
+
+            //checking that session not terminated
+            const loginUser = await authFunctions.getCurrentDevices(refreshToken)
+            expect(loginUser.status).toBe(200)
+            expect(loginUser.body).toEqual([deviceData[0], deviceData[1], deviceData[2], deviceData[3]])
+            expect(loginUser.body.length).toBe(4)
+        });
+
     it('should terminate session by device id and return 204',
         async () => {
             const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
