@@ -25,7 +25,6 @@ export const createdUser = {
         createdAt: expect.any(String)
     },
     emailConfirmation:{
-
         confirmationCode:expect.any(String),
         emailExpiration: expect.any(Date),
         isConfirmed:false,

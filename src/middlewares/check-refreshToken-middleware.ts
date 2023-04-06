@@ -6,10 +6,8 @@ import {tokensCollection} from "../db/db";
 let x=1
 
 export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    // console.log(`refreshTokenFromMiddleware ${x++}`)
     const refreshToken = req.cookies.refreshToken
 
-    // console.log(`refreshTokenFromMiddleware ${x++} `,refreshToken)
     if (!req.cookies.refreshToken ) {
 
         return res.sendStatus(401)

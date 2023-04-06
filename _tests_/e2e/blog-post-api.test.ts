@@ -1101,6 +1101,10 @@ describe("auth testing", () => {
 
         await loginLoop();
         expect(loginUser.status).toBe(400)
+
+        //checking user not logged
+        const refreshToken = loginUser.headers['set-cookie']
+        expect(refreshToken).toEqual(undefined)
     });
 
     it('should NOT login with number in loginOrEmail and return 400', async () => {
@@ -1117,9 +1121,13 @@ describe("auth testing", () => {
 
         await loginLoop();
         expect(loginUser.status).toBe(400)
+
+        //checking user not logged
+        const refreshToken = loginUser.headers['set-cookie']
+        expect(refreshToken).toEqual(undefined)
     });
 
-    it('should NOT login because more than 5 attempts in 10 sec and return 429', async () => {
+    it('should LIMIT login because more than 5 attempts in 10 sec and return 429', async () => {
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "123456"
@@ -1129,6 +1137,10 @@ describe("auth testing", () => {
             }
 
         expect(loginUser.status).toBe(429)
+
+        //checking user not logged
+        const refreshToken = loginUser.headers['set-cookie']
+        expect(refreshToken).toEqual(undefined)
     });
 
     it('should NOT login with incorrect loginOrEmail and  return 401', async () => {
@@ -1148,6 +1160,10 @@ describe("auth testing", () => {
         await loginLoop();
         expect(loginUser.status).toBe(401)
 
+        //checking user not logged
+        const refreshToken = loginUser.headers['set-cookie']
+        expect(refreshToken).toEqual(undefined)
+
     });
 
     it('should NOT login with incorrect password and return 401', async () => {
@@ -1164,9 +1180,12 @@ describe("auth testing", () => {
                 loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
             }
         }
-
         await loginLoop();
         expect(loginUser.status).toBe(401)
+
+        //checking user not logged
+        const refreshToken = loginUser.headers['set-cookie']
+        expect(refreshToken).toEqual(undefined)
     });
 
     it('should login return 200', async () => {
