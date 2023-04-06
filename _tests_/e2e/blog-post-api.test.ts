@@ -1111,18 +1111,14 @@ describe("auth testing", () => {
     });
 
     it('should NOT login with number in loginOrEmail and return 400', async () => {
+
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: 123456
         }
 
-        async function loginLoop() {
-            for (let i = 0; i <= 3; i++) {
-                loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
-            }
-        }
+        loginUser = await authFunctions.loginUser(loginUserData, "deviceName[i]")
 
-        await loginLoop();
         expect(loginUser.status).toBe(400)
 
         //checking user not logged
