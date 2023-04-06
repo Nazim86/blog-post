@@ -1069,7 +1069,6 @@ describe("auth testing", () => {
     it('should LIMIT confirm registration with more than 5 attempts in 10s and return 429', async () => {
         let result: any
         for (let i = 0; i <= 6; i++) {
-            const userWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
             result = await authFunctions.registrationConfirmation({code: "userWithoutConfirm?.emailConfirmation.confirmationCode"})
         }
         expect(result.status).toBe(429)
@@ -1332,8 +1331,6 @@ describe("auth testing", () => {
         async () => {
             const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
 
-            const devices = await authFunctions.getCurrentDevices(refreshToken)
-
             const result = await authFunctions.deleteDeviceByDeviceId(refreshToken, "devices.body[0].deviceId")
 
             expect(result.status).toBe(404)
@@ -1393,20 +1390,30 @@ describe("auth testing", () => {
 
         });
 
+    it('should NOT logout with wrong refreshToken and return 401',
+        async () => {
+
+            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+
+            const result = await authFunctions.logout({refreshToken:"sd"})
+            expect(result.status).toBe(401)
+
+            const loginUser = await authFunctions.getCurrentUser(refreshToken)
+            expect(loginUser.status).toBe(200)
+            expect(loginUser.body).toEqual(currentUser)
+
+        });
+
     it('should logout and return 204',
         async () => {
 
             const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
-            // console.log(refreshToken)
-            // console.log(newToken.body.accessToken)
+
             const result = await authFunctions.logout(refreshToken)
             expect(result.status).toBe(204)
 
-            const loginUser = await authFunctions.getCurrentDevices(refreshToken)
-            expect(loginUser.status).toBe(200)
-            expect(loginUser.body.length).toBe(0)
-            expect(loginUser.body).toEqual([deviceData[2]])
-
+            const loginUser = await authFunctions.getCurrentUser(refreshToken)
+            expect(loginUser.status).toBe(401)
         });
 
 
