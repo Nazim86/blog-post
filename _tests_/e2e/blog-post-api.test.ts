@@ -39,7 +39,7 @@ import {
     commentWithPagination,
     createdComment
 } from "./data/comments-data";
-import {currentUser, newUserData, newUserEmail} from "./data/auth-data";
+import {createdUser, currentUser, newUserData, newUserEmail} from "./data/auth-data";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
 
@@ -996,6 +996,24 @@ describe("auth testing", () => {
         expect(users).toEqual([])
     });
 
+    it('should create new user and send confirmation email and return 204', async () => {
+
+        newUser = await authFunctions.registerUser(newUserData)
+
+        expect(newUser.status).toBe(204)
+
+        //checking that user created
+        const users = await usersAccountsCollection.find({}).toArray()
+        expect(users).toEqual([createdUser])
+
+    });
+
+    it('should NOT create new user with the existing email pr password and return 400', async () => {
+
+        newUser = await authFunctions.registerUser(newUserData)
+        expect(newUser.status).toBe(400)
+    });
+
     it('should LIMIT with more than 5 attempts in 10 sec and return 429', async () => {
 
         let fakeUser: any;
@@ -1004,22 +1022,14 @@ describe("auth testing", () => {
         }
         expect(fakeUser.status).toBe(429)
 
-    });
-
-    it('should create new user and send confirmation email and return 204', async () => {
+        //checking creating user after 10sec.,because ip limit counts 5 attempts in 10s.
         // await delay(10000) //real test
         await ipCollection.deleteMany({}) //imitation in order to run test faster
-
-        newUser = await authFunctions.registerUser(newUserData)
-
-        expect(newUser.status).toBe(204)
-
+        fakeUser = await authFunctions.registerUser({...newUserData,login:`John9`,email:`john@gmail.com9`,password:`sasdaddd9`})
+        expect(fakeUser.status).toBe(204)
     });
 
-    it('should NOT create new user with the existing email pr password and return 400', async () => {
-        newUser = await authFunctions.registerUser(newUserData)
-        expect(newUser.status).toBe(400)
-    });
+
 
     it('should NOT resend registration with email and return 2400', async () => {
 
