@@ -44,7 +44,6 @@ import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
 
 
-
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -944,16 +943,11 @@ describe("user testing", () => {
 describe("auth testing", () => {
     jest.setTimeout(3 * 60 * 1000)
 
-    //TODO should replace any with type
     let newUser: any
     let loginUser: any
     let newRefreshToken: any
 
     const deviceName = ["blackberry", "nokia", "siemens", "philips"];
-
-
-    // const imapService = new MailBoxImap()
-
 
     beforeAll(async () => {
 
@@ -1017,15 +1011,25 @@ describe("auth testing", () => {
     it('should LIMIT with more than 5 attempts in 10 sec and return 429', async () => {
 
         let fakeUser: any;
-        for (let i = 0; i <=5; i++) {
-            fakeUser = await authFunctions.registerUser({...newUserData,login:`John${i}`,email:`john@gmail.com${i}`,password:`sasdaddd${i}`})
+        for (let i = 0; i <= 5; i++) {
+            fakeUser = await authFunctions.registerUser({
+                ...newUserData,
+                login: `John${i}`,
+                email: `john@gmail.com${i}`,
+                password: `sasdaddd${i}`
+            })
         }
         expect(fakeUser.status).toBe(429)
 
         //checking creating user after 10sec.,because ip limit counts 5 attempts in 10s.
         // await delay(10000) //real test
         await ipCollection.deleteMany({}) //imitation in order to run test faster
-        fakeUser = await authFunctions.registerUser({...newUserData,login:`John9`,email:`john@gmail.com9`,password:`sasdaddd9`})
+        fakeUser = await authFunctions.registerUser({
+            ...newUserData,
+            login: `John9`,
+            email: `john@gmail.com9`,
+            password: `sasdaddd9`
+        })
         expect(fakeUser.status).toBe(204)
     });
 
@@ -1036,7 +1040,7 @@ describe("auth testing", () => {
     });
 
     it('should LIMIT resend registration email with more than 5 attempts in 10s and return 429', async () => {
-        let result:any
+        let result: any
         for (let i = 0; i <= 6; i++) {
 
             result = await authFunctions.resendEmail({email: newUserEmail})
@@ -1057,13 +1061,13 @@ describe("auth testing", () => {
         expect(result.status).toBe(400)
 
         //checking user not confirmed
-        const user = await usersAccountsCollection.findOne({"accountData.email":newUserEmail})
+        const user = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
         expect(user!.emailConfirmation.isConfirmed).toEqual(false)
 
     });
 
     it('should LIMIT confirm registration with more than 5 attempts in 10s and return 429', async () => {
-        let result:any
+        let result: any
         for (let i = 0; i <= 6; i++) {
             const userWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
             result = await authFunctions.registrationConfirmation({code: "userWithoutConfirm?.emailConfirmation.confirmationCode"})
@@ -1083,7 +1087,7 @@ describe("auth testing", () => {
         expect(result.status).toBe(204)
 
         //checking user confirmed
-        const user = await usersAccountsCollection.findOne({"accountData.email":newUserEmail})
+        const user = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
         expect(user!.emailConfirmation.isConfirmed).toEqual(true)
     });
 
@@ -1132,9 +1136,9 @@ describe("auth testing", () => {
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "123456"
         }
-            for (let i = 0; i <=6; i++) {
-                loginUser = await authFunctions.loginUser(loginUserData, "deviceName[i]")
-            }
+        for (let i = 0; i <= 6; i++) {
+            loginUser = await authFunctions.loginUser(loginUserData, "deviceName[i]")
+        }
 
         expect(loginUser.status).toBe(429)
 
@@ -1180,6 +1184,7 @@ describe("auth testing", () => {
                 loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
             }
         }
+
         await loginLoop();
         expect(loginUser.status).toBe(401)
 
@@ -1196,11 +1201,13 @@ describe("auth testing", () => {
             loginOrEmail: "nazim86mammadov@yandex.ru",
             password: "123456"
         }
+
         async function loginLoop() {
             for (let i = 0; i <= 3; i++) {
                 loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
             }
         }
+
         await loginLoop();
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
@@ -1248,6 +1255,14 @@ describe("auth testing", () => {
 
     });
 
+    it('should NOT get active devices for current user with wrong refreshToken return 401', async () => {
+
+        const loginUser = await authFunctions.getCurrentDevices({null: null})
+        expect(loginUser.status).toBe(401)
+        expect(loginUser.body).toEqual({})
+
+    });
+
     it('should get active devices for current user return 200', async () => {
 
         const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
@@ -1256,40 +1271,101 @@ describe("auth testing", () => {
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual(deviceData)
         expect(loginUser.body.length).toBe(4)
-
     });
-    it('should terminate session by device id and return 204',
-        async () => {
 
+    it('should NOT terminate session by device id with wrong refreshToken and return 401',
+        async () => {
             const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             const devices = await authFunctions.getCurrentDevices(refreshToken)
 
-            // console.log("device Id",devices.body[0].deviceId)
+            const result = await authFunctions.deleteDeviceByDeviceId({a: "a"}, devices.body[0].deviceId)
 
-            // console.log(refreshToken)
-            // console.log(newToken.body.accessToken)
-            const result = await authFunctions.deleteDeviceByDeviceId(refreshToken,devices.body[0].deviceId)
+            expect(result.status).toBe(401)
 
-            // console.log("Delete result",result.body)
+            //checking that session not terminated
+            const loginUser = await authFunctions.getCurrentDevices(refreshToken)
+            expect(loginUser.status).toBe(200)
+            expect(loginUser.body).toEqual([deviceData[0], deviceData[1], deviceData[2], deviceData[3]])
+            expect(loginUser.body.length).toBe(4)
+        });
+
+    it('should NOT terminate session by device id of other user and return 403',
+        async () => {
+
+            const newLoginUserData = {
+                loginOrEmail: "testing403@yandex.ru",
+                password: "123456"
+            }
+
+            //Creating new user
+            await authFunctions.registerUser({
+                login: "Testing403",
+                    password: "123456",
+                    email: "testing403@yandex.ru"
+            })
+
+            //confirming new user
+            const NewUserWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": "testing403@yandex.ru"})
+            await authFunctions.registrationConfirmation({code: NewUserWithoutConfirm?.emailConfirmation.confirmationCode})
+
+            const refreshTokenOfCurrentUser = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+
+            //creating new user in order to try delete other user device
+            const newLogin = await authFunctions.loginUser(newLoginUserData, "testing403DeviceName")
+            const refreshTokenNewUser = newLogin.headers['set-cookie'][0].split(";")[0]
+
+            const deviceOfCurrentUser = await authFunctions.getCurrentDevices(refreshTokenOfCurrentUser)
+
+            const result = await authFunctions.deleteDeviceByDeviceId(refreshTokenNewUser, deviceOfCurrentUser.body[0].deviceId)
+
+            expect(result.status).toBe(403)
+
+            //checking that session not terminated
+            const loginUser = await authFunctions.getCurrentDevices(refreshTokenOfCurrentUser)
+            expect(loginUser.status).toBe(200)
+            expect(loginUser.body).toEqual([deviceData[0], deviceData[1], deviceData[2], deviceData[3]])
+            expect(loginUser.body.length).toBe(4)
+        });
+
+    it('should terminate session by device id and return 204',
+        async () => {
+            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
+
+            const devices = await authFunctions.getCurrentDevices(refreshToken)
+
+            const result = await authFunctions.deleteDeviceByDeviceId(refreshToken, devices.body[0].deviceId)
+
             expect(result.status).toBe(204)
 
             const loginUser = await authFunctions.getCurrentDevices(refreshToken)
             expect(loginUser.status).toBe(200)
-            expect(loginUser.body).toEqual([deviceData[1],deviceData[2],deviceData[3]])
+            expect(loginUser.body).toEqual([deviceData[1], deviceData[2], deviceData[3]])
             expect(loginUser.body.length).toBe(3)
         });
 
+    it('should NOT terminate all devices sessions except current with wrong refreshToken and return 401',
+        async () => {
 
+            const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
 
+            const result = await authFunctions.deleteDevices({refreshToken: "s"})
+            expect(result.status).toBe(401)
+
+            //checking that not terminate all devices
+            const loginUser = await authFunctions.getCurrentDevices(refreshToken)
+            expect(loginUser.status).toBe(200)
+            expect(loginUser.body).toEqual([deviceData[1], deviceData[2], deviceData[3]])
+            expect(loginUser.body.length).toBe(3)
+
+        });
 
 
     it('should terminate all devices sessions except current and return 204',
         async () => {
 
             const refreshToken = newRefreshToken.headers['set-cookie'][0].split(";")[0]
-            // console.log(refreshToken)
-            // console.log(newToken.body.accessToken)
+
             const result = await authFunctions.deleteDevices(refreshToken)
             expect(result.status).toBe(204)
 
@@ -1314,11 +1390,7 @@ describe("auth testing", () => {
             expect(loginUser.body.length).toBe(0)
             expect(loginUser.body).toEqual([deviceData[2]])
 
-
         });
-
-
-
 
 
 });
