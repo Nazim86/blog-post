@@ -1258,18 +1258,16 @@ describe("comments testing", () => {
         post = await postFunctions.createPost(newPost, authorizationData)
 
         //creating new post
-        user = await userFunctions.createUser(userCreateData, authorizationData)
+        user = await userFunctions.createUser(newUserData, authorizationData)
 
         //login with created user
         const loginUserData = {
             loginOrEmail: user.body.login,
             password: "123456"
         }
-
         loginUser = await authFunctions.loginUser(loginUserData, "chrome") //will get token from logged user
 
     });
-
 
     it('should create comment by postID and return 201', async () => {
 

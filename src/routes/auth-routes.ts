@@ -74,8 +74,8 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
         return res.sendStatus(401)
     }
 
-    const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s")
-    const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s")
+    const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10m")
+    const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20m")
 
     const ipAddress = req.ip;
     const deviceName = req.headers['user-agent'] ?? "chrome"
@@ -88,7 +88,7 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        sameSite: 'strict', secure: true,
+        sameSite: 'strict', //secure: true,
         maxAge: 24 * 60 * 60 * 1000
     });
 
@@ -103,14 +103,14 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         const {deviceId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
 
-        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10s", deviceId)
-        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20s", deviceId)
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10m", deviceId)
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20m", deviceId)
 
         await securityService.updateDevice(refreshToken)
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 

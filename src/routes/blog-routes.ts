@@ -9,12 +9,11 @@ import {
 import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {blogService} from "../domain/blog-service";
 import {blogQueryRepo} from "../query-repositories/blog-query-repo";
-import {BlogQueryType} from "../repositories/types/blog-query-type";
 import {getPaginationValues} from "../functions/pagination-values";
-import {PostQueryType} from "../repositories/types/post-query-type";
 import {postQueryRepo} from "../query-repositories/posts-query-repo";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {postService} from "../domain/posts-service";
+import {QueryPaginationType} from "../repositories/types/query-type";
 
 
 export const blogRoutes = Router({})
@@ -27,7 +26,7 @@ blogRoutes.get('/', queryValidations, async (req: Request, res: Response) => {
 
     const {searchName, sortBy, sortDirection, pageNumber, pageSize} = getPaginationValues(req.query)
 
-    const getBlog: BlogQueryType = await blogQueryRepo.getBlog(searchName, sortBy,
+    const getBlog: QueryPaginationType<BlogsViewType[]> = await blogQueryRepo.getBlog(searchName, sortBy,
         sortDirection, pageNumber, pageSize)
 
     res.status(200).send(getBlog)
@@ -38,7 +37,7 @@ blogRoutes.get('/:blogId/posts', queryValidations, async (req: Request, res: Res
     const {pageNumber, pageSize, sortBy, sortDirection} = getPaginationValues(req.query)
 
     const blogId = req.params.blogId
-    const getBlogByBlogId: PostQueryType | boolean = await postQueryRepo.getPostsByBlogId(pageNumber,pageSize, sortBy, sortDirection, blogId)
+    const getBlogByBlogId: QueryPaginationType<PostsViewType[]> | boolean = await postQueryRepo.getPostsByBlogId(pageNumber,pageSize, sortBy, sortDirection, blogId)
 
 
     if (getBlogByBlogId) {

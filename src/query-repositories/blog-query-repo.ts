@@ -2,8 +2,8 @@ import {blogsCollection} from "../db/db";
 import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {blogMapping} from "../mapping/blog-mapping";
 import {Filter, ObjectId} from "mongodb";
-import {BlogQueryType} from "../repositories/types/blog-query-type";
 import {BlogsDbType} from "../repositories/types/blogs-db-type";
+import {QueryPaginationType} from "../repositories/types/query-type";
 
 // type SortedBy = {
 //     fieldname: keyof TemplateStringsArray
@@ -37,7 +37,7 @@ export const blogQueryRepo = {
 
     async getBlog(
         searchNameTerm: string, sortBy: string = "createdAt", sortDirection: string = 'desc',
-        pageNumber: number = 1, pageSize: number = 10): Promise<BlogQueryType> {
+        pageNumber: number = 1, pageSize: number = 10): Promise<QueryPaginationType<BlogsViewType[]>> {
 
 
         const filter: Filter<BlogsDbType> = {name: {$regex: searchNameTerm ?? '', $options: 'i'}}

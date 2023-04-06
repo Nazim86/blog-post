@@ -1,14 +1,14 @@
 import {commentsCollection} from "../db/db";
 import {ObjectId} from "mongodb";
-import {CommentQueryType} from "../repositories/types/comment-query-type";
 import {commentMapping} from "../mapping/comment-mapping";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {postRepository} from "../repositories/post-in-db-repository";
+import {QueryPaginationType} from "../repositories/types/query-type";
 
 export const commentsQueryRepo = {
-    async getCommentsForPost(postId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<CommentQueryType | null> {
+    async getCommentsForPost(postId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<QueryPaginationType<CommentsViewType[]>| null> {
 
         const postById: PostsViewType | boolean = await postRepository.getPostById(postId)
         if (!postById) return null

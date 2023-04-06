@@ -1,9 +1,9 @@
 import { postsCollection} from "../db/db";
 import {postMapping} from "../mapping/post-mapping";
-import {PostQueryType} from "../repositories/types/post-query-type";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {PostsDbType} from "../repositories/types/posts-db-type";
 import {ObjectId} from "mongodb";
+import {QueryPaginationType} from "../repositories/types/query-type";
 
 
 export const postQueryRepo = {
@@ -32,7 +32,7 @@ export const postQueryRepo = {
 
         },
 
-        async getPost(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<PostQueryType>{
+        async getPost(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<QueryPaginationType<PostsViewType[]>>{
 
             const skipSize = (pageNumber - 1) * pageSize
             const totalCount = await postsCollection.countDocuments({})
@@ -56,7 +56,7 @@ export const postQueryRepo = {
         },
 
         async getPostsByBlogId(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, blogId: string):
-            Promise<PostQueryType | boolean> {
+            Promise<QueryPaginationType<PostsViewType[]> | boolean> {
 
 
             const skipSize = (pageNumber - 1) * pageSize

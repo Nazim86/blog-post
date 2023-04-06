@@ -11,12 +11,11 @@ import {PostsViewType} from "../repositories/types/posts-view-type";
 import {postService} from "../domain/posts-service";
 import {getPaginationValues} from "../functions/pagination-values";
 import {postQueryRepo} from "../query-repositories/posts-query-repo";
-import {PostQueryType} from "../repositories/types/post-query-type";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 import {commentService} from "../domain/comment-service";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
-import {CommentQueryType} from "../repositories/types/comment-query-type";
+import {QueryPaginationType} from "../repositories/types/query-type";
 
 
 export const postRoutes = Router({})
@@ -28,7 +27,7 @@ postRoutes.get('/', async (req: Request, res: Response) => {
 
     const {pageNumber,pageSize,sortBy,sortDirection} = getPaginationValues(req.query)
 
-    const getPost:PostQueryType = await postQueryRepo.getPost(pageNumber,pageSize,sortBy,sortDirection);
+    const getPost:QueryPaginationType<PostsViewType[]> = await postQueryRepo.getPost(pageNumber,pageSize,sortBy,sortDirection);
 
     res.status(200).send(getPost)
 })
@@ -51,7 +50,7 @@ postRoutes.get('/:postId/comments',  async (req: Request, res: Response) => {
 
     const {pageNumber,pageSize,sortBy,sortDirection} = getPaginationValues(req.query)
 
-    const getCommentsForPost:CommentQueryType|null =
+    const getCommentsForPost:QueryPaginationType<CommentsViewType[]>|null =
         await commentsQueryRepo.getCommentsForPost(req.params.postId, pageNumber,pageSize,sortBy,sortDirection)
 
     if (getCommentsForPost) {

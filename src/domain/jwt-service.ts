@@ -16,16 +16,6 @@ export const jwtService = {
     },
 
 
-    // async getUserIdAndIssuedDateByToken (refreshToken:string, secretKey:string):Promise<string|null>{
-    //
-    //     try {
-    //         const decoded:any = jwt.verify(refreshToken,secretKey)
-    //         return decoded.userId
-    //     }
-    //     catch (e){
-    //         return null
-    //     }
-    // },
 
     async getRefreshTokenMetaData(refreshToken: string, secretKey: string = settings.REFRESH_TOKEN_SECRET):Promise<any>{ //TODO change any
 
