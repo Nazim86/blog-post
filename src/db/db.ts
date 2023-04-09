@@ -16,8 +16,10 @@ const url = process.env.NODE_ENV === "test" ? 'mongodb://0.0.0.0:27017': process
 if (!url){
     throw new Error("Url does not found!")
 }
-export const client = new MongoClient(url)
-const db = client.db('blogPost')
+const dbName = 'blogPost'
+export const client = new MongoClient(url+"/"+dbName)
+const db = client.db()
+
 
 export const blogsCollection = db.collection<BlogsDbType>("blogs")
 export const postsCollection = db.collection<PostsDbType>("posts")
@@ -28,14 +30,25 @@ export const tokensCollection = db.collection<RefreshTokenMetaDbType>("validToke
 export const ipCollection = db.collection<IpDataType>("ipAddresses")
 
 
-
-
+// // getting-started.js
+// const mongoose = require('mongoose');
+//
+// main().catch(err => console.log(err));
+//
+// async function main() {
+//     await mongoose.connect('mongodb://127.0.0.1:27017/test');
+//
+//     // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
+// }
+//
 
 
 export async function runDb (){
 
     try{
-        await client.connect()
+
+        // await mongoose.connect('mongodb://127.0.0.1:27017/test');
+        await client.connect();
         await client.db('blogPost').command({ping:1})
         console.log("Connected to mongo server successfully")
     }
