@@ -1,4 +1,5 @@
 import {MongoClient} from 'mongodb'
+import mongoose from "mongoose";
 import {BlogsDbType} from "../repositories/types/blogs-db-type";
 import {PostsDbType} from "../repositories/types/posts-db-type";
 
@@ -7,6 +8,9 @@ import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-db-type";
 import {IpDataType} from "../repositories/types/ip-type";
+
+
+// getting-started.js
 
 
 dotenv.config()
@@ -30,9 +34,6 @@ export const tokensCollection = db.collection<RefreshTokenMetaDbType>("validToke
 export const ipCollection = db.collection<IpDataType>("ipAddresses")
 
 
-// // getting-started.js
-// const mongoose = require('mongoose');
-//
 // main().catch(err => console.log(err));
 //
 // async function main() {
@@ -40,20 +41,21 @@ export const ipCollection = db.collection<IpDataType>("ipAddresses")
 //
 //     // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 // }
-//
+
 
 
 export async function runDb (){
 
     try{
 
-        // await mongoose.connect('mongodb://127.0.0.1:27017/test');
-        await client.connect();
-        await client.db('blogPost').command({ping:1})
+        await mongoose.connect(url+"/"+dbName);
+        // await client.connect();
+        // await client.db('blogPost').command({ping:1})
         console.log("Connected to mongo server successfully")
     }
     catch {
         console.log("Can't connect to Db")
-        await client.close()
+        // await client.close()
+        await mongoose.connection.close()
     }
 }

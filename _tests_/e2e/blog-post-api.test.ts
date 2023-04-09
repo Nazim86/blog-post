@@ -30,7 +30,7 @@ import {
     userPaginationValues
 } from "./data/user-data";
 import {notCreateUser} from "./functions/user-should-not-functions";
-import {client, ipCollection, tokensCollection, usersAccountsCollection} from "../../src/db/db";
+import {client, ipCollection, usersAccountsCollection} from "../../src/db/db";
 import {authFunctions} from "./functions/auth-functions";
 import {commentFunctions} from "./functions/comment-functions";
 import {
@@ -42,9 +42,7 @@ import {
 import {createdUser, currentUser, newUserData, newUserEmail} from "./data/auth-data";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
-import jwt from "jsonwebtoken";
-import {settings} from "../../src/settings";
-import {RefreshTokenMetaDbType} from "../../src/repositories/types/refresh-token-meta-db-type";
+import mongoose from "mongoose";
 
 
 async function delay(ms: number) {
@@ -54,6 +52,8 @@ async function delay(ms: number) {
 
 afterAll(async () => {
     await client.close();
+    await mongoose.connection.close()
+
 });
 
 describe("blogs SHOULD NOT CRUD testing", () => {
