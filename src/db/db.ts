@@ -8,6 +8,7 @@ import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-db-type";
 import {IpDataType} from "../repositories/types/ip-type";
+import {blogSchema} from "../repositories/schemas/blog-schema";
 
 
 // getting-started.js
@@ -24,7 +25,11 @@ const dbName = 'blogPost'
 export const client = new MongoClient(url+"/"+dbName)
 const db = client.db()
 
+//mongoose models
+export const BlogModel = mongoose.model("blogs",blogSchema)
 
+
+//mongoDb collections
 export const blogsCollection = db.collection<BlogsDbType>("blogs")
 export const postsCollection = db.collection<PostsDbType>("posts")
 // export const usersCollection = db.collection<UserDbType>("users")
