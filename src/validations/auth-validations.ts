@@ -4,4 +4,6 @@ export const loginOrEmailValidation = body("loginOrEmail").isString().trim().not
 export const passwordValidation = body("password").isString().trim().notEmpty()
 export const confirmationCodeValidation = body("code").isString().trim().notEmpty()
 
+export const recoveryCodeValidation  = body("recoveryCode").isString().trim().notEmpty()
+
 export const authValidations = [loginOrEmailValidation,passwordValidation]

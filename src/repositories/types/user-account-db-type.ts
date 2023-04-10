@@ -19,6 +19,8 @@ type UserType = {
     passwordSalt:string
     email: string
     createdAt: string
+    recoveryCode:string
+    recoveryCodeExpiration:Date
 }
 export type UserAccountDbType = {
     _id:ObjectId

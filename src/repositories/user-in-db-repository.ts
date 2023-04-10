@@ -18,6 +18,13 @@ export const authRepository = {
 
     },
 
+    async findUserByRecoveryCode(recoveryCode: string): Promise<UserAccountDbType | null> {
+
+        return await usersAccountsCollection.findOne(
+            {"accountData.recoveryCode": recoveryCode})
+
+    },
+
     async findUserByEmail(email: string) {
 
         return await usersAccountsCollection.findOne({"accountData.email": email})
@@ -32,8 +39,8 @@ export const authRepository = {
 
     async updateUserAccountData(userId: ObjectId, passwordSalt:string, passwordHash:string): Promise<boolean> {
 
-        const result = await usersAccountsCollection.updateMany({_id: userId}, {$set: {"emailConfirmation.isConfirmed": true,
-                "accountData.passwordSalt":passwordSalt,"accountData.passwordHash":passwordHash}})
+        const result = await usersAccountsCollection.updateMany({_id: userId}, {$set:
+                {"accountData.passwordSalt":passwordSalt,"accountData.passwordHash":passwordHash}})
         return result.modifiedCount === 1
     },
 

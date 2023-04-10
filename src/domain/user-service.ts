@@ -22,15 +22,20 @@ export const userService = {
                 passwordHash,
                 passwordSalt,
                 email: email,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                recoveryCode:uuid(),
+                recoveryCodeExpiration:add(new Date(), {
+                    hours: 1,
+                    minutes: 3
+                })
             },
-            emailConfirmation:{
-                confirmationCode:uuid(),
-                emailExpiration: add(new Date(),{
-                    hours:1,
-                    minutes:3
+            emailConfirmation: {
+                confirmationCode: uuid(),
+                emailExpiration: add(new Date(), {
+                    hours: 1,
+                    minutes: 3
                 }),
-                isConfirmed:true,
+                isConfirmed: false,
                 sentEmailsByDate: new Date()
             }
         }

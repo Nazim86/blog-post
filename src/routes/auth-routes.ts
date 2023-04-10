@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
-import {authValidations, confirmationCodeValidation} from "../validations/auth-validations";
+import {authValidations, confirmationCodeValidation, recoveryCodeValidation} from "../validations/auth-validations";
 import {jwtService} from "../domain/jwt-service";
 import {emailValidation, userInputValidations} from "../validations/user-validations";
 import {authService} from "../domain/auth-service";
@@ -97,22 +97,22 @@ authRoutes.post('/password-recovery', checkIpLimitMiddleware, emailValidation, i
         const email = req.body.email
 
 
-        const emailResending: string | boolean = await authService.sendingRecoveryCode(email)
+        const isReoveryEmailSent:boolean = await authService.sendingRecoveryCode(email)
 
-        if (!emailResending) {
+        if (!isReoveryEmailSent) {
             return res.status(400).send(errorMessage("wrong email", "email"))
         }
         res.sendStatus(204)
 
     });
-authRoutes.post('/new-password', checkIpLimitMiddleware, confirmationCodeValidation, inputValidationErrorsMiddleware,
+authRoutes.post('/new-password', checkIpLimitMiddleware, recoveryCodeValidation, inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
 
         const newPassword = req.body.newPassword
         const recoveryCode = req.body.recoveryCode
 
-        const registrationConfirmation: boolean = await authService.passwordRecovery(newPassword,recoveryCode)
+        const registrationConfirmation: boolean = await authService.setNewPasswordByRecoveryCode(newPassword,recoveryCode)
 
         if (!registrationConfirmation) {
             return res.status(400).send(errorMessage("Wrong code", "code"))
