@@ -53,7 +53,7 @@ export async function runDb (){
 
     try{
 
-        // await mongoose.connect(url+"/"+dbName);
+        await mongoose.connect(url+"/"+dbName);
         await client.connect();
         await client.db('blogPost').command({ping:1})
         console.log("Connected to mongo server successfully")
@@ -61,6 +61,6 @@ export async function runDb (){
     catch {
         console.log("Can't connect to Db")
         await client.close()
-        // await mongoose.connection.close()
+        await mongoose.connection.close()
     }
 }
