@@ -10,10 +10,19 @@ import {UserAccountViewType} from "../repositories/types/user-account-view-type"
 import {tokenInDbRepository} from "../repositories/token-in-db-repository";
 import {jwtService} from "./jwt-service";
 
-
-
+const registrationMessage = {
+    subject:"Email confirmation",
+    html:"Thank for your registration",
+    paragraph:"registration",
+}
+const passwordRecoveryMessage = {
+    subject:"Password Recovery",
+    html:"Password Recovery",
+    paragraph:"password recovery",
+}
 
 export const authService = {
+
 
     async createNewUser(login: string, password: string, email: string): Promise<UserAccountDbType |null> {
 
@@ -46,7 +55,7 @@ export const authService = {
 
         try {
             await emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
-                createUser.accountData.email)
+                createUser.accountData.email,registrationMessage)
 
         }
         catch (e){
@@ -82,15 +91,12 @@ export const authService = {
         if(user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.emailExpiration < new Date()) return false
 
-
-
         try {
-
             const newCode = uuid()
             await usersAccountsCollection.updateMany({_id:user._id},[{$set:{"emailConfirmation.confirmationCode":newCode}},
                 {$set:{"emailConfirmation.sentEmailsByDate":new Date()}}])
 
-            await emailManager.sendConfirmationEmail(newCode,user.accountData.email)
+            await emailManager.sendConfirmationEmail(newCode,user.accountData.email,registrationMessage)
         }
         catch (e){
             return false
@@ -100,8 +106,46 @@ export const authService = {
 
     },
 
+    async sendingRecoveryCode(email:string):Promise<string|boolean>{
+
+        const user:UserAccountDbType|null = await authRepository.findUserByEmail(email)
+
+        // if(!user) return false
+        // if(user.emailConfirmation.isConfirmed) return false
+        // if (user.emailConfirmation.emailExpiration < new Date()) return false
+
+
+if (user) {
+
+    try {
+        const recoveryCode = uuid()
+        await usersAccountsCollection.updateMany({_id: user._id}, [{$set: {"accountData.recoveryCode": recoveryCode}}])
+
+        await emailManager.sendConfirmationEmail(recoveryCode, user.accountData.email,passwordRecoveryMessage)
+    } catch (e) {
+        return true
+    }
+}
+        return true
+    },
+
     async deleteUser(id: string): Promise<boolean> {
         return await authRepository.deleteUser(id)
+    },
+
+    async passwordRecovery(newPassword:string,recoveryCode:string):Promise<boolean>{
+
+        const user:UserAccountDbType | null = await authRepository.findUserByConfirmationCode(recoveryCode)
+
+        if(!user) return false
+        if(user.emailConfirmation.isConfirmed) return false
+        if (user.emailConfirmation.confirmationCode !== recoveryCode) return false
+        if (user.emailConfirmation.emailExpiration < new Date()) return false
+
+        const passwordSalt = await bcrypt.genSalt(10)
+        const passwordHash = await this._generateHash(newPassword, passwordSalt)
+
+        return await authRepository.updateUserAccountData(user._id,passwordSalt,passwordHash)
     },
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDbType | null> {
@@ -136,9 +180,6 @@ export const authService = {
     async insertRefreshTokenMetaData (refreshToken:string, ip:string,deviceName:string){
         const {deviceId,lastActiveDate,userId,expiration} = await jwtService.getRefreshTokenMetaData(refreshToken)
 
-// const updateResult = await tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
-//
-//         if(!updateResult) {
 
             const refreshTokenMeta = {
                 lastActiveDate: lastActiveDate,

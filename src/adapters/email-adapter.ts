@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer"
+import {emailMessageType} from "../repositories/types/email-message-type";
 
 export const emailAdapter={
-    async sendConfirmationEmail(confirmationCode:string,email:string){
+    async sendConfirmationEmail(confirmationCode: string, email: string, message:emailMessageType){
 
         // create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
@@ -16,10 +17,10 @@ export const emailAdapter={
         await transporter.sendMail({
             from: '"Jan Cloude Vandamme 👻" <fuadson86@gmail.com>', // sender address
             to: email, // list of receivers
-            subject: "Email Confirmation", // Subject line
-            html: ` <h1>Thank for your registration</h1>
-       <p>To finish registration please follow the link below:
-          <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a>
+            subject: message.subject, // Subject line
+            html: ` <h1>${message.html}</h1>
+       <p>To finish ${message.paragraph} please follow the link below:
+          <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete ${message.paragraph}</a>
       </p>
      `,// html body
         });
@@ -29,3 +30,7 @@ export const emailAdapter={
 
 
 }
+
+//
+//
+//

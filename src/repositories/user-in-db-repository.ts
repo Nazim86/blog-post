@@ -29,6 +29,14 @@ export const authRepository = {
         return result.modifiedCount === 1
     },
 
+
+    async updateUserAccountData(userId: ObjectId, passwordSalt:string, passwordHash:string): Promise<boolean> {
+
+        const result = await usersAccountsCollection.updateMany({_id: userId}, {$set: {"emailConfirmation.isConfirmed": true,
+                "accountData.passwordSalt":passwordSalt,"accountData.passwordHash":passwordHash}})
+        return result.modifiedCount === 1
+    },
+
     async deleteUser(id: string): Promise<boolean> {
         try {
             const result = await usersAccountsCollection.deleteOne({_id: new ObjectId(id)});

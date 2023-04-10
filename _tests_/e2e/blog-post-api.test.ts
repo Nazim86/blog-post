@@ -30,7 +30,7 @@ import {
     userPaginationValues
 } from "./data/user-data";
 import {notCreateUser} from "./functions/user-should-not-functions";
-import {client, ipCollection, usersAccountsCollection} from "../../src/db/db";
+import {client, ipCollection, tokensCollection, usersAccountsCollection} from "../../src/db/db";
 import {authFunctions} from "./functions/auth-functions";
 import {commentFunctions} from "./functions/comment-functions";
 import {
@@ -43,6 +43,9 @@ import {createdUser, currentUser, newUserData, newUserEmail} from "./data/auth-d
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import {settings} from "../../src/settings";
+import {RefreshTokenMetaDbType} from "../../src/repositories/types/refresh-token-meta-db-type";
 
 
 async function delay(ms: number) {
@@ -1229,18 +1232,24 @@ describe("auth testing", () => {
 
     it('should get new access token and refresh token by refresh token and return 200',
         async () => {
+            //getDevices
+            //const device1LastActiveDateOld = devices[0]/lasActiveDate
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
             await delay(1000); // Wait for 1 second
 
             getRefreshToken = await authFunctions.refreshToken(refreshToken)
 
-            // const newRefreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
-            //
-            //
-            // //check lastActiveDate of token equal to device last Active Date
-            // const verifyRefreshToken:any = jwt.verify (newRefreshToken,settings.REFRESH_TOKEN_SECRET)
-            // const device:RefreshTokenMetaDbType|null = await tokensCollection.findOne({deviceId:verifyRefreshToken.deviceId})
-            //
+            //getDevices
+            //const device1LastActiveDate = deviceAfterRefreshToken = devices[0].lastActiveDate
+            expect('lastActiveDateNew').not.toBeUndefined()
+expect('1').not.toBe('2')
+            const newRefreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
+
+
+            //check lastActiveDate of token equal to device last Active Date
+            const verifyRefreshToken:any = jwt.verify (newRefreshToken,settings.REFRESH_TOKEN_SECRET)
+            const device:RefreshTokenMetaDbType|null = await tokensCollection.findOne({deviceId:verifyRefreshToken.deviceId})
+
 
             expect(getRefreshToken.status).toBe(200)
             expect(getRefreshToken.body).toEqual({accessToken: expect.any(String)})

@@ -59,10 +59,6 @@ authRoutes.post('/registration-confirmation', checkIpLimitMiddleware, confirmati
         res.sendStatus(204)
     });
 
-
-
-
-
 authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
 
     const {loginOrEmail, password} = req.body;
@@ -94,6 +90,36 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
 
     res.status(200).send({accessToken: accessToken})
 });
+
+authRoutes.post('/password-recovery', checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const email = req.body.email
+
+
+        const emailResending: string | boolean = await authService.sendingRecoveryCode(email)
+
+        if (!emailResending) {
+            return res.status(400).send(errorMessage("wrong email", "email"))
+        }
+        res.sendStatus(204)
+
+    });
+authRoutes.post('/new-password', checkIpLimitMiddleware, confirmationCodeValidation, inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+
+        const newPassword = req.body.newPassword
+        const recoveryCode = req.body.recoveryCode
+
+        const registrationConfirmation: boolean = await authService.passwordRecovery(newPassword,recoveryCode)
+
+        if (!registrationConfirmation) {
+            return res.status(400).send(errorMessage("Wrong code", "code"))
+        }
+        res.sendStatus(204)
+    });
+
 
 authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
@@ -129,9 +155,12 @@ authRoutes.get('/me', checkRefreshTokenMiddleware, async (req: Request, res: Res
 authRoutes.post('/logout', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
 
-        const {deviceId,userId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
+        const {
+            deviceId,
+            userId
+        } = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
 
-        await securityService.deleteDeviceById(deviceId,userId)
+        await securityService.deleteDeviceById(deviceId, userId)
 
         try {
             res.clearCookie("refreshToken")

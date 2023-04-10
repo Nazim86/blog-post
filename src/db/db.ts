@@ -22,8 +22,8 @@ if (!url){
     throw new Error("Url does not found!")
 }
 const dbName = 'blogPost'
-export const client = new MongoClient(url+"/"+dbName)
-const db = client.db()
+export const client = new MongoClient(url)
+const db = client.db('blogPost')
 
 //mongoose models
 export const BlogModel = mongoose.model("blogs",blogSchema)
@@ -53,14 +53,14 @@ export async function runDb (){
 
     try{
 
-        await mongoose.connect(url+"/"+dbName);
-        // await client.connect();
-        // await client.db('blogPost').command({ping:1})
+        // await mongoose.connect(url+"/"+dbName);
+        await client.connect();
+        await client.db('blogPost').command({ping:1})
         console.log("Connected to mongo server successfully")
     }
     catch {
         console.log("Can't connect to Db")
-        // await client.close()
-        await mongoose.connection.close()
+        await client.close()
+        // await mongoose.connection.close()
     }
 }
