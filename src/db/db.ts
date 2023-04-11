@@ -52,10 +52,9 @@ export const ipCollection = db.collection<IpDataType>("ipAddresses")
 export async function runDb (){
 
     try{
-
-        await mongoose.connect(url+"/"+dbName);
+        await mongoose.connect('mongodb://127.0.0.1:27017/blogPost');
         await client.connect();
-        await client.db('blogPost').command({ping:1})
+        // await client.db('blogPost').command({ping:1})
         console.log("Connected to mongo server successfully")
     }
     catch {

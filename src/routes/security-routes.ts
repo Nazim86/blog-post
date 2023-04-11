@@ -18,7 +18,6 @@ securityRoutes.get("/devices", checkRefreshTokenMiddleware, async (req: Request,
 
 securityRoutes.delete("/devices", checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
 const {deviceId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken)
-    console.log(deviceId)
     await securityService.deleteDevices(deviceId)
     res.sendStatus(204)
 })

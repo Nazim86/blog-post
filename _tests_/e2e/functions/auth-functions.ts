@@ -49,7 +49,6 @@ export const authFunctions = {
             .set('Cookie', `${refreshToken}`)
             .send()
 
-
     },
 
     async getCurrentDevices(refreshToken:object){
@@ -76,6 +75,19 @@ export const authFunctions = {
     },
 
 
+    async sendRecoveryCode(email:object){
+        return  request(app)
+            .post('/auth/password-recovery')
+            .send(email)
+
+    },
+
+    async setNewPassword(passwordAndRecoveryCode:object){
+        return  request(app)
+            .post('/auth/new-password')
+            .send(passwordAndRecoveryCode)
+
+    },
 
     async logout(refreshToken:object){
         return  request(app)

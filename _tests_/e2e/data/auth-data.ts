@@ -14,6 +14,7 @@ export const currentUser = {
 }
 
 
+
 export const createdUser = {
 
     _id:expect.any(ObjectId),
@@ -22,7 +23,9 @@ export const createdUser = {
         passwordHash:expect.any(String),
         passwordSalt:expect.any(String),
         email: newUserEmail,
-        createdAt: expect.any(String)
+        createdAt: expect.any(String),
+        recoveryCode:expect.any(String),
+        recoveryCodeExpiration:expect.any(Date)
     },
     emailConfirmation:{
         confirmationCode:expect.any(String),

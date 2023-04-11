@@ -2,7 +2,11 @@ import {Request, Response, Router} from "express";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {authValidations, confirmationCodeValidation, recoveryCodeValidation} from "../validations/auth-validations";
 import {jwtService} from "../domain/jwt-service";
-import {emailValidation, userInputValidations} from "../validations/user-validations";
+import {
+    emailValidation,
+    newPasswordValidation,
+    userInputValidations
+} from "../validations/user-validations";
 import {authService} from "../domain/auth-service";
 import {
     checkUsersAccountsCredentialsMiddleware
@@ -91,36 +95,6 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
     res.status(200).send({accessToken: accessToken})
 });
 
-authRoutes.post('/password-recovery', checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
-
-        const email = req.body.email
-
-
-        const isReoveryEmailSent:boolean = await authService.sendingRecoveryCode(email)
-
-        if (!isReoveryEmailSent) {
-            return res.status(400).send(errorMessage("wrong email", "email"))
-        }
-        res.sendStatus(204)
-
-    });
-authRoutes.post('/new-password', checkIpLimitMiddleware, recoveryCodeValidation, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
-
-
-        const newPassword = req.body.newPassword
-        const recoveryCode = req.body.recoveryCode
-
-        const registrationConfirmation: boolean = await authService.setNewPasswordByRecoveryCode(newPassword,recoveryCode)
-
-        if (!registrationConfirmation) {
-            return res.status(400).send(errorMessage("Wrong code", "code"))
-        }
-        res.sendStatus(204)
-    });
-
-
 authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
         clearExpiredTokens.start();
@@ -151,6 +125,36 @@ authRoutes.get('/me', checkRefreshTokenMiddleware, async (req: Request, res: Res
     res.status(200).send(getCurrentUser)
 
 })
+
+authRoutes.post('/password-recovery', checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const email = req.body.email
+
+
+        const isReoveryEmailSent:boolean = await authService.sendingRecoveryCode(email)
+
+        if (!isReoveryEmailSent) {
+            return res.status(400).send(errorMessage("wrong email", "email"))
+        }
+        res.sendStatus(204)
+
+    });
+authRoutes.post('/new-password', checkIpLimitMiddleware,newPasswordValidation,recoveryCodeValidation, inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+
+        const newPassword = req.body.newPassword
+        const recoveryCode = req.body.recoveryCode
+
+        const registrationConfirmation: boolean = await authService.setNewPasswordByRecoveryCode(newPassword,recoveryCode)
+
+        if (!registrationConfirmation) {
+            return res.status(400).send(errorMessage("Wrong code", "code"))
+        }
+        res.sendStatus(204)
+    });
+
 
 authRoutes.post('/logout', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
