@@ -6,6 +6,7 @@ import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-e
 import {userQueryRepo} from "../query-repositories/user-query-repo";
 import {checkUserCredentialsMiddleware} from "../middlewares/check-user-credentials-middleware";
 import {authService} from "../domain/auth-service";
+import {userService} from "../domain/user-service";
 
 export const userRoutes = Router({})
 
@@ -25,7 +26,7 @@ const login = req.body.login
     const email = req.body.email
 
 
-    const newUser = await authService.createNewUser(login,password,email)
+    const newUser = await userService.createNewUser(login,password,email)
     if (newUser){
         res.status(201).send(newUser)
     }
@@ -35,7 +36,7 @@ userRoutes.delete("/:id", baseAuthorizationMiddleware,async (req:Request, res:Re
 
     const id = req.params.id
 
-    const deleteUser = await authService.deleteUser(id)
+    const deleteUser = await userService.deleteUser(id)
 
     if(deleteUser) {
 

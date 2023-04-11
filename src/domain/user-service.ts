@@ -6,6 +6,7 @@ import {UserByIdType} from "../repositories/types/user-by-id-type";
 import {v4 as uuid} from "uuid";
 import add from "date-fns/add";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
+import {userRepository} from "../repositories/user-in-db-repository";
 
 
 export const userService = {
@@ -40,7 +41,16 @@ export const userService = {
         }
 
 
-        return await userRepositoryOld.createNewUser(newUser)
+        // return await userRepositoryOld.createNewUser(newUser) old version
+
+        await userRepository.createNewUser(newUser)
+
+        return {
+            id: newUser._id.toString(),
+            login: newUser.accountData.login,
+            email: newUser.accountData.email,
+            createdAt: newUser.accountData.createdAt
+        }
 
     },
 
