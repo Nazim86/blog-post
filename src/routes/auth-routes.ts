@@ -100,6 +100,7 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
     res.status(200).send({accessToken: accessToken})
 });
 
+
 authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
         clearExpiredTokens.start();
