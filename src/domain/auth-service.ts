@@ -9,22 +9,9 @@ import {usersAccountsCollection} from "../db/db";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 import {tokenInDbRepository} from "../repositories/token-in-db-repository";
 import {jwtService} from "./jwt-service";
-
-const registrationMessage = {
-    subject: "Email confirmation",
-    html: "Thank for your registration",
-    paragraph: "registration",
-    link: "https://somesite.com/confirm-email?code="
-}
-const passwordRecoveryMessage = {
-    subject: "Password Recovery",
-    html: "Password Recovery",
-    paragraph: "password recovery",
-    link:"https://somesite.com/password-recovery?recoveryCode="
-}
+import {passwordRecoveryMessage, registrationMessage} from "../repositories/email-messages-repo";
 
 export const authService = {
-
 
     async createNewUser(login: string, password: string, email: string): Promise<UserAccountDbType | null> {
 
@@ -56,9 +43,7 @@ export const authService = {
             }
         }
 
-
         const createUser = await authRepository.createNewUser(newUser)
-
 
         try {
             await emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
