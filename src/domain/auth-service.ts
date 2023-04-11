@@ -46,6 +46,7 @@ export const authService = {
         const createUser = await authRepository.createNewUser(newUser)
 
         try {
+            console.log("confirmationCode",createUser.emailConfirmation.confirmationCode,)
             await emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
                 createUser.accountData.email, registrationMessage)
 
@@ -100,15 +101,11 @@ export const authService = {
 
         const user: UserAccountDbType | null = await authRepository.findUserByEmail(email)
 
-        // if(!user) return false
-        // if(user.emailConfirmation.isConfirmed) return false
-        // if (user.emailConfirmation.emailExpiration < new Date()) return false
-
-
         if (user) {
 
             try {
                 const recoveryCode = uuid()
+                console.log("Recovery code",recoveryCode)
                 await usersAccountsCollection.updateMany({_id: user._id}, {$set:
                         {"accountData.recoveryCode": recoveryCode, "accountData.recoveryCodeExpiration":add(new Date(), {
                                 hours: 1,
@@ -121,10 +118,6 @@ export const authService = {
             }
         }
         return true
-    },
-
-    async deleteUser(id: string): Promise<boolean> {
-        return await authRepository.deleteUser(id)
     },
 
     async setNewPasswordByRecoveryCode(newPassword: string, recoveryCode: string): Promise<boolean> {
@@ -140,6 +133,10 @@ export const authService = {
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
 
         return await authRepository.updateUserAccountData(user._id, passwordSalt, passwordHash)
+    },
+
+    async deleteUser(id: string): Promise<boolean> {
+        return await authRepository.deleteUser(id)
     },
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDbType | null> {

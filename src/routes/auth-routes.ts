@@ -132,9 +132,9 @@ authRoutes.post('/password-recovery', checkIpLimitMiddleware, emailValidation, i
         const email = req.body.email
 
 
-        const isReoveryEmailSent:boolean = await authService.sendingRecoveryCode(email)
+        const isRecoveryEmailSent:boolean = await authService.sendingRecoveryCode(email)
 
-        if (!isReoveryEmailSent) {
+        if (!isRecoveryEmailSent) {
             return res.status(400).send(errorMessage("wrong email", "email"))
         }
         res.sendStatus(204)
@@ -147,9 +147,9 @@ authRoutes.post('/new-password', checkIpLimitMiddleware,newPasswordValidation,re
         const newPassword = req.body.newPassword
         const recoveryCode = req.body.recoveryCode
 
-        const registrationConfirmation: boolean = await authService.setNewPasswordByRecoveryCode(newPassword,recoveryCode)
+        const isNewPasswordSet: boolean = await authService.setNewPasswordByRecoveryCode(newPassword,recoveryCode)
 
-        if (!registrationConfirmation) {
+        if (!isNewPasswordSet) {
             return res.status(400).send(errorMessage("Wrong code", "code"))
         }
         res.sendStatus(204)
