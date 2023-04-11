@@ -1,6 +1,6 @@
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
-import {authRepository} from "../repositories/user-in-db-repository";
+import {userRepository} from "../repositories/user-in-db-repository";
 import {v4 as uuid} from 'uuid';
 import add from "date-fns/add"
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
@@ -43,7 +43,7 @@ export const authService = {
             }
         }
 
-        const createUser = await authRepository.createNewUser(newUser)
+        const createUser = await userRepository.createNewUser(newUser)
 
         try {
             console.log("confirmationCode",createUser.emailConfirmation.confirmationCode,)
@@ -65,19 +65,19 @@ export const authService = {
 
     async registrationConfirmation(code: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await authRepository.findUserByConfirmationCode(code)
+        const user: UserAccountDbType | null = await userRepository.findUserByConfirmationCode(code)
 
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
         if (user.emailConfirmation.emailExpiration < new Date()) return false
 
-        return await authRepository.updateConfirmation(user._id)
+        return await userRepository.updateConfirmation(user._id)
     },
 
     async resendEmail(email: string): Promise<string | boolean> {
 
-        const user: UserAccountDbType | null = await authRepository.findUserByEmail(email)
+        const user: UserAccountDbType | null = await userRepository.findUserByEmail(email)
 
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
@@ -99,7 +99,7 @@ export const authService = {
 
     async sendingRecoveryCode(email: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await authRepository.findUserByEmail(email)
+        const user: UserAccountDbType | null = await userRepository.findUserByEmail(email)
 
         if (user) {
 
@@ -122,7 +122,7 @@ export const authService = {
 
     async setNewPasswordByRecoveryCode(newPassword: string, recoveryCode: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await authRepository.findUserByRecoveryCode(recoveryCode)
+        const user: UserAccountDbType | null = await userRepository.findUserByRecoveryCode(recoveryCode)
 
         if (!user) return false
         // if (user.emailConfirmation.isConfirmed) return false
@@ -132,16 +132,16 @@ export const authService = {
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(newPassword, passwordSalt)
 
-        return await authRepository.updateUserAccountData(user._id, passwordSalt, passwordHash)
+        return await userRepository.updateUserAccountData(user._id, passwordSalt, passwordHash)
     },
 
     async deleteUser(id: string): Promise<boolean> {
-        return await authRepository.deleteUser(id)
+        return await userRepository.deleteUser(id)
     },
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDbType | null> {
 
-        const user: UserAccountDbType | null = await authRepository.checkCredentials(loginOrEmail)
+        const user: UserAccountDbType | null = await userRepository.checkCredentials(loginOrEmail)
 
         if (!user) return null
 
@@ -157,7 +157,7 @@ export const authService = {
     },
 
     async findUserById(userId: string): Promise<UserAccountDbType | null> {
-        return await authRepository.findUserById(userId)
+        return await userRepository.findUserById(userId)
     },
 
     async getCurrentUser(user: UserAccountDbType): Promise<UserAccountViewType> {

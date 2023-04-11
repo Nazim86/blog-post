@@ -3,7 +3,7 @@ import {usersAccountsCollection} from "../db/db";
 import {ObjectId} from "mongodb";
 import {UserAccountDbType} from "./types/user-account-db-type";
 
-export const authRepository = {
+export const userRepository = {
     async createNewUser(newUser: UserAccountDbType): Promise<UserAccountDbType> {
 
         await usersAccountsCollection.insertOne(newUser)
