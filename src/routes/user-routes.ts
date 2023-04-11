@@ -1,11 +1,11 @@
 import {Request,Response, Router} from "express";
 import {getPaginationValues} from "../functions/pagination-values";
 import {userInputValidations} from "../validations/user-validations";
-import {userService} from "../domain/user-service";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {userQueryRepo} from "../query-repositories/user-query-repo";
 import {checkUserCredentialsMiddleware} from "../middlewares/check-user-credentials-middleware";
+import {authService} from "../domain/auth-service";
 
 export const userRoutes = Router({})
 
@@ -25,7 +25,7 @@ const login = req.body.login
     const email = req.body.email
 
 
-    const newUser = await userService.createNewUser(login,password,email)
+    const newUser = await authService.createNewUser(login,password,email)
     if (newUser){
         res.status(201).send(newUser)
     }
@@ -35,7 +35,7 @@ userRoutes.delete("/:id", baseAuthorizationMiddleware,async (req:Request, res:Re
 
     const id = req.params.id
 
-    const deleteUser = await userService.deleteUser(id)
+    const deleteUser = await authService.deleteUser(id)
 
     if(deleteUser) {
 
