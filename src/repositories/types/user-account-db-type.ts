@@ -8,7 +8,6 @@ type EmailConfirmationType={
     emailExpiration: Date
     isConfirmed:boolean
     sentEmailsByDate:Date
-
 }
 
 
@@ -16,7 +15,6 @@ type EmailConfirmationType={
 type UserType = {
     login: string
     passwordHash:string
-    passwordSalt:string
     email: string
     createdAt: string
     recoveryCode:string
@@ -26,5 +24,4 @@ export type UserAccountDbType = {
     _id:ObjectId
     accountData: UserType
     emailConfirmation:EmailConfirmationType
-
 }

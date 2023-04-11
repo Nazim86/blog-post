@@ -18,6 +18,7 @@ import {UserAccountViewType} from "../repositories/types/user-account-view-type"
 import {checkIpLimitMiddleware} from "../middlewares/check-ip-limit-middleware";
 import {securityService} from "../domain/security-service";
 import {clearExpiredTokens} from "../db/db-clearing-expired-tokens";
+import {userRepository} from "../repositories/user-in-db-repository";
 
 export const authRoutes = Router({});
 
@@ -67,8 +68,12 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
 
     const {loginOrEmail, password} = req.body;
 
+    const isCredentialsExist = await authService.checkCredentials(loginOrEmail, password)
 
-    const user = await authService.checkCredentials(loginOrEmail, password)
+    if (!isCredentialsExist) {
+        return res.sendStatus(401)
+    }
+    const user = await userRepository.findUserByLoginOrEmail(loginOrEmail)
 
     if (!user) {
         return res.sendStatus(401)

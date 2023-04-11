@@ -15,15 +15,13 @@ export const authService = {
 
     async createNewUser(login: string, password: string, email: string): Promise<UserAccountDbType | null> {
 
-        const passwordSalt = await bcrypt.genSalt(10)
-        const passwordHash = await this._generateHash(password, passwordSalt)
+        const passwordHash = await bcrypt.hash(password, 10)
 
         const newUser: UserAccountDbType = {
             _id: new ObjectId(),
             accountData: {
                 login: login,
                 passwordHash,
-                passwordSalt,
                 email: email,
                 createdAt: new Date().toISOString(),
                 recoveryCode:uuid(),
@@ -58,9 +56,9 @@ export const authService = {
 
     },
 
-    async _generateHash(password: string, passwordSalt: string): Promise<string> {
+    async _generateHash(password: string): Promise<string> {
 
-        return await bcrypt.hash(password, passwordSalt)
+        return await bcrypt.hash(password, 10)
     },
 
     async registrationConfirmation(code: string): Promise<boolean> {
@@ -129,31 +127,25 @@ export const authService = {
         if (user.accountData.recoveryCode !== recoveryCode) return false
         if (user.accountData.recoveryCodeExpiration < new Date()) return false
 
-        const passwordSalt = await bcrypt.genSalt(10)
-        const passwordHash = await this._generateHash(newPassword, passwordSalt)
+        const passwordHash = await bcrypt.hash(newPassword, 10)
 
-        return await userRepository.updateUserAccountData(user._id, passwordSalt, passwordHash)
+        return await userRepository.updateUserAccountData(user._id, passwordHash)
     },
 
     async deleteUser(id: string): Promise<boolean> {
         return await userRepository.deleteUser(id)
     },
 
-    async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDbType | null> {
+    async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await userRepository.checkCredentials(loginOrEmail)
+        const user: UserAccountDbType | null = await userRepository.findUserByLoginOrEmail(loginOrEmail)
 
-        if (!user) return null
+        if (!user) return false
 
-        if (!user.emailConfirmation.isConfirmed) return null
+        if (!user.emailConfirmation.isConfirmed) return false
 
-        const passwordSalt = user.accountData.passwordSalt;
+        return bcrypt.compare(password, user.accountData.passwordHash)
 
-        const passwordHash = await this._generateHash(password, passwordSalt);
-
-        if (passwordHash !== user.accountData.passwordHash) return null
-
-        return user
     },
 
     async findUserById(userId: string): Promise<UserAccountDbType | null> {

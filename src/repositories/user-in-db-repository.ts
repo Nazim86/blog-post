@@ -37,10 +37,10 @@ export const userRepository = {
     },
 
 
-    async updateUserAccountData(userId: ObjectId, passwordSalt:string, passwordHash:string): Promise<boolean> {
+    async updateUserAccountData(userId: ObjectId, passwordHash:string): Promise<boolean> {
 
         const result = await usersAccountsCollection.updateMany({_id: userId}, {$set:
-                {"accountData.passwordSalt":passwordSalt,"accountData.passwordHash":passwordHash}})
+                {"accountData.passwordHash":passwordHash}})
         return result.modifiedCount === 1
     },
 
@@ -54,7 +54,7 @@ export const userRepository = {
 
     },
 
-    async checkCredentials(loginOrEmail: string): Promise<UserAccountDbType | null> {
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDbType | null> {
         return await usersAccountsCollection.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
     },
 

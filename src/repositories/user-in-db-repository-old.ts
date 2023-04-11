@@ -5,7 +5,7 @@ import {ObjectId} from "mongodb";
 import {UserByIdType} from "./types/user-by-id-type";
 import {UserAccountDbType} from "./types/user-account-db-type";
 
-export const userRepository = {
+export const userRepositoryOld = {
     async createNewUser(newUser: UserAccountDbType): Promise<UserViewType> {
 
         await usersAccountsCollection.insertOne(newUser)
@@ -30,7 +30,7 @@ export const userRepository = {
 
     },
 
-    async checkCredentials(loginOrEmail: string): Promise<UserAccountDbType | null> {
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDbType | null> {
         return await usersAccountsCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]})
     },
 

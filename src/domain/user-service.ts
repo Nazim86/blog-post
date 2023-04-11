@@ -1,4 +1,4 @@
-import {userRepository} from "../repositories/user-in-db-repository-old";
+import {userRepositoryOld} from "../repositories/user-in-db-repository-old";
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
 import {UserViewType} from "../repositories/types/user-view-type";
@@ -20,7 +20,6 @@ export const userService = {
             accountData: {
                 login: login,
                 passwordHash,
-                passwordSalt,
                 email: email,
                 createdAt: new Date().toISOString(),
                 recoveryCode:uuid(),
@@ -41,7 +40,7 @@ export const userService = {
         }
 
 
-        return await userRepository.createNewUser(newUser)
+        return await userRepositoryOld.createNewUser(newUser)
 
     },
 
@@ -51,27 +50,23 @@ export const userService = {
     },
 
     async deleteUser(id: string): Promise<boolean> {
-        return await userRepository.deleteUser(id)
+        return await userRepositoryOld.deleteUser(id)
     },
 
-    async checkCredentials(loginOrEmail: string, password: string): Promise<UserAccountDbType | null> {
+    async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
 
-        const user = await userRepository.checkCredentials(loginOrEmail)
+        const user: UserAccountDbType | null = await userRepositoryOld.findUserByLoginOrEmail(loginOrEmail)
 
-        if (!user) return null
+        if (!user) return false
 
-        const passwordSalt = user.accountData.passwordSalt;
+        if (!user.emailConfirmation.isConfirmed) return false
 
-        const passwordHash = await this._generateHash(password, passwordSalt);
+        return bcrypt.compare(password, user.accountData.passwordHash)
 
-        if (passwordHash !== user.accountData.passwordHash) {
-            return null
-        }
-        return user
     },
 
     async findUserById (userId:string):Promise<UserByIdType |null>{
-        return await userRepository.findUserById(userId)
+        return await userRepositoryOld.findUserById(userId)
     }
 
 
