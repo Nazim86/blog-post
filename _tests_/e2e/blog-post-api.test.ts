@@ -1404,7 +1404,10 @@ describe("auth testing", () => {
 
     it('should set new password by recovery code and return 204',
         async () => {
-        //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
+            // // await delay(10000) //real test
+            await ipCollection.deleteMany({}) //imitation in order to run test faster
+
+            //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
             const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
             const currentUser = await authFunctions.getCurrentUser(refreshToken)
             const userAccountDb = await usersAccountsCollection.findOne({_id: new ObjectId(currentUser.body.userId)})
@@ -1418,14 +1421,13 @@ describe("auth testing", () => {
             const result = await authFunctions.setNewPassword(passwordAndRecoveryCode)
             expect(result.status).toBe(204)
 
-            // // await delay(10000) //real test
-            // await ipCollection.deleteMany({}) //imitation in order to run test faster
 
             const loginUserData = {
                 loginOrEmail: "nazim86mammadov@yandex.ru",
                 password: "567899"
             }
 
+            //login with new passord
             const loginUser = await authFunctions.loginUser(loginUserData, "iphone 15")
             expect(loginUser.status).toBe(200)
             expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
