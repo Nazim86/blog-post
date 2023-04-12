@@ -8,13 +8,15 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
 
     const ipDataByIpAddress: IpDataType|null= await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]})
 
+    console.log(req.ip)
+
     if (!ipDataByIpAddress) {
 
         const ipData: IpDataType = {
             endPoint: req.originalUrl,
             ipAddress: req.ip,
             issuedAt: new Date().getTime(),
-            attempts: 2
+            attempts: 1
         }
         await ipCollection.insertOne(ipData)
     }

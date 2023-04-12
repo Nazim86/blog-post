@@ -91,7 +91,7 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        sameSite: 'strict', //secure: true,
+        sameSite: 'strict', secure: true,
         maxAge: 24 * 60 * 60 * 1000
     });
 
@@ -113,7 +113,7 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', //secure: true,
+            sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
