@@ -13,6 +13,7 @@ export const emailAdapter={
             },
         });
 
+
         // send mail with defined transport object
         await transporter.sendMail({
             from: '"Jan Cloude Vandamme 👻" <fuadson86@gmail.com>', // sender address
