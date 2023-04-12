@@ -32,7 +32,7 @@ export const userQueryRepo = {
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: mappedUsers
+            items: getUsers
         }
 
     }

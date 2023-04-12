@@ -13,18 +13,18 @@ export const emailAdapter = {
             },
         });
 
-        await new Promise((resolve, reject) => {
-            // verify connection configuration
-            transporter.verify(function (error: Error | null, success: boolean) {
-                if (error) {
-                    console.log(error);
-                    reject(error);
-                } else {
-                    console.log("Server is ready to take our messages");
-                    resolve(success);
-                }
-            });
-        });
+        // await new Promise((resolve, reject) => {
+        //     // verify connection configuration
+        //     transporter.verify(function (error: Error | null, success: boolean) {
+        //         if (error) {
+        //             console.log(error);
+        //             reject(error);
+        //         } else {
+        //             console.log("Server is ready to take our messages");
+        //             resolve(success);
+        //         }
+        //     });
+        // });
 
         const mailData = {
             from: '"Jan Cloude Vandamme 👻" <fuadson86@gmail.com>', // sender address
@@ -36,21 +36,9 @@ export const emailAdapter = {
       </p>`,// html body
         }
 
-        await new Promise((resolve, reject) => {
             // send mail
             transporter.sendMail(
                 mailData,
-                (err: Error | null, info: SentMessageInfo) => {
-                    if (err) {
-                        console.error(err);
-                        reject(err);
-                    } else {
-                        console.log(info);
-                        resolve(info);
-                    }
-                }
             );
-        });
-
     },
 }

@@ -35,7 +35,7 @@ export const userService = {
                     hours: 1,
                     minutes: 3
                 }),
-                isConfirmed: false,
+                isConfirmed: true,
                 sentEmailsByDate: new Date()
             }
         }

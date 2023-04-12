@@ -85,15 +85,13 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
     const ipAddress = req.ip;
     const deviceName = req.headers['user-agent'] ?? "chrome"
 
-    // console.log(deviceName) del
-
 
     await authService.insertRefreshTokenMetaData(refreshToken, ipAddress!, deviceName!)
 
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
-        sameSite: 'strict', secure: true,
+        sameSite: 'strict', //secure: true,
         maxAge: 24 * 60 * 60 * 1000
     });
 
@@ -115,7 +113,7 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            sameSite: 'strict', secure: true,
+            sameSite: 'strict', //secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
@@ -155,7 +153,7 @@ authRoutes.post('/new-password', checkIpLimitMiddleware,newPasswordValidation,re
         const isNewPasswordSet: boolean = await authService.setNewPasswordByRecoveryCode(newPassword,recoveryCode)
 
         if (!isNewPasswordSet) {
-            return res.status(400).send(errorMessage("Wrong code", "code"))
+            return res.status(400).send(errorMessage("Wrong code", "recoveryCode"))
         }
         res.sendStatus(204)
     });

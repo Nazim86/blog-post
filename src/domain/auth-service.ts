@@ -44,7 +44,7 @@ export const authService = {
         const createUser = await userRepository.createNewUser(newUser)
 
         try {
-            console.log("confirmationCode",createUser.emailConfirmation.confirmationCode,)
+            console.log("confirmation code",createUser.emailConfirmation.confirmationCode)
             await emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
                 createUser.accountData.email, registrationMessage)
 
@@ -54,11 +54,6 @@ export const authService = {
 
         return createUser
 
-    },
-
-    async _generateHash(password: string): Promise<string> {
-
-        return await bcrypt.hash(password, 10)
     },
 
     async registrationConfirmation(code: string): Promise<boolean> {
@@ -104,8 +99,10 @@ export const authService = {
             try {
                 const recoveryCode = uuid()
                 console.log("Recovery code",recoveryCode)
-                await usersAccountsCollection.updateMany({_id: user._id}, {$set:
-                        {"accountData.recoveryCode": recoveryCode, "accountData.recoveryCodeExpiration":add(new Date(), {
+                await usersAccountsCollection.updateOne({_id: user._id}, {$set:
+                        {
+                            "accountData.recoveryCode": recoveryCode,
+                            "accountData.recoveryCodeExpiration": add(new Date(), {
                                 hours: 1,
                                 minutes: 3
                             })}})

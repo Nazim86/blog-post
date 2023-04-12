@@ -26,7 +26,7 @@ export const client = new MongoClient(url)
 const db = client.db('blogPost')
 
 //mongoose models
-export const BlogModel = mongoose.model("blogs",blogSchema)
+// export const BlogModel = mongoose.model("blogs",blogSchema)
 
 
 //mongoDb collections
@@ -50,7 +50,7 @@ export const ipCollection = db.collection<IpDataType>("ipAddresses")
 export async function runDb (){
 
     try{
-        await mongoose.connect('mongodb://127.0.0.1:27017/blogPost');
+        // await mongoose.connect('mongodb://127.0.0.1:27017/blogPost');
         await client.connect();
         await client.db('blogPost').command({ping:1})
         console.log("Connected to mongo server successfully")
@@ -58,6 +58,6 @@ export async function runDb (){
     catch {
         console.log("Can't connect to Db")
         await client.close()
-        await mongoose.connection.close()
+        // await mongoose.connection.close()
     }
 }
