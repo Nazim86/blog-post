@@ -100,6 +100,7 @@ authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidati
 
 authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
+
         clearExpiredTokens.start();
 
         const user = req.context.user!
@@ -145,8 +146,6 @@ authRoutes.post('/password-recovery', checkIpLimitMiddleware, emailValidation, i
     });
 authRoutes.post('/new-password', checkIpLimitMiddleware,newPasswordValidation,recoveryCodeValidation, inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
-
-
         const newPassword = req.body.newPassword
         const recoveryCode = req.body.recoveryCode
 
