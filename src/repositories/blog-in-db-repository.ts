@@ -1,4 +1,4 @@
-import { blogsCollection} from "../db/db";
+import {BlogModel, blogsCollection} from "../db/db";
 import {ObjectId} from "mongodb";
 import {blogMapping} from "../mapping/blog-mapping";
 import {BlogsViewType} from "./types/blogs-view-type";
@@ -11,11 +11,11 @@ export const blogRepository = {
     async createBlog(newBlog: BlogsDbType): Promise<BlogsViewType> {
 
 
-        const result = await blogsCollection.insertOne(newBlog)
+        const result = await BlogModel.create(newBlog)
 
 
         return {
-            id: result.insertedId.toString(),
+            id: result._id.toString(),
             name: newBlog.name,
             description: newBlog.description,
             websiteUrl: newBlog.websiteUrl,
@@ -60,12 +60,9 @@ export const blogRepository = {
             )
             return result.matchedCount === 1
         }
-
         catch (e) {
             return false
         }
-
-
     },
 
     async deleteBlogById(id: string): Promise<boolean> {
