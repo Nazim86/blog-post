@@ -29,6 +29,7 @@ const db = client.db('blogPost')
 export const BlogModel = mongoose.model("blogs",blogSchema)
 
 
+
 //mongoDb collections
 export const blogsCollection = db.collection<BlogsDbType>("blogs")
 export const postsCollection = db.collection<PostsDbType>("posts")
