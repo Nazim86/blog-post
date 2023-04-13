@@ -1304,8 +1304,8 @@ describe("auth testing", () => {
             //Creating new user
             await authFunctions.registerUser({
                 login: "Testing403",
-                    password: "123456",
-                    email: "testing403@yandex.ru"
+                password: "123456",
+                email: "testing403@yandex.ru"
             })
 
             //confirming new user
@@ -1394,13 +1394,92 @@ describe("auth testing", () => {
 
         });
 
+    it('should LIMIT send password recovery code if more than 5 attempt in 10s. and return 429',
+        async () => {
+            let result: any;
+            for (let i = 0; i <= 6; i++) {
+                result = await authFunctions.sendRecoveryCode({email: "fakeEmail@fake.com"})
+            }
+            expect(result.status).toBe(429)
+        });
+
+    it('should NOT send password recovery code to invalid email format and return 400',
+        async () => {
+            // // await delay(10000) //real test
+            await ipCollection.deleteMany({}) //imitation in order to run test faster
+
+            const result = await authFunctions.sendRecoveryCode({email: "222>gmail.com"})
+            expect(result.status).toBe(400)
+        });
+
+
+    it('should send password recovery code by even NOT existing email address and return 204',
+        async () => {
+
+            const result = await authFunctions.sendRecoveryCode({email: "fakeEmail@fake.com"})
+            expect(result.status).toBe(204)
+        });
+
+
     it('should send password recovery code by email and return 204',
         async () => {
 
-            const result = await authFunctions.sendRecoveryCode({email:newUserEmail})
+            const result = await authFunctions.sendRecoveryCode({email: newUserEmail})
             expect(result.status).toBe(204)
+        });
+
+    it('should NOT set new password with short password and return 400',
+        async () => {
+
+            //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const currentUser = await authFunctions.getCurrentUser(refreshToken)
+            const userAccountDb = await usersAccountsCollection.findOne({_id: new ObjectId(currentUser.body.userId)})
+
+            const recoveryCode = userAccountDb!.accountData.recoveryCode
+            const passwordAndRecoveryCode = {
+                newPassword: "5678",
+                recoveryCode: recoveryCode
+            }
+            const result = await authFunctions.setNewPassword(passwordAndRecoveryCode)
+            expect(result.status).toBe(400)
 
         });
+
+    it('should NOT set new password with wrong recovery code and return 400',
+        async () => {
+
+            const passwordAndRecoveryCode = {
+                newPassword: "567888",
+                recoveryCode: "assf"
+            }
+            const result = await authFunctions.setNewPassword(passwordAndRecoveryCode)
+            expect(result.status).toBe(400)
+        });
+
+    it('should NOT set new password by recovery code if more than 5 attempst in 10s. and return 429',
+        async () => {
+            // // await delay(10000) //real test
+            await ipCollection.deleteMany({}) //imitation in order to run test faster
+
+            let result: any;
+
+            //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
+            const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
+            const currentUser = await authFunctions.getCurrentUser(refreshToken)
+            const userAccountDb = await usersAccountsCollection.findOne({_id: new ObjectId(currentUser.body.userId)})
+
+            const recoveryCode = userAccountDb!.accountData.recoveryCode
+            const passwordAndRecoveryCode = {
+                newPassword: "567899",
+                recoveryCode: recoveryCode
+            }
+            for (let i = 0; i <= 6; i++) {
+                result = await authFunctions.setNewPassword(passwordAndRecoveryCode)
+            }
+            expect(result.status).toBe(429)
+        });
+
 
     it('should set new password by recovery code and return 204',
         async () => {
@@ -1414,8 +1493,8 @@ describe("auth testing", () => {
 
             const recoveryCode = userAccountDb!.accountData.recoveryCode
             const passwordAndRecoveryCode = {
-                newPassword:"567899",
-                recoveryCode:recoveryCode
+                newPassword: "567899",
+                recoveryCode: recoveryCode
             }
 
             const result = await authFunctions.setNewPassword(passwordAndRecoveryCode)
@@ -1435,13 +1514,12 @@ describe("auth testing", () => {
         });
 
 
-
     it('should NOT logout with wrong refreshToken and return 401',
         async () => {
 
             const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
-            const result = await authFunctions.logout({refreshToken:"sd"})
+            const result = await authFunctions.logout({refreshToken: "sd"})
             expect(result.status).toBe(401)
 
             const loginUser = await authFunctions.getCurrentUser(refreshToken)

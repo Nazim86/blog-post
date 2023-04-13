@@ -21,7 +21,6 @@ export const createdUser = {
     accountData: {
         login: "Leo",
         passwordHash:expect.any(String),
-        passwordSalt:expect.any(String),
         email: newUserEmail,
         createdAt: expect.any(String),
         recoveryCode:expect.any(String),
