@@ -6,17 +6,17 @@ import {ipCollection} from "../db/db";
 export const checkIpLimitMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
 
-    const ipDataByIpAddress: IpDataType|null= await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]})
+    const ipDataByIpAddress: IpDataType|null= await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.baseUrl}]})
 
-    console.log(req.ip)
+    console.log('End point', req.baseUrl)
 
     if (!ipDataByIpAddress) {
 
         const ipData: IpDataType = {
-            endPoint: req.originalUrl,
+            endPoint: req.baseUrl,
             ipAddress: req.ip,
             issuedAt: new Date().getTime(),
-            attempts: 1
+            attempts: 2
         }
         await ipCollection.insertOne(ipData)
     }
@@ -24,8 +24,8 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
     if (ipDataByIpAddress) {
 
         if ((new Date().getTime() - ipDataByIpAddress.issuedAt) > 10000) {
-            await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]},{$set:{attempts:1,issuedAt:new Date().getTime()}})
-
+            // await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.baseUrl}]},{$set:{attempts:1,issuedAt:new Date().getTime()}})
+            await ipCollection.deleteMany({})
             return next()
         }
 
@@ -34,7 +34,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
         }
 
         if ((new Date().getTime() - ipDataByIpAddress.issuedAt) < 10000) {
-            await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]},{$inc:{attempts:1}})
+            await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.baseUrl}]},{$inc:{attempts:1}})
 
             return next()
 

@@ -3,16 +3,13 @@ import {jwtService} from "../domain/jwt-service";
 import {settings} from "../settings";
 import {authService} from "../domain/auth-service";
 import {tokensCollection} from "../db/db";
-let x=1
 
 export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+
     const refreshToken = req.cookies.refreshToken
 
     if (!req.cookies.refreshToken ) {
-
         return res.sendStatus(401)
-
-
     }
 
     const refreshTokenMetaData:any = await jwtService.getRefreshTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET) //TODO replace any

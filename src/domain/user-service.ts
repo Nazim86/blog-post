@@ -40,7 +40,7 @@ export const userService = {
             }
         }
 
-
+        console.log(newUser.emailConfirmation.confirmationCode)
         // return await userRepositoryOld.createNewUser(newUser) old version
 
         await userRepository.createNewUser(newUser)
