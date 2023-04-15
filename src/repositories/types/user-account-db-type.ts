@@ -2,17 +2,16 @@ import {ObjectId} from "mongodb";
 
 
 
-type EmailConfirmationType={
+export type EmailConfirmationType={
 
     confirmationCode:string
     emailExpiration: Date
     isConfirmed:boolean
-    sentEmailsByDate:Date
 }
 
 
 
-type UserType = {
+export type UserType = {
     login: string
     passwordHash:string
     email: string

@@ -37,7 +37,6 @@ export const authService = {
                     minutes: 3
                 }),
                 isConfirmed: false,
-                sentEmailsByDate: new Date()
             }
         }
 
@@ -98,7 +97,6 @@ export const authService = {
 
             try {
                 const recoveryCode = uuid()
-                console.log("Recovery code",recoveryCode)
                 await usersAccountsCollection.updateOne({_id: user._id}, {$set:
                         {
                             "accountData.recoveryCode": recoveryCode,

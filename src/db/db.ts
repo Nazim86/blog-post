@@ -10,6 +10,8 @@ import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-d
 import {IpDataType} from "../repositories/types/ip-type";
 import {BlogSchema} from "../repositories/schemas/blog-schema";
 import {PostSchema} from "../repositories/schemas/post-schema";
+import {UserAccountSchema} from "../repositories/schemas/user-schema";
+import {CommentSchema} from "../repositories/schemas/comment-schema";
 
 
 // getting-started.js
@@ -29,6 +31,8 @@ const db = client.db('blogPost')
 //mongoose models
 export const BlogModel = mongoose.model("blogs",BlogSchema)
 export const PostModel = mongoose.model('posts',PostSchema)
+export const UserAccountModel = mongoose.model('usersAccounts',UserAccountSchema)
+export const CommentModel = mongoose.model("comments", CommentSchema)
 
 
 

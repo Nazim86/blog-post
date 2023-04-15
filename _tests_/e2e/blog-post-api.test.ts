@@ -883,12 +883,14 @@ describe("user testing", () => {
         expect(newUser.status).toBe(201)
         expect(newUser.body).toEqual(userCreatedData)
 
+
         users.push(newUser.body)
 
         const expectedResult = {...createdUserWithPagination}
 
         const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
         expect(status).toBe(200)
+        console.log(body)
         expect(body).toEqual(expectedResult)
 
     });

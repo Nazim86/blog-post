@@ -1,4 +1,4 @@
-import {usersAccountsCollection} from "../db/db";
+import {UserAccountModel} from "../db/db";
 
 import {ObjectId} from "mongodb";
 import {UserAccountDbType} from "./types/user-account-db-type";
@@ -6,40 +6,40 @@ import {UserAccountDbType} from "./types/user-account-db-type";
 export const userRepository = {
     async createNewUser(newUser: UserAccountDbType): Promise<UserAccountDbType> {
 
-        await usersAccountsCollection.insertOne(newUser)
+        await UserAccountModel.create(newUser)
         return newUser
 
     },
 
     async findUserByConfirmationCode(code: string): Promise<UserAccountDbType | null> {
 
-        return await usersAccountsCollection.findOne(
+        return UserAccountModel.findOne(
             {"emailConfirmation.confirmationCode": code})
 
     },
 
     async findUserByRecoveryCode(recoveryCode: string): Promise<UserAccountDbType | null> {
 
-        return await usersAccountsCollection.findOne(
+        return UserAccountModel.findOne(
             {"accountData.recoveryCode": recoveryCode})
 
     },
 
     async findUserByEmail(email: string) {
 
-        return await usersAccountsCollection.findOne({"accountData.email": email})
+        return UserAccountModel.findOne({"accountData.email": email})
     },
 
     async updateConfirmation(userId: ObjectId): Promise<boolean> {
 
-        const result = await usersAccountsCollection.updateOne({_id: userId}, {$set: {"emailConfirmation.isConfirmed": true}})
+        const result = await UserAccountModel.updateOne({_id: userId}, {$set: {"emailConfirmation.isConfirmed": true}})
         return result.modifiedCount === 1
     },
 
 
     async updateUserAccountData(userId: ObjectId, passwordHash:string): Promise<boolean> {
 
-        const result = await usersAccountsCollection.updateOne({_id: userId}, {
+        const result = await UserAccountModel.updateOne({_id: userId}, {
             $set:
                 {"accountData.passwordHash": passwordHash}})
         return result.modifiedCount === 1
@@ -47,7 +47,7 @@ export const userRepository = {
 
     async deleteUser(id: string): Promise<boolean> {
         try {
-            const result = await usersAccountsCollection.deleteOne({_id: new ObjectId(id)});
+            const result = await UserAccountModel.deleteOne({_id: new ObjectId(id)});
             return result.deletedCount === 1;
         } catch (e) {
             return false
@@ -56,11 +56,11 @@ export const userRepository = {
     },
 
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDbType | null> {
-        return usersAccountsCollection.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
+        return UserAccountModel.findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
     },
 
     async findUserById(userId: string): Promise<UserAccountDbType | null> {
-        const user = await usersAccountsCollection.findOne({_id: new ObjectId(userId)})
+        const user = await UserAccountModel.findOne({_id: new ObjectId(userId)})
         if (!user) return null
         return user
 
