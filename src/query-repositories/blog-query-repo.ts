@@ -1,21 +1,17 @@
-import {blogsCollection} from "../db/db";
+import {BlogModel} from "../db/db";
 import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {blogMapping} from "../mapping/blog-mapping";
-import {Filter, ObjectId} from "mongodb";
-import {BlogsDbType} from "../repositories/types/blogs-db-type";
-import {QueryPaginationType} from "../repositories/types/query-type";
+import {ObjectId} from "mongodb";
+import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 
-// type SortedBy = {
-//     fieldname: keyof TemplateStringsArray
-//     direction: 'asc' | 'desc'
-// }
+
 export const blogQueryRepo = {
 
     async getBlogById(id: string): Promise<BlogsViewType | boolean> {
 
         try {
 
-            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)})
+            const foundBlog = await BlogModel.findOne({_id: new ObjectId(id)})
             if (foundBlog) {
                 return {
                     id: foundBlog._id.toString(),
@@ -40,16 +36,16 @@ export const blogQueryRepo = {
         pageNumber: number = 1, pageSize: number = 10): Promise<QueryPaginationType<BlogsViewType[]>> {
 
 
-        const filter: Filter<BlogsDbType> = {name: {$regex: searchNameTerm ?? '', $options: 'i'}}
+        const filter= {name: {$regex: searchNameTerm ?? '', $options: 'i'}}
         const skipSize = (pageNumber - 1) * pageSize
-        const totalCount = await blogsCollection.countDocuments(filter)
+        const totalCount = await BlogModel.countDocuments(filter)
         const pagesCount = Math.ceil(totalCount / pageSize)
 
-        const getBlog = await blogsCollection.find(filter)
+        const getBlog = await BlogModel.find(filter)
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1}) // did not understand well
             .skip(skipSize)
             .limit(pageSize)
-            .toArray()
+            .lean()
 
         const mappedBlog = blogMapping(getBlog)
         return {

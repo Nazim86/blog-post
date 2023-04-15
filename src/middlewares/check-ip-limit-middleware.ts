@@ -1,12 +1,12 @@
 import {NextFunction, Request, Response} from "express";
 import {IpDataType} from "../repositories/types/ip-type";
-import {ipCollection} from "../db/db";
+import {IpModel} from "../db/db";
 
 
 export const checkIpLimitMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
     const currentDate = new Date().getTime()
-    const ipDataByIpAddress: IpDataType|null= await ipCollection.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]})
+    const ipDataByIpAddress: IpDataType|null= await IpModel.findOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]})
 
     if (!ipDataByIpAddress) {
 
@@ -16,14 +16,14 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
             issuedAt: currentDate,
             attempts: 2
         }
-        await ipCollection.insertOne(ipData)
+        await IpModel.create(ipData)
     }
 
     if (ipDataByIpAddress) {
 
         if ((currentDate - ipDataByIpAddress.issuedAt) > 10000) {
             // await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.baseUrl}]},{$set:{attempts:1,issuedAt:new Date().getTime()}})
-            await ipCollection.deleteMany({})
+            await IpModel.deleteMany({})
             return next()
         }
 
@@ -32,7 +32,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
         }
 
         if ((currentDate - ipDataByIpAddress.issuedAt) < 10000) {
-            await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]},{$inc:{attempts:1}})
+            await IpModel.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.originalUrl}]},{$inc:{attempts:1}})
 
             return next()
 

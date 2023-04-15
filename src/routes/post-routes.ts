@@ -15,7 +15,7 @@ import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-acc
 import {commentService} from "../domain/comment-service";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
-import {QueryPaginationType} from "../repositories/types/query-type";
+import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 
 
 export const postRoutes = Router({})

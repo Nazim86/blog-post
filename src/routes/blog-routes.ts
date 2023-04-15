@@ -13,7 +13,7 @@ import {getPaginationValues} from "../functions/pagination-values";
 import {postQueryRepo} from "../query-repositories/posts-query-repo";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {postService} from "../domain/posts-service";
-import {QueryPaginationType} from "../repositories/types/query-type";
+import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 
 
 export const blogRoutes = Router({})

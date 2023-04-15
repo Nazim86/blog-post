@@ -9,7 +9,7 @@ import {usersAccountsCollection} from "../db/db";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 import {tokenInDbRepository} from "../repositories/token-in-db-repository";
 import {jwtService} from "./jwt-service";
-import {passwordRecoveryMessage, registrationMessage} from "../repositories/email-messages-repo";
+import {passwordRecoveryMessage, registrationMessage} from "../managers/email-messages-repo";
 
 export const authService = {
 
