@@ -5,4 +5,4 @@ export type IpDataType = {
     attempts: number
 }
 
-// export let ipCollection: IpDataType[] = [];
+// export let IpModel: IpDataType[] = [];

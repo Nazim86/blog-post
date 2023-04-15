@@ -22,7 +22,7 @@ export const checkIpLimitMiddleware = async (req: Request, res: Response, next: 
     if (ipDataByIpAddress) {
 
         if ((currentDate - ipDataByIpAddress.issuedAt) > 10000) {
-            // await ipCollection.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.baseUrl}]},{$set:{attempts:1,issuedAt:new Date().getTime()}})
+            // await IpModel.updateOne({$and :[{ipAddress:req.ip},{endPoint: req.baseUrl}]},{$set:{attempts:1,issuedAt:new Date().getTime()}})
             await IpModel.deleteMany({})
             return next()
         }

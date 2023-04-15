@@ -21,14 +21,18 @@ import {IpSchema} from "../repositories/schemas/ip-schema";
 
 dotenv.config()
 
-const url = process.env.NODE_ENV === "test" ? 'mongodb://0.0.0.0:27017': process.env.MONGO_URL
+// const url = process.env.NODE_ENV === "test" ? 'mongodb://0.0.0.0:27017': process.env.MONGO_URL
+// const url = process.env.NODE_ENV === "test" ? 'mongodb://127.0.0.1:27017': process.env.MONGOOSE_URL
 
-if (!url){
-    throw new Error("Url does not found!")
-}
+const mongooseAtlasUrl = process.env.MONGOOSE_URL
+const testUrl = 'mongodb://127.0.0.1:27017/blogPost'
+
+// if (!url){
+//     throw new Error("Url does not found!")
+// }
 const dbName = 'blogPost'
-export const client = new MongoClient(url)
-const db = client.db('blogPost')
+// export const client = new MongoClient(url)
+// const db = client.db('blogPost')
 
 //mongoose models
 export const BlogModel = mongoose.model("blogs",BlogSchema)
@@ -39,35 +43,28 @@ export const TokenModel = mongoose.model("validTokenList",TokenSchema)
 export const IpModel = mongoose.model('ipData',IpSchema)
 
 
-//mongoDb collections
-export const blogsCollection = db.collection<BlogsDbType>("blogs")
-export const postsCollection = db.collection<PostsDbType>("posts")
-// export const usersCollection = db.collection<UserDbType>("users")
-export const commentsCollection = db.collection<CommentsDbType>("comments")
-export const usersAccountsCollection = db.collection<UserAccountDbType>("usersAccounts")
-export const tokensCollection = db.collection<RefreshTokenMetaDbType>("validTokenList")
-export const ipCollection = db.collection<IpDataType>("ipAddresses")
-
-
-// main().catch(err => console.log(err));
-//
-// async function main() {
-//     await mongoose.connect('mongodb://127.0.0.1:27017/test');
-//
-//     // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
-// }
+// //mongoDb collections
+// export const blogsCollection = db.collection<BlogsDbType>("blogs")
+// export const postsCollection = db.collection<PostsDbType>("posts")
+// // export const usersCollection = db.collection<UserDbType>("users")
+// export const commentsCollection = db.collection<CommentsDbType>("comments")
+// export const UserAccountModel = db.collection<UserAccountDbType>("usersAccounts")
+// export const tokensCollection = db.collection<RefreshTokenMetaDbType>("validTokenList")
+// export const IpModel = db.collection<IpDataType>("ipAddresses")
 
 export async function runDb (){
 
     try{
-        await mongoose.connect('mongodb://127.0.0.1:27017/blogPost');
-        await client.connect();
-        await client.db('blogPost').command({ping:1})
+        await mongoose.connect('mongodb://127.0.0.1:27017'+'/'+ dbName);
+        // await mongoose.connect(testUrl);
+
+        // await client.connect();
+        // await client.db('blogPost').command({ping:1})
         console.log("Connected to mongo server successfully")
     }
     catch {
         console.log("Can't connect to Db")
-        await client.close()
+        // await client.close()
         await mongoose.connection.close()
     }
 }

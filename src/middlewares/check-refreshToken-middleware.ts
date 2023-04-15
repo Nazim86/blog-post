@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from "express";
 import {jwtService} from "../domain/jwt-service";
 import {settings} from "../settings";
 import {authService} from "../domain/auth-service";
-import {tokensCollection} from "../db/db";
+import {TokenModel} from "../db/db";
 
 export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -20,7 +20,7 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
 
     const {deviceId,lastActiveDate,userId} = refreshTokenMetaData
 
-    const getTokenDataFromDb = await tokensCollection.findOne({deviceId:deviceId,lastActiveDate:lastActiveDate})
+    const getTokenDataFromDb = await TokenModel.findOne({deviceId:deviceId,lastActiveDate:lastActiveDate})
 
     if (!getTokenDataFromDb){
         // console.log(`refreshTokenFromMiddleware ${x++}`)

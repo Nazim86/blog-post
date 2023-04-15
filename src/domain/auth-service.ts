@@ -5,7 +5,7 @@ import {v4 as uuid} from 'uuid';
 import add from "date-fns/add"
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {emailManager} from "../managers/email-manager";
-import {usersAccountsCollection} from "../db/db";
+import {UserAccountModel} from "../db/db";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 import {tokenInDbRepository} from "../repositories/token-in-db-repository";
 import {jwtService} from "./jwt-service";
@@ -77,7 +77,7 @@ export const authService = {
 
         try {
             const newCode = uuid()
-            await usersAccountsCollection.updateMany({_id: user._id}, [{$set: {"emailConfirmation.confirmationCode": newCode}},
+            await UserAccountModel.updateMany({_id: user._id}, [{$set: {"emailConfirmation.confirmationCode": newCode}},
                 {$set: {"emailConfirmation.sentEmailsByDate": new Date()}}])
 
             await emailManager.sendConfirmationEmail(newCode, user.accountData.email, registrationMessage)
@@ -97,7 +97,7 @@ export const authService = {
 
             try {
                 const recoveryCode = uuid()
-                await usersAccountsCollection.updateOne({_id: user._id}, {$set:
+                await UserAccountModel.updateOne({_id: user._id}, {$set:
                         {
                             "accountData.recoveryCode": recoveryCode,
                             "accountData.recoveryCodeExpiration": add(new Date(), {

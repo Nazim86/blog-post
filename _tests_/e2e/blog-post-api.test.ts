@@ -30,7 +30,6 @@ import {
     userPaginationValues
 } from "./data/user-data";
 import {notCreateUser} from "./functions/user-should-not-functions";
-import {client, ipCollection, usersAccountsCollection} from "../../src/db/db";
 import {authFunctions} from "./functions/auth-functions";
 import {commentFunctions} from "./functions/comment-functions";
 import {
@@ -44,13 +43,14 @@ import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
 import mongoose from "mongoose";
 import {ObjectId} from "mongodb";
+import {IpModel, UserAccountModel} from "../../src/db/db";
 
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 afterAll(async () => {
-    await client.close();
+    // await client.close();
     await mongoose.connection.close()
 
 });
@@ -942,7 +942,7 @@ describe("user testing", () => {
 });
 
 describe("auth testing", () => {
-    jest.setTimeout(3 * 60 * 1000)
+    // jest.setTimeout(0 * 60 * 1000)
 
     let newUser: any
     let loginUser: any
@@ -967,7 +967,7 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(400)
 
         //checking that user did not create
-        const users = await usersAccountsCollection.find({}).toArray()
+        const users = await UserAccountModel.find({}).lean()
         expect(users).toEqual([])
     });
 
@@ -977,7 +977,7 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(400)
 
         //checking that user did not create
-        const users = await usersAccountsCollection.find({}).toArray()
+        const users = await UserAccountModel.find({}).lean()
         expect(users).toEqual([])
     });
 
@@ -987,7 +987,7 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(400)
 
         //checking that user did not create
-        const users = await usersAccountsCollection.find({}).toArray()
+        const users = await UserAccountModel.find({}).lean()
         expect(users).toEqual([])
     });
 
@@ -998,7 +998,7 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(204)
 
         //checking that user created
-        const users = await usersAccountsCollection.find({}).toArray()
+        const users = await UserAccountModel.find({}).lean()
         expect(users).toEqual([createdUser])
 
     });
@@ -1024,7 +1024,7 @@ describe("auth testing", () => {
 
         //checking creating user after 10sec.,because ip limit counts 5 attempts in 10s.
         // await delay(10000) //real test
-        await ipCollection.deleteMany({}) //imitation in order to run test faster
+        await IpModel.deleteMany({}) //imitation in order to run test faster
         fakeUser = await authFunctions.registerUser({
             ...newUserData,
             login: `John9`,
@@ -1051,7 +1051,7 @@ describe("auth testing", () => {
 
     it('should resend registration email and return 204', async () => {
         // await delay(10000) //real test
-        await ipCollection.deleteMany({}) //imitation in order to run test faster
+        await IpModel.deleteMany({}) //imitation in order to run test faster
         const result = await authFunctions.resendEmail({email: newUserEmail})
         expect(result.status).toBe(204)
     });
@@ -1062,7 +1062,7 @@ describe("auth testing", () => {
         expect(result.status).toBe(400)
 
         //checking user not confirmed
-        const user = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
+        const user = await UserAccountModel.findOne({"accountData.email": newUserEmail})
         expect(user!.emailConfirmation.isConfirmed).toEqual(false)
 
     });
@@ -1078,16 +1078,16 @@ describe("auth testing", () => {
 
     it('should confirm registration and return 204', async () => {
         // await delay(10000) //real test
-        await ipCollection.deleteMany({}) //imitation in order to run test faster
+        await IpModel.deleteMany({}) //imitation in order to run test faster
 
-        const userWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
+        const userWithoutConfirm = await UserAccountModel.findOne({"accountData.email": newUserEmail})
 
         const result = await authFunctions.registrationConfirmation({code: userWithoutConfirm?.emailConfirmation.confirmationCode})
 
         expect(result.status).toBe(204)
 
         //checking user confirmed
-        const user = await usersAccountsCollection.findOne({"accountData.email": newUserEmail})
+        const user = await UserAccountModel.findOne({"accountData.email": newUserEmail})
         expect(user!.emailConfirmation.isConfirmed).toEqual(true)
     });
 
@@ -1145,7 +1145,7 @@ describe("auth testing", () => {
 
     it('should NOT login with incorrect loginOrEmail and  return 401', async () => {
         // await delay(10000) //real test
-        await ipCollection.deleteMany({}) //imitation in order to run test faster
+        await IpModel.deleteMany({}) //imitation in order to run test faster
         const loginUserData = {
             loginOrEmail: "nazim86mammadov",
             password: "123456"
@@ -1168,7 +1168,7 @@ describe("auth testing", () => {
 
     it('should NOT login with incorrect password and return 401', async () => {
         // await delay(10000) //real test
-        await ipCollection.deleteMany({}) //imitation in order to run test faster
+        await IpModel.deleteMany({}) //imitation in order to run test faster
 
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
@@ -1191,7 +1191,7 @@ describe("auth testing", () => {
 
     it('should login return 200', async () => {
         // await delay(10000) //real test
-        await ipCollection.deleteMany({}) //imitation in order to run test faster
+        await IpModel.deleteMany({}) //imitation in order to run test faster
 
         const loginUserData = {
             loginOrEmail: "nazim86mammadov@yandex.ru",
@@ -1311,7 +1311,7 @@ describe("auth testing", () => {
             })
 
             //confirming new user
-            const NewUserWithoutConfirm = await usersAccountsCollection.findOne({"accountData.email": "testing403@yandex.ru"})
+            const NewUserWithoutConfirm = await UserAccountModel.findOne({"accountData.email": "testing403@yandex.ru"})
             await authFunctions.registrationConfirmation({code: NewUserWithoutConfirm?.emailConfirmation.confirmationCode})
 
             const refreshTokenOfCurrentUser = getRefreshToken.headers['set-cookie'][0].split(";")[0]
@@ -1408,7 +1408,7 @@ describe("auth testing", () => {
     it('should NOT send password recovery code to invalid email format and return 400',
         async () => {
             // // await delay(10000) //real test
-            await ipCollection.deleteMany({}) //imitation in order to run test faster
+            await IpModel.deleteMany({}) //imitation in order to run test faster
 
             const result = await authFunctions.sendRecoveryCode({email: "222>gmail.com"})
             expect(result.status).toBe(400)
@@ -1436,7 +1436,7 @@ describe("auth testing", () => {
             //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
             const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
             const currentUser = await authFunctions.getCurrentUser(refreshToken)
-            const userAccountDb = await usersAccountsCollection.findOne({_id: new ObjectId(currentUser.body.userId)})
+            const userAccountDb = await UserAccountModel.findOne({_id: new ObjectId(currentUser.body.userId)})
 
             const recoveryCode = userAccountDb!.accountData.recoveryCode
             const passwordAndRecoveryCode = {
@@ -1462,14 +1462,14 @@ describe("auth testing", () => {
     it('should NOT set new password by recovery code if more than 5 attempst in 10s. and return 429',
         async () => {
             // // await delay(10000) //real test
-            await ipCollection.deleteMany({}) //imitation in order to run test faster
+            await IpModel.deleteMany({}) //imitation in order to run test faster
 
             let result: any;
 
             //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
             const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
             const currentUser = await authFunctions.getCurrentUser(refreshToken)
-            const userAccountDb = await usersAccountsCollection.findOne({_id: new ObjectId(currentUser.body.userId)})
+            const userAccountDb = await UserAccountModel.findOne({_id: new ObjectId(currentUser.body.userId)})
 
             const recoveryCode = userAccountDb!.accountData.recoveryCode
             const passwordAndRecoveryCode = {
@@ -1486,12 +1486,12 @@ describe("auth testing", () => {
     it('should set new password by recovery code and return 204',
         async () => {
             // // await delay(10000) //real test
-            await ipCollection.deleteMany({}) //imitation in order to run test faster
+            await IpModel.deleteMany({}) //imitation in order to run test faster
 
             //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
             const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
             const currentUser = await authFunctions.getCurrentUser(refreshToken)
-            const userAccountDb = await usersAccountsCollection.findOne({_id: new ObjectId(currentUser.body.userId)})
+            const userAccountDb = await UserAccountModel.findOne({_id: new ObjectId(currentUser.body.userId)})
 
             const recoveryCode = userAccountDb!.accountData.recoveryCode
             const passwordAndRecoveryCode = {

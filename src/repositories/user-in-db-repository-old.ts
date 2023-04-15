@@ -1,4 +1,4 @@
-import {usersAccountsCollection} from "../db/db";
+import {UserAccountModel} from "../db/db";
 import {UserViewType} from "./types/user-view-type";
 
 import {ObjectId} from "mongodb";
@@ -8,20 +8,18 @@ import {UserAccountDbType} from "./types/user-account-db-type";
 export const userRepositoryOld = {
     async createNewUser(newUser: UserAccountDbType): Promise<UserViewType> {
 
-        await usersAccountsCollection.insertOne(newUser)
+        await UserAccountModel.create(newUser)
         return {
-
             id: newUser._id.toString(),
             login: newUser.accountData.login,
             email: newUser.accountData.email,
             createdAt: newUser.accountData.createdAt
         }
-
     },
 
     async deleteUser(id: string): Promise<boolean> {
         try {
-            const result = await usersAccountsCollection.deleteOne({_id: new ObjectId(id)});
+            const result = await UserAccountModel.deleteOne({_id: new ObjectId(id)});
             return result.deletedCount === 1;
         }
         catch (e) {
@@ -31,11 +29,11 @@ export const userRepositoryOld = {
     },
 
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserAccountDbType | null> {
-        return await usersAccountsCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]})
+        return await UserAccountModel.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]})
     },
 
     async findUserById (userId:string):Promise<UserByIdType | null>{
-        const result =await usersAccountsCollection.findOne({_id:new ObjectId(userId)})
+        const result =await UserAccountModel.findOne({_id:new ObjectId(userId)})
         if (result) {
             return {
                 email:result.accountData.email,

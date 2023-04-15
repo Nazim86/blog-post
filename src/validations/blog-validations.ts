@@ -1,6 +1,4 @@
-import {body, param, query} from "express-validator";
-import {blogsCollection} from "../db/db";
-import {ObjectId} from "mongodb";
+import {body, query} from "express-validator";
 
 export const nameValidation = body("name").isString().trim().notEmpty().isLength({max:15})
 export const description = body("description").isString().trim().notEmpty().isLength({max:500})
