@@ -1,21 +1,20 @@
 import {Request, Response, Router} from "express";
 import {
-    blogsCollection,
-    commentsCollection, ipCollection,
-    postsCollection,
-    tokensCollection,
-    usersAccountsCollection
+    BlogModel,CommentModel, ipCollection, PostModel,
+
+    tokensCollection, UserAccountModel,
+
 } from "../db/db";
 
 
 export const deleteRoutes = Router({})
 
 deleteRoutes.delete('/', async (req: Request, res: Response) => {
-    await blogsCollection.deleteMany({})
-    await postsCollection.deleteMany({})
+    await BlogModel.deleteMany({})
+    await PostModel.deleteMany({})
     // await usersCollection.deleteMany({})
-    await commentsCollection.deleteMany({})
-    await usersAccountsCollection.deleteMany({})
+    await CommentModel.deleteMany({})
+    await UserAccountModel.deleteMany({})
     await tokensCollection.deleteMany({})
     await ipCollection.deleteMany({})
 
