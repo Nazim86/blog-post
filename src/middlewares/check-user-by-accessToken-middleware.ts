@@ -12,16 +12,16 @@ export const checkUserByAccessTokenMiddleware = async (req: Request, res: Respon
 
     const accessToken = req.headers.authorization.split(" ")[1]
 
-    const {userId} = await jwtService.getRefreshTokenMetaData(accessToken,settings.ACCESS_TOKEN_SECRET)
+    const tokenMetaData = await jwtService.getRefreshTokenMetaData(accessToken,settings.ACCESS_TOKEN_SECRET)
 
-    if (!userId) {
-        res.sendStatus(401)
-    } else {
+    if (!tokenMetaData || !tokenMetaData.userId) {
+        return res.sendStatus(401);
+    }
+
+    const { userId } = tokenMetaData;
+
+
         req.context = {}
         req.context.user = await authService.findUserById(userId)
         next()
-    }
-
-
-
 }

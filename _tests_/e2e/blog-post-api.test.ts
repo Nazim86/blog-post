@@ -33,7 +33,7 @@ import {notCreateUser} from "./functions/user-should-not-functions";
 import {authFunctions} from "./functions/auth-functions";
 import {commentFunctions} from "./functions/comment-functions";
 import {
-    commentCreatingData, commentUpdated,
+    commentCreatingData, commentErrorMessage, commentUpdated,
     commentUpdatingData,
     commentWithPagination,
     createdComment
@@ -1579,6 +1579,41 @@ describe("comments testing", () => {
         loginUser = await authFunctions.loginUser(loginUserData, "chrome") //will get token from logged user
 
     });
+
+    it('should NOT create comment by with short content and return 400', async () => {
+
+        //Create comment by postId for specific post
+        comment = await commentFunctions.createComment(post.body.id,
+            {content:"commentCreatingData"}, loginUser.body.accessToken)
+
+        expect(comment.status).toBe(400)
+        expect(comment.body).toEqual(commentErrorMessage)
+
+    });
+
+    it('should NOT create comment by with long content and return 400', async () => {
+
+        //Create comment by postId for specific post
+        comment = await commentFunctions.createComment(post.body.id,
+            {content:"commentCreatingData".repeat(30)}, loginUser.body.accessToken)
+
+        expect(comment.status).toBe(400)
+        expect(comment.body).toEqual(commentErrorMessage)
+
+    });
+
+    it('should NOT create comment with wrong or expired accessToken and return 401', async () => {
+
+        //Create comment by postId for specific post
+        comment = await commentFunctions.createComment(post.body.id,
+            commentCreatingData, "loginUser")
+
+        expect(comment.status).toBe(401)
+        expect(comment.body).toEqual({})
+
+    });
+
+
 
     it('should create comment by postID and return 201', async () => {
 

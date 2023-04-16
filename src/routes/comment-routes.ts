@@ -48,7 +48,7 @@ commentRoutes.get('/:commentId',
         }
     })
 
-commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware, likeValidation,inputValidationErrorsMiddleware,
+commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware,likeValidation,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const likeStatus = req.body.likeStatus;

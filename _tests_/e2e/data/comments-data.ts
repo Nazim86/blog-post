@@ -57,6 +57,15 @@ export const commentUpdated = {
 
 }
 
+export const commentErrorMessage= {
+    "errorsMessages": [
+        {
+            "message": "Invalid value",
+            "field": "content"
+        }
+    ]
+}
+
 export const commentCreatingData = {content:"Learning to code in IT incubator"}
 
 export const commentUpdatingData = {content:"Already done homework 7 and going on"}
