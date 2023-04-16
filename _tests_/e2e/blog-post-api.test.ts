@@ -1613,6 +1613,16 @@ describe("comments testing", () => {
 
     });
 
+    it('should NOT create comment with wrong postID and return 404', async () => {
+
+        //Create comment by postId for specific post
+        comment = await commentFunctions.createComment("post.body.id",
+            commentCreatingData, loginUser.body.accessToken)
+
+        expect(comment.status).toBe(404)
+        expect(comment.body).toEqual({})
+
+    });
 
 
     it('should create comment by postID and return 201', async () => {
