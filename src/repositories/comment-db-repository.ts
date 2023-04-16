@@ -14,8 +14,12 @@ export const commentDbRepository = {
                 userId: userId,
                 userLogin: userLogin
             },
-            createdAt: postComment.createdAt
-
+            createdAt: postComment.createdAt,
+            likesInfo:{
+                likesCount:postComment.likesInfo.likesCount,
+                dislikesCount: postComment.likesInfo.dislikesCount,
+                myStatus:postComment.likesInfo.myStatus
+            }
         }
     },
 

@@ -486,12 +486,10 @@ describe("post testing", () => {
     });
 
     it('should get post empty post and return 200', async () => {
-        const emptyPost = {...emptyPostData}
-        const paginationData = {...postPaginationValues}
 
-        const {body, status} = await postFunctions.getPost(paginationData)
+        const {body, status} = await postFunctions.getPost(postPaginationValues)
         expect(status).toBe(200)
-        expect(body).toEqual(emptyPost)
+        expect(body).toEqual(emptyPostData)
 
 
     });

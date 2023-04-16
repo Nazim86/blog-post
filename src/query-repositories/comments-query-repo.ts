@@ -48,7 +48,12 @@ export const commentsQueryRepo = {
                     userId: getComment.commentatorInfo.userId,
                     userLogin: getComment.commentatorInfo.userLogin
                 },
-                createdAt: getComment.createdAt
+                createdAt: getComment.createdAt,
+                likesInfo:{
+                    likesCount:getComment.likesInfo.likesCount,
+                    dislikesCount: getComment.likesInfo.dislikesCount,
+                    myStatus:getComment.likesInfo.myStatus
+                }
 
             }
         }

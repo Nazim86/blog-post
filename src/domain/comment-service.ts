@@ -22,7 +22,12 @@ export const commentService = {
                     userId: userId,
                     userLogin: userLogin
                 },
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                likesInfo:{
+                    likesCount:0,
+                    dislikesCount: 0,
+                    myStatus:"None"
+                }
             }
             return await commentDbRepository.createPostComment(postComment, userId, userLogin)
     },

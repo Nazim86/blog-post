@@ -6,6 +6,7 @@ import {commentService} from "../domain/comment-service";
 import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-credentials-middleware";
+import {likeValidation} from "../validations/like-validation";
 
 export const commentRoutes = Router({})
 
@@ -13,8 +14,6 @@ commentRoutes.put('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCr
     async (req: Request, res: Response) => {
 
         const content = req.body.content;
-
-
 
         const updateComment:boolean = await commentService.updateComment(req.params.commentId, content)
 
@@ -44,6 +43,21 @@ commentRoutes.get('/:commentId',
 
         if (getComment) {
             res.status(200).send(getComment)
+        } else {
+            res.send(404)
+        }
+    })
+
+commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware, likeValidation,inputValidationErrorsMiddleware,
+    async (req: Request, res: Response) => {
+
+        const likeStatus = req.body.likeStatus;
+        const commentId = req.params.commentId
+
+        const updateComment:boolean = await commentService.updateComment(commentId, likeStatus)
+
+        if (updateComment) {
+            res.send(204)
         } else {
             res.send(404)
         }

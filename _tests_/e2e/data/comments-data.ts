@@ -7,7 +7,13 @@ export const createdComment = {
         userId: expect.any(String),
         userLogin: expect.any(String)
     },
-    createdAt: expect.any(String)
+    createdAt: expect.any(String),
+    likesInfo:{
+        likesCount:expect.any(Number),
+        dislikesCount: expect.any(Number),
+        myStatus:expect.any(String)
+    }
+
 }
 
 export const commentWithPagination = {
@@ -23,7 +29,12 @@ export const commentWithPagination = {
             userId: expect.any(String),
             userLogin: expect.any(String)
         },
-        createdAt: expect.any(String)
+        createdAt: expect.any(String),
+        likesInfo:{
+            likesCount:expect.any(Number),
+            dislikesCount: expect.any(Number),
+            myStatus:expect.any(String)
+        }
     }
     ]
 }
@@ -37,8 +48,12 @@ export const commentUpdated = {
             userId: expect.any(String),
             userLogin: expect.any(String)
         },
-        createdAt: expect.any(String)
-
+        createdAt: expect.any(String),
+    likesInfo:{
+        likesCount:expect.any(Number),
+        dislikesCount: expect.any(Number),
+        myStatus:expect.any(String)
+    }
 
 }
 

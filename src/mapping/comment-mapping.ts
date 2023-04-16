@@ -10,7 +10,12 @@ export const commentMapping = (array: CommentsDbType[]): CommentsViewType[] => {
                 userId: postComment.commentatorInfo.userId,
                 userLogin: postComment.commentatorInfo.userLogin
             },
-            createdAt: postComment.createdAt
+            createdAt: postComment.createdAt,
+            likesInfo:{
+                likesCount:0,
+                dislikesCount: 0,
+                myStatus:"None"
+            }
         }
 
     })
