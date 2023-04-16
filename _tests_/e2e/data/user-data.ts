@@ -1,4 +1,6 @@
 
+export const newUserEmail = "nazim86mammadov@yandex.ru"
+
 export const userPaginationValues = {
     pageNumber: 1,
     pageSize: 10,
@@ -25,8 +27,8 @@ export const createdUserWithPagination = {
     totalCount: expect.any(Number) | 1,
     items:[ {
         id:expect.any(String),
-        login: "nazim",
-        email: "nazim@gmail.com",
+        login: "Leo",
+        email: newUserEmail,
         createdAt:expect.any(String)
     }
     ]
@@ -34,14 +36,14 @@ export const createdUserWithPagination = {
 
 
 export const userCreateData = {
-    login: "nazim",
+    login: "Leo",
     password:"123456",
-    email: "nazim@gmail.com"
+    email: newUserEmail
 }
 
 export const userCreatedData = {
     id:expect.any(String),
-    login: "nazim",
-    email: "nazim@gmail.com",
+    login: "Leo",
+    email: newUserEmail,
     createdAt:expect.any(String)
 }

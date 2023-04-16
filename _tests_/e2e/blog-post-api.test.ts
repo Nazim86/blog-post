@@ -890,7 +890,6 @@ describe("user testing", () => {
 
         const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
         expect(status).toBe(200)
-        console.log(body)
         expect(body).toEqual(expectedResult)
 
     });
@@ -942,7 +941,7 @@ describe("user testing", () => {
 });
 
 describe("auth testing", () => {
-    // jest.setTimeout(0 * 60 * 1000)
+    jest.setTimeout(1 * 60 * 1000)
 
     let newUser: any
     let loginUser: any
@@ -998,8 +997,9 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(204)
 
         //checking that user created
-        const users = await UserAccountModel.find({}).lean()
-        expect(users).toEqual([createdUser])
+        const users = await userFunctions.getUsers(paginationValues,authorizationData)
+        console.log(users.body)
+        expect(users.body).toEqual(createdUserWithPagination)
 
     });
 
@@ -1206,7 +1206,6 @@ describe("auth testing", () => {
 
         await loginLoop();
 
-
         expect(loginUser.status).toBe(200)
         expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
     });
@@ -1229,13 +1228,19 @@ describe("auth testing", () => {
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
             const devicesWithOldLastActive = await authFunctions.getCurrentDevices(refreshToken)
 
+            // await delay(1000); // Wait for 1 second
+            // console.log("old time",new Date())
             await delay(1000); // Wait for 1 second
 
+            // await new Promise(resolve => setTimeout(resolve, 2000));
+            // console.log("new time",new Date())
             getRefreshToken = await authFunctions.refreshToken(refreshToken)
             const newRefreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             //getDevices
             const deviceWithUpdatedLastActive = await authFunctions.getCurrentDevices(newRefreshToken)
+            // console.log(devicesWithOldLastActive.body[3].lastActiveDate)
+            // console.log(deviceWithUpdatedLastActive.body[3].lastActiveDate)
             expect(devicesWithOldLastActive.body[3].lastActiveDate).not.toEqual(deviceWithUpdatedLastActive.body[3].lastActiveDate)
 
             expect(getRefreshToken.status).toBe(200)

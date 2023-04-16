@@ -43,7 +43,6 @@ export const authService = {
         const createUser = await userRepository.createNewUser(newUser)
 
         try {
-            console.log("confirmation code",createUser.emailConfirmation.confirmationCode)
             await emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
                 createUser.accountData.email, registrationMessage)
 

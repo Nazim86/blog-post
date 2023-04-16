@@ -41,3 +41,15 @@ const startApp = async ()=>
 startApp()
 
 // module.exports = app
+
+const user = {
+    age:18,
+    showAge(){
+        console.log(this.age)
+    }
+}
+
+// const showAge = user.showAge
+// showAge()
+
+setTimeout(user.showAge,1000)
