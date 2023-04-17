@@ -54,7 +54,7 @@ commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware,ch
         const likeStatus = req.body.likeStatus;
         const commentId = req.params.commentId
 
-        const updateComment:boolean = await commentService.updateComment(commentId, likeStatus)
+        const updateComment:boolean = await commentService.updateLikeStatus(commentId, likeStatus)
 
         if (updateComment) {
             res.send(204)

@@ -29,6 +29,28 @@ export const commentDbRepository = {
         return result.matchedCount === 1
     },
 
+    async updateLikeStatus(commentId:string,likeStatus:string,filter:object):Promise<boolean>{
+        // let filter:string;
+
+        // switch (likeStatus) {
+        //     case LikeEnum.Like :
+        //         filter = "likesInfo.likesCount"
+        //     case LikeEnum.Dislike:
+        //         filter = "likesInfo.likesCount"
+        //     case LikeEnum.None:
+        //         filter = "likesInfo.myStatus"
+        //     default:
+        //         filter = ""
+        // }
+
+
+        const result = await CommentModel.updateOne({_id:new ObjectId(commentId)},filter)
+
+        return result.matchedCount === 1
+    },
+
+
+
     async deleteComment(commentId:string):Promise<boolean>{
         const result = await CommentModel.deleteOne({_id:new ObjectId(commentId)})
 

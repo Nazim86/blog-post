@@ -12,9 +12,9 @@ export const commentMapping = (array: CommentsDbType[]): CommentsViewType[] => {
             },
             createdAt: postComment.createdAt,
             likesInfo:{
-                likesCount:0,
-                dislikesCount: 0,
-                myStatus:"None"
+                likesCount:postComment.likesInfo.likesCount,
+                dislikesCount: postComment.likesInfo.dislikesCount,
+                myStatus:postComment.likesInfo.myStatus
             }
         }
 

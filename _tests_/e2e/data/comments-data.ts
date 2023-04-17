@@ -66,6 +66,14 @@ export const commentErrorMessage= {
     ]
 }
 
+export const likeData= {
+    likesCount:0,
+    dislikesCount: 0,
+    myStatus:"None"
+}
+
+
+
 export const commentCreatingData = {content:"Learning to code in IT incubator"}
 
 export const commentUpdatingData = {content:"Already done homework 7 and going on"}

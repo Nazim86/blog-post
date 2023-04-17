@@ -36,9 +36,9 @@ import {
     commentCreatingData, commentErrorMessage, commentUpdated,
     commentUpdatingData,
     commentWithPagination,
-    createdComment
+    createdComment, likeData
 } from "./data/comments-data";
-import {createdUser, currentUser, newUserData, newUserEmail} from "./data/auth-data";
+import { currentUser, newUserData, newUserEmail} from "./data/auth-data";
 import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
 import mongoose from "mongoose";
@@ -1555,6 +1555,9 @@ describe("comments testing", () => {
     let user: any
     let loginUser: any
     let comment: any
+    let updateLikeStatus:any;
+    let getComment:any;
+
     beforeAll(async () => {
 
         //clearAllData()
@@ -1675,6 +1678,158 @@ describe("comments testing", () => {
 
     });
 
+    //Like,Dislike,None comment tests
+    it('should update likeInfo by sending Like to None comment and return 204', async () => {
+
+        const commentId = comment.body.id
+
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking update of likeInfo
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+
+    });
+
+    it('should uodate likeInfo by sending Like to already Liked comment and return 204', async () => {
+
+        const commentId = comment.body.id
+
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking update of likeInfo
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual(likeData)
+    });
+
+    it('should update likeInfo by sending Like to already Disliked comment and return 204', async () => {
+
+        const commentId = comment.body.id
+
+        //Dislike comment
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking likeInfo for Dislike
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,dislikesCount:1,myStatus:"Dislike"})
+
+
+        //Like Disliked comment
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking likeInfo after Dislike
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+
+    });
+
+
+    it('should update likeInfo by sending Dislike to Liked comment and return 204', async () => {
+
+        const commentId = comment.body.id
+
+        //sending Dislike
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking likeInfo for Dislike update
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:0,dislikesCount:1,myStatus:"Dislike"})
+    });
+
+    it('should update likeInfo by Dislike to already Disliked comment and return 204', async () => {
+
+        const commentId = comment.body.id
+
+        //send Dislike
+        const updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking update of likeInfo for Dislike
+        const getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual(likeData)
+
+    });
+
+    it('should update likeInfo by Dislike to None comment and return 204', async () => {
+
+        const commentId = comment.body.id
+
+        //send Dislike
+        const updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking update of likeInfo for Dislike
+        const getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,dislikesCount:1,myStatus:"Dislike"})
+
+    });
+
+
+    it('should update likeInfo by sending None to Disliked comment return 204', async () => {
+
+        const commentId = comment.body.id
+
+        //sending None
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking likeInfo for None update
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual(likeData)
+    });
+
+    it('should update likeInfo by None Liked comment and return 204', async () => {
+
+        const commentId = comment.body.id
+
+        //Like comment
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking update of likeInfo for Dislike
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+
+        //send None
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking update of likeInfo for None
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual(likeData)
+
+    });
+
+    it('should update likeInfo by None Noned comment and return 204', async () => {
+
+        const commentId = comment.body.id
+
+        //send None
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loginUser.body.accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking update of likeInfo for None
+        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual(likeData)
+
+    });
+
     it('should delete comment by comment id and return 204', async () => {
 
         const deleteComment = await commentFunctions.deleteCommentByCommentId(comment.body.id, loginUser.body.accessToken)
@@ -1683,7 +1838,6 @@ describe("comments testing", () => {
         const {status, body} = await commentFunctions.getCommentByCommentId(comment.body.id)
         expect(status).toBe(404)
         expect(body).toEqual({})
-
 
     });
 

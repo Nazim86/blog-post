@@ -47,9 +47,17 @@ export const commentFunctions = {
             .put(`/comments/${commentId}`)
             .send(updateData)
             .set("Authorization", `Bearer ${token}`)
-
-
     },
+
+    async updateLikeStatus (commentId:string,likeStatus:object,token:string) {
+
+        return request(app)
+            .put(`/comments/${commentId}/like-status`)
+            .send(likeStatus)
+            .set("Authorization", `Bearer ${token}`)
+    },
+
+
 
 
 }
