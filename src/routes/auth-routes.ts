@@ -105,7 +105,7 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
 
         const user = req.context.user!
 
-        const {deviceId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
+        const {deviceId} = await jwtService.getTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
 
         const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10m", deviceId)
         const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20m", deviceId)
@@ -164,7 +164,7 @@ authRoutes.post('/logout', checkRefreshTokenMiddleware,
         const {
             deviceId,
             userId
-        } = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
+        } = await jwtService.getTokenMetaData(req.cookies.refreshToken, settings.REFRESH_TOKEN_SECRET)
 
         await securityService.deleteDeviceById(deviceId, userId)
 

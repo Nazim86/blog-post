@@ -1642,34 +1642,34 @@ describe("comments testing", () => {
         getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
-//
-// //User2 like
-//         updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[1].accessToken)
-//         expect(updateLikeStatus.status).toBe(204)
-//
-// //checking like of user1
-//         getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
-//         expect(getComment.status).toBe(200)
-//         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
-//
-//
-//         //User3 like
-//         updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[2].accessToken)
-//         expect(updateLikeStatus.status).toBe(204)
-//
-//         //checking like of user1
-//         getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
-//         expect(getComment.status).toBe(200)
-//         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
-//
-//         //User4 like
-//         updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[3].accessToken)
-//         expect(updateLikeStatus.status).toBe(204)
-//
-//         //checking like of user1
-//         getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
-//         expect(getComment.status).toBe(200)
-//         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+
+//User2 like
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[1].accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+//checking like of user1
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+
+
+        //User3 like
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[2].accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking like of user1
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+
+        //User4 like
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[3].accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking like of user1
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
 
     });
 

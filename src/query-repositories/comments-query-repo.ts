@@ -1,5 +1,5 @@
 import {CommentModel, LikeModel} from "../db/db";
-import {MONGO_CLIENT_EVENTS, ObjectId} from "mongodb";
+import {ObjectId} from "mongodb";
 import {commentMapping} from "../mapping/comment-mapping";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {CommentsDbType} from "../repositories/types/comments-db-type";
@@ -35,7 +35,7 @@ export const commentsQueryRepo = {
         }
     },
 
-    async getComment(commentId: string, userId?: string | undefined): Promise<CommentsViewType | null> {
+    async getComment(commentId: string, userId?: string): Promise<CommentsViewType | null> {
 
         try {
             const getComment: CommentsDbType | null = await CommentModel.findOne({_id: new ObjectId(commentId)})

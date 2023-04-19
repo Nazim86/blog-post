@@ -10,6 +10,7 @@ import {likeValidation} from "../validations/like-validation";
 import {jwtService} from "../domain/jwt-service";
 import {settings} from "../settings";
 
+
 export const commentRoutes = Router({})
 
 commentRoutes.put('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
@@ -42,12 +43,12 @@ commentRoutes.delete('/:commentId', checkUserByAccessTokenMiddleware,checkCommen
 commentRoutes.get('/:commentId',
     async (req: Request, res: Response) => {
 
-    const accessToken: string | undefined = req.headers.authorization
+    const accessToken: string | undefined = req.headers.authorization?.split(" ")[1]
 
     let userId = undefined
 
     if (accessToken) {
-        const tokenData = await jwtService.getRefreshTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
+        const tokenData = await jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
         if(tokenData){
             userId = tokenData.userId
         }
@@ -60,7 +61,6 @@ commentRoutes.get('/:commentId',
         return res.sendStatus(404)
     }
     res.status(200).send(getComment)
-
     })
 
 

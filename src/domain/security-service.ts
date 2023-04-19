@@ -16,7 +16,7 @@ export const securityService = {
 
 
    async updateDevice(refreshToken:string):Promise<boolean>{
-       const {deviceId,lastActiveDate}= await jwtService.getRefreshTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
+       const {deviceId,lastActiveDate}= await jwtService.getTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
 
       return await tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
 

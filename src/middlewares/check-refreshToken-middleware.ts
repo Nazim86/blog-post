@@ -3,6 +3,7 @@ import {jwtService} from "../domain/jwt-service";
 import {settings} from "../settings";
 import {authService} from "../domain/auth-service";
 import {TokenModel} from "../db/db";
+import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-db-type";
 
 export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -12,7 +13,7 @@ export const checkRefreshTokenMiddleware = async (req: Request, res: Response, n
         return res.sendStatus(401)
     }
 
-    const refreshTokenMetaData:any = await jwtService.getRefreshTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET) //TODO replace any
+    const refreshTokenMetaData: RefreshTokenMetaDbType = await jwtService.getTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
 
     if (!refreshTokenMetaData) {
         return res.sendStatus(401)

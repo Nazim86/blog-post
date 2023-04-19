@@ -16,6 +16,7 @@ export const commentFunctions = {
         const result = await request(app)
             .get(`/comments/${commentId}`)
             .send()
+            .set("Authorization", `${accessToken ? `Bearer ${accessToken}` : undefined}`)
 
         return {status:result.status,body:result.body}
 

@@ -17,14 +17,14 @@ securityRoutes.get("/devices", checkRefreshTokenMiddleware, async (req: Request,
 })
 
 securityRoutes.delete("/devices", checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
-const {deviceId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken)
+const {deviceId} = await jwtService.getTokenMetaData(req.cookies.refreshToken)
     await securityService.deleteDevices(deviceId)
     res.sendStatus(204)
 })
 
 securityRoutes.delete("/devices/:id", deviceIdValidation,inputValidationErrorsMiddleware,checkRefreshTokenMiddleware,
     async (req: Request, res: Response) => {
-        const {userId} = await jwtService.getRefreshTokenMetaData(req.cookies.refreshToken)
+        const {userId} = await jwtService.getTokenMetaData(req.cookies.refreshToken)
 
         const result = await securityService.deleteDeviceById(req.params.id,userId)
 
