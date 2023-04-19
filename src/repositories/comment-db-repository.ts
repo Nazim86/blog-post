@@ -7,7 +7,21 @@ import {LikeEnum} from "./enums/like-enum";
 export const commentDbRepository = {
 
     async createPostComment(postComment:CommentsDbType,userId:string, userLogin:string):Promise<CommentsViewType>{
-        const comment = await CommentModel.create(postComment)
+        const comment:CommentsDbType = await CommentModel.create(postComment)
+
+        const commentId = comment._id.toString()
+
+        let myStatus = 'None'
+        if (userId) {
+            const likeInDb = await LikeModel.findOne({commentId, userId})
+            if (likeInDb) {
+                myStatus = likeInDb.status
+            }
+        }
+
+        const likesCount = await LikeModel.countDocuments({commentId, status: LikeEnum.Like})
+        const dislikesCount = await LikeModel.countDocuments({commentId, status: LikeEnum.Dislike})
+
         return{
             id: comment._id.toString(),
             content: postComment.content,
@@ -17,9 +31,9 @@ export const commentDbRepository = {
             },
             createdAt: postComment.createdAt,
             likesInfo:{
-                likesCount:postComment.likesInfo.likesCount,
-                dislikesCount: postComment.likesInfo.dislikesCount,
-                myStatus:postComment.likesInfo.myStatus
+                likesCount,
+                dislikesCount,
+                myStatus:myStatus
             }
         }
     },

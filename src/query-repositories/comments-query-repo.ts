@@ -24,14 +24,16 @@ export const commentsQueryRepo = {
             .lean()
 
 
-        const mappedComment: CommentsViewType[] = commentMapping(getCommentsForPost)
+        const mappedComment: Promise<CommentsViewType>[] = commentMapping(getCommentsForPost)
+
+        const resolvedComments: CommentsViewType[] = await Promise.all(mappedComment);
 
         return {
             pagesCount: pagesCount,
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: mappedComment
+            items: resolvedComments
         }
     },
 
@@ -43,10 +45,8 @@ export const commentsQueryRepo = {
             if (!getComment) return null
 
             let myStatus = 'None'
-            console.log("Userid",userId)
             if (userId) {
                 const likeInDb = await LikeModel.findOne({commentId, userId})
-                console.log("LikeinDB",likeInDb)
                 if (likeInDb) {
                     myStatus = likeInDb.status
                 }
