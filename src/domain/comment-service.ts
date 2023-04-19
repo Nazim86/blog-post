@@ -39,62 +39,15 @@ export const commentService = {
 
     },
 
-    async updateLikeStatus(commentId:string,likeStatus:string):Promise<boolean>{
+    async updateLikeStatus(commentId:string, userId: string, likeStatus:LikeEnum):Promise<boolean>{
 
-        const getComment:CommentsViewType|null = await commentsQueryRepo.getComment(commentId)
+        const getComment:CommentsViewType|null = await commentsQueryRepo.getComment(commentId,userId)
 
         if(!getComment) return false
 
-        const myStatus = getComment.likesInfo.myStatus
+        const result = await commentDbRepository.updateLikeStatus(commentId,userId,likeStatus)
 
-        if(myStatus===LikeEnum.Dislike && likeStatus===LikeEnum.Like){
-            return await commentDbRepository.updateLikeStatus(commentId,LikeEnum.Like,{$set:{"likesInfo.myStatus":likeStatus},$inc:{"likesInfo.likesCount":1,"likesInfo.dislikesCount":-1}})
-        }
-
-        if(myStatus===LikeEnum.Dislike && likeStatus===LikeEnum.None){
-            return await commentDbRepository.updateLikeStatus(commentId,LikeEnum.Like,{$set:{"likesInfo.myStatus":LikeEnum.None},$inc:{"likesInfo.dislikesCount":-1}})
-        }
-
-        if(myStatus===LikeEnum.Dislike && likeStatus===LikeEnum.Dislike){
-            return await commentDbRepository.updateLikeStatus(commentId,LikeEnum.Like,{$set:{"likesInfo.myStatus":LikeEnum.None},$inc:{"likesInfo.dislikesCount":-1}})
-        }
-
-        if(myStatus===LikeEnum.Like && likeStatus===LikeEnum.Dislike){
-            return await commentDbRepository.updateLikeStatus(commentId,LikeEnum.Like,{$set:{"likesInfo.myStatus":likeStatus},$inc:{"likesInfo.likesCount":-1,"likesInfo.dislikesCount":1}})
-        }
-
-        if(myStatus===LikeEnum.Like && likeStatus===LikeEnum.None){
-            return await commentDbRepository.updateLikeStatus(commentId,LikeEnum.Like,{$set:{"likesInfo.myStatus":likeStatus},$inc:{"likesInfo.likesCount":-1}})
-        }
-
-        if(myStatus===LikeEnum.Like && likeStatus===LikeEnum.Like){
-            return await commentDbRepository.updateLikeStatus(commentId,LikeEnum.Like,{$set:{"likesInfo.myStatus":LikeEnum.None},$inc:{"likesInfo.likesCount":-1}})
-        }
-
-        if(myStatus===LikeEnum.None && likeStatus===LikeEnum.Dislike){
-            return await commentDbRepository.updateLikeStatus(commentId,LikeEnum.Like,{$set:{"likesInfo.myStatus":likeStatus},$inc:{"likesInfo.dislikesCount":1}})
-        }
-
-        if(myStatus===LikeEnum.None && likeStatus===LikeEnum.None){
-            return true
-        }
-
-        if(myStatus===LikeEnum.None && likeStatus===LikeEnum.Like){
-            return await commentDbRepository.updateLikeStatus(commentId,LikeEnum.Like,{$set:{"likesInfo.myStatus":likeStatus},$inc:{"likesInfo.likesCount":1}})
-        }
-
-        // switch (likeStatus) {
-        //     case LikeEnum.Like && :
-        //         return response.sendStatus(404)
-        //     case ResultCode.Forbidden:
-        //         return response.sendStatus(403)
-        //     //..
-        //     default:
-        //         return
-        // }
-
-        return false
-
+        return result
 
     },
 

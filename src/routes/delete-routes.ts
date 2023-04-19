@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {
-    BlogModel, CommentModel, IpModel, PostModel, TokenModel, UserAccountModel,
+    BlogModel, CommentModel, IpModel, LikeModel, PostModel, TokenModel, UserAccountModel,
 
 } from "../db/db";
 
@@ -14,6 +14,7 @@ deleteRoutes.delete('/', async (req: Request, res: Response) => {
     await UserAccountModel.deleteMany({})
     await TokenModel.deleteMany({})
     await IpModel.deleteMany({})
+    await LikeModel.deleteMany({})
 
     return res.sendStatus(204)
 })

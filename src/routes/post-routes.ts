@@ -88,7 +88,6 @@ postRoutes.post('/:postId/comments', checkUserByAccessTokenMiddleware, postComme
         const userId = req.context.user!._id.toString()
         const userLogin = req.context.user!.accountData.login
 
-
         const postComment: CommentsViewType|null=  await commentService.createPostComment(postId,content,userId,userLogin)
 
         if (postComment) {

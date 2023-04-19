@@ -1187,7 +1187,7 @@ describe("auth testing", () => {
         expect(refreshToken).toEqual(undefined)
     });
 
-    it('should login return 200', async () => {
+    it('should login and return 200', async () => {
         // await delay(10000) //real test
         await IpModel.deleteMany({}) //imitation in order to run test faster
 
@@ -1552,11 +1552,12 @@ describe("comments testing", () => {
     //TODO should replace any with type
     let blog: any
     let post: any
-    let user: any
-    let loginUser: any
+    let user: any[] = []
+    let loggedUser: any[] = []
     let comment: any
     let updateLikeStatus:any;
     let getComment:any;
+    let refreshToken:any;
 
     beforeAll(async () => {
 
@@ -1571,23 +1572,113 @@ describe("comments testing", () => {
         const newPost = {...newPostCreatingData, blogId: blog.body.id}
         post = await postFunctions.createPost(newPost, authorizationData)
 
-        //creating new post
-        user = await userFunctions.createUser(newUserData, authorizationData)
-
-        //login with created user
-        const loginUserData = {
-            loginOrEmail: user.body.login,
-            password: "123456"
+        //Create 4 new user
+        async function createUser() {
+            for (let i = 0; i <= 3; i++) {
+                const userData = {
+                    login: `Leo${i}`,
+                    password: `123456${i}`,
+                    email: `nazim86mammadov@yandex.ru${i}`
+                }
+                const newUser = await userFunctions.createUser(userData, authorizationData)
+                user.push(newUser.body)
+            }
         }
-        loginUser = await authFunctions.loginUser(loginUserData, "chrome") //will get token from logged user
+        await createUser();
+
+        //Log 4 users
+        async function loginUsers() {
+            for (let i = 0; i <= 3; i++) {
+                const userData = {
+                    loginOrEmail: `Leo${i}`,
+                    password: `123456${i}`
+                }
+                const logUser = await authFunctions.loginUser(userData, "chrome")
+                loggedUser.push(logUser.body)
+            }
+        }
+        await loginUsers();
+
+
+        //
+        // //creating new user
+        // user = await userFunctions.createUser(newUserData, authorizationData)
+        //
+        // //login with created user
+        // const loginUserData = {
+        //     loginOrEmail: user.body.login,
+        //     password: "123456"
+        // }
+        // loginUser = await authFunctions.loginUser(loginUserData, "chrome") //will get token from logged user
 
     });
+
+
+    //simulation of test in lesson
+    it('should update likeInfo by sending Like from 4 users to None comment and return 204', async () => {
+
+        //Create comment by postId for specific post
+        comment = await commentFunctions.createComment(post.body.id,
+            commentCreatingData, loggedUser[0].accessToken)
+        const returnedComment = {
+            ...createdComment,
+            commentatorInfo: {
+                ...createdComment.commentatorInfo,
+                userLogin: user[0].login, userId: user[0].id
+            }
+        }
+
+        expect(comment.status).toBe(201)
+        expect(comment.body).toEqual(returnedComment)
+
+
+        const commentId = comment.body.id
+
+//User1 like
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[0].accessToken)
+        expect(updateLikeStatus.status).toBe(204)
+
+        //checking like of user1
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
+        expect(getComment.status).toBe(200)
+        expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+//
+// //User2 like
+//         updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[1].accessToken)
+//         expect(updateLikeStatus.status).toBe(204)
+//
+// //checking like of user1
+//         getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
+//         expect(getComment.status).toBe(200)
+//         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+//
+//
+//         //User3 like
+//         updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[2].accessToken)
+//         expect(updateLikeStatus.status).toBe(204)
+//
+//         //checking like of user1
+//         getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
+//         expect(getComment.status).toBe(200)
+//         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+//
+//         //User4 like
+//         updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[3].accessToken)
+//         expect(updateLikeStatus.status).toBe(204)
+//
+//         //checking like of user1
+//         getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].accessToken)
+//         expect(getComment.status).toBe(200)
+//         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
+
+    });
+
 
     it('should NOT create comment by with short content and return 400', async () => {
 
         //Create comment by postId for specific post
         comment = await commentFunctions.createComment(post.body.id,
-            {content:"commentCreatingData"}, loginUser.body.accessToken)
+            {content:"commentCreatingData"}, loggedUser[0].accessToken)
 
         expect(comment.status).toBe(400)
         expect(comment.body).toEqual(commentErrorMessage)
@@ -1598,7 +1689,7 @@ describe("comments testing", () => {
 
         //Create comment by postId for specific post
         comment = await commentFunctions.createComment(post.body.id,
-            {content:"commentCreatingData".repeat(30)}, loginUser.body.accessToken)
+            {content:"commentCreatingData".repeat(30)}, loggedUser[0].accessToken)
 
         expect(comment.status).toBe(400)
         expect(comment.body).toEqual(commentErrorMessage)
@@ -1620,7 +1711,7 @@ describe("comments testing", () => {
 
         //Create comment by postId for specific post
         comment = await commentFunctions.createComment("post.body.id",
-            commentCreatingData, loginUser.body.accessToken)
+            commentCreatingData, loggedUser[0].accessToken)
 
         expect(comment.status).toBe(404)
         expect(comment.body).toEqual({})
@@ -1632,12 +1723,12 @@ describe("comments testing", () => {
 
         //Create comment by postId for specific post
         comment = await commentFunctions.createComment(post.body.id,
-            commentCreatingData, loginUser.body.accessToken)
+            commentCreatingData, loggedUser[0].accessToken)
         const returnedComment = {
             ...createdComment,
             commentatorInfo: {
                 ...createdComment.commentatorInfo,
-                userLogin: user.body.login, userId: user.body.id
+                userLogin: user[0].login, userId: user[0].id
             }
         }
 
@@ -1653,6 +1744,9 @@ describe("comments testing", () => {
     });
 
 
+
+
+
     it('should get comments by post id and return 200', async () => {
 
         const {status, body} = await commentFunctions.getCommentByPostId(post.body.id)
@@ -1664,7 +1758,7 @@ describe("comments testing", () => {
 
     it('should update comment by comment id and return 204', async () => {
 
-        const updatedComment = await commentFunctions.updateComment(comment.body.id, commentUpdatingData, loginUser.body.accessToken)
+        const updatedComment = await commentFunctions.updateComment(comment.body.id, commentUpdatingData, loggedUser[0].accessToken)
         expect(updatedComment.status).toBe(204)
 
     });
@@ -1678,30 +1772,57 @@ describe("comments testing", () => {
 
     });
 
+    // it('should create and login 4 users and return 200', async () => {
+    //     // await delay(10000) //real test
+    //     await IpModel.deleteMany({}) //imitation in order to run test faster
+    //
+    //     const loginUserData = {
+    //         loginOrEmail: "nazim86mammadov@yandex.ru",
+    //         password: "123456"
+    //     }
+    //
+    //
+    //
+    //     async function loginLoop() {
+    //         for (let i = 0; i <= 3; i++) {
+    //             loginUser = await authFunctions.loginUser(loginUserData, deviceName[i])
+    //         }
+    //     }
+    //     await loginLoop();
+    //
+    //     refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
+    //
+    //     expect(loginUser.status).toBe(200)
+    //     expect(loginUser.body).toEqual({accessToken: loginUser.body.accessToken})
+    // });
+
     //Like,Dislike,None comment tests
+
+
     it('should update likeInfo by sending Like to None comment and return 204', async () => {
 
         const commentId = comment.body.id
 
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[3].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking update of likeInfo
-        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[3].accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
 
     });
 
-    it('should uodate likeInfo by sending Like to already Liked comment and return 204', async () => {
+
+    it('should update likeInfo by sending Like to already Liked comment and return 204', async () => {
 
         const commentId = comment.body.id
 
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[3].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking update of likeInfo
-        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[3].accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual(likeData)
     });
@@ -1711,21 +1832,21 @@ describe("comments testing", () => {
         const commentId = comment.body.id
 
         //Dislike comment
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking likeInfo for Dislike
-        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].body.accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual({...likeData,dislikesCount:1,myStatus:"Dislike"})
 
 
         //Like Disliked comment
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking likeInfo after Dislike
-        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].body.accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
 
@@ -1737,11 +1858,11 @@ describe("comments testing", () => {
         const commentId = comment.body.id
 
         //sending Dislike
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking likeInfo for Dislike update
-        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].body.accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:0,dislikesCount:1,myStatus:"Dislike"})
     });
@@ -1751,11 +1872,11 @@ describe("comments testing", () => {
         const commentId = comment.body.id
 
         //send Dislike
-        const updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loginUser.body.accessToken)
+        const updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking update of likeInfo for Dislike
-        const getComment = await commentFunctions.getCommentByCommentId(commentId)
+        const getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].body.accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual(likeData)
 
@@ -1766,11 +1887,11 @@ describe("comments testing", () => {
         const commentId = comment.body.id
 
         //send Dislike
-        const updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loginUser.body.accessToken)
+        const updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Dislike"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking update of likeInfo for Dislike
-        const getComment = await commentFunctions.getCommentByCommentId(commentId)
+        const getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].body.accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual({...likeData,dislikesCount:1,myStatus:"Dislike"})
 
@@ -1782,11 +1903,11 @@ describe("comments testing", () => {
         const commentId = comment.body.id
 
         //sending None
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking likeInfo for None update
-        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].body.accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual(likeData)
     });
@@ -1796,20 +1917,20 @@ describe("comments testing", () => {
         const commentId = comment.body.id
 
         //Like comment
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"Like"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking update of likeInfo for Dislike
-        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].body.accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual({...likeData,likesCount:1,myStatus:"Like"})
 
         //send None
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking update of likeInfo for None
-        getComment = await commentFunctions.getCommentByCommentId(commentId)
+        getComment = await commentFunctions.getCommentByCommentId(commentId,loggedUser[0].body.accessToken)
         expect(getComment.status).toBe(200)
         expect(getComment.body.likesInfo).toEqual(likeData)
 
@@ -1820,7 +1941,7 @@ describe("comments testing", () => {
         const commentId = comment.body.id
 
         //send None
-        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loginUser.body.accessToken)
+        updateLikeStatus = await commentFunctions.updateLikeStatus(commentId, {likeStatus:"None"}, loggedUser[0].accessToken)
         expect(updateLikeStatus.status).toBe(204)
 
         //checking update of likeInfo for None
@@ -1832,7 +1953,7 @@ describe("comments testing", () => {
 
     it('should delete comment by comment id and return 204', async () => {
 
-        const deleteComment = await commentFunctions.deleteCommentByCommentId(comment.body.id, loginUser.body.accessToken)
+        const deleteComment = await commentFunctions.deleteCommentByCommentId(comment.body.id, loggedUser[0].body.accessToken)
         expect(deleteComment.status).toBe(204)
 
         const {status, body} = await commentFunctions.getCommentByCommentId(comment.body.id)

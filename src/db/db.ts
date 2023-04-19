@@ -14,6 +14,7 @@ import {UserAccountSchema} from "../repositories/schemas/user-schema";
 import {CommentSchema} from "../repositories/schemas/comment-schema";
 import {TokenSchema} from "../repositories/schemas/token-schema";
 import {IpSchema} from "../repositories/schemas/ip-schema";
+import {LikeSchema} from "../repositories/schemas/like-schema";
 
 
 // getting-started.js
@@ -39,6 +40,7 @@ export const BlogModel = mongoose.model("blogs",BlogSchema)
 export const PostModel = mongoose.model('posts',PostSchema)
 export const UserAccountModel = mongoose.model('usersAccounts',UserAccountSchema)
 export const CommentModel = mongoose.model("comments", CommentSchema)
+export const LikeModel = mongoose.model("likes", LikeSchema)
 export const TokenModel = mongoose.model("validTokenList",TokenSchema)
 export const IpModel = mongoose.model('ipData',IpSchema)
 

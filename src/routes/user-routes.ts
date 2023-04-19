@@ -5,7 +5,6 @@ import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares"
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {userQueryRepo} from "../query-repositories/user-query-repo";
 import {checkUserCredentialsMiddleware} from "../middlewares/check-user-credentials-middleware";
-import {authService} from "../domain/auth-service";
 import {userService} from "../domain/user-service";
 
 export const userRoutes = Router({})
@@ -38,13 +37,11 @@ userRoutes.delete("/:id", baseAuthorizationMiddleware,async (req:Request, res:Re
 
     const deleteUser = await userService.deleteUser(id)
 
-    if(deleteUser) {
-
-        res.sendStatus(204)
-    }else{
+    if(!deleteUser) {
         res.sendStatus(404)
     }
 
+    res.sendStatus(204)
 
 
 })

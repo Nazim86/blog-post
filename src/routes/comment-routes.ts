@@ -7,6 +7,8 @@ import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-credentials-middleware";
 import {likeValidation} from "../validations/like-validation";
+import {jwtService} from "../domain/jwt-service";
+import {settings} from "../settings";
 
 export const commentRoutes = Router({})
 
@@ -17,11 +19,12 @@ commentRoutes.put('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCr
 
         const updateComment:boolean = await commentService.updateComment(req.params.commentId, content)
 
-        if (updateComment) {
-            res.send(204)
-        } else {
-            res.send(404)
+        if (!updateComment) {
+            res.sendStatus(404)
         }
+
+        res.sendStatus(204)
+
     })
 
 commentRoutes.delete('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware,
@@ -29,36 +32,49 @@ commentRoutes.delete('/:commentId', checkUserByAccessTokenMiddleware,checkCommen
 
         const deleteComment:boolean = await commentService.deleteComment(req.params.commentId)
 
-        if (deleteComment) {
-            res.send(204)
-        } else {
-            res.send(404)
+        if (!deleteComment) {
+            res.sendStatus(404)
         }
+
+        res.sendStatus(204)
     })
 
 commentRoutes.get('/:commentId',
     async (req: Request, res: Response) => {
 
-        const getComment:CommentsViewType|null = await commentsQueryRepo.getComment(req.params.commentId)
+    const accessToken: string | undefined = req.headers.authorization
 
-        if (getComment) {
-            res.status(200).send(getComment)
-        } else {
-            res.send(404)
+    let userId = undefined
+
+    if (accessToken) {
+        const tokenData = await jwtService.getRefreshTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
+        if(tokenData){
+            userId = tokenData.userId
         }
+
+    }
+
+    const getComment: CommentsViewType | null = await commentsQueryRepo.getComment(req.params.commentId, userId)
+
+    if (!getComment) {
+        return res.sendStatus(404)
+    }
+    res.status(200).send(getComment)
+
     })
 
-commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware,likeValidation,inputValidationErrorsMiddleware,
+
+commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware,likeValidation,inputValidationErrorsMiddleware,
     async (req: Request, res: Response) => {
 
         const likeStatus = req.body.likeStatus;
         const commentId = req.params.commentId
+        const userId = req.context.user!._id.toString()
 
-        const updateComment:boolean = await commentService.updateLikeStatus(commentId, likeStatus)
+        const updateComment:boolean = await commentService.updateLikeStatus(commentId, userId, likeStatus)
 
-        if (updateComment) {
-            res.send(204)
-        } else {
-            res.send(404)
+        if(!updateComment) {
+            return res.sendStatus(404)
         }
+        res.sendStatus(204)
     })

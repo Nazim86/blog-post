@@ -1,7 +1,8 @@
 import {CommentsDbType} from "./types/comments-db-type";
 import {CommentsViewType} from "./types/comments-view-type";
-import {CommentModel} from "../db/db";
-import {ObjectId} from "mongodb";
+import {CommentModel, LikeModel} from "../db/db";
+import {ObjectId, UpdateResult} from "mongodb";
+import {LikeEnum} from "./enums/like-enum";
 
 export const commentDbRepository = {
 
@@ -29,24 +30,11 @@ export const commentDbRepository = {
         return result.matchedCount === 1
     },
 
-    async updateLikeStatus(commentId:string,likeStatus:string,filter:object):Promise<boolean>{
-        // let filter:string;
+    async updateLikeStatus(commentId:string,userId:string,likeStatus:LikeEnum):Promise<boolean>{
 
-        // switch (likeStatus) {
-        //     case LikeEnum.Like :
-        //         filter = "likesInfo.likesCount"
-        //     case LikeEnum.Dislike:
-        //         filter = "likesInfo.likesCount"
-        //     case LikeEnum.None:
-        //         filter = "likesInfo.myStatus"
-        //     default:
-        //         filter = ""
-        // }
+        const result:UpdateResult = await LikeModel.updateOne({commentId,userId}, {$set: {addedAt: new Date().toISOString(), status: likeStatus}}, {upsert: true})
 
-
-        const result = await CommentModel.updateOne({_id:new ObjectId(commentId)},filter)
-
-        return result.matchedCount === 1
+        return result.upsertedCount===1 || result.modifiedCount ===1
     },
 
 

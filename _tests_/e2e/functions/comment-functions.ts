@@ -12,7 +12,7 @@ export const commentFunctions = {
 
         },
 
-    async getCommentByCommentId (commentId:string){
+    async getCommentByCommentId (commentId:string,accessToken?:string){
         const result = await request(app)
             .get(`/comments/${commentId}`)
             .send()
