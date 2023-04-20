@@ -8,7 +8,8 @@ import {postRepository} from "../repositories/post-in-db-repository";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
 
-export const commentsQueryRepo = {
+class CommentsQueryRepo{
+
     async getCommentsForPost(postId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<QueryPaginationType<CommentsViewType[]> | null> {
 
         const postById: PostsViewType | boolean = await postRepository.getPostById(postId)
@@ -35,7 +36,7 @@ export const commentsQueryRepo = {
             totalCount: totalCount,
             items: resolvedComments
         }
-    },
+    }
 
     async getComment(commentId: string, userId?: string): Promise<CommentsViewType | null> {
 
@@ -52,26 +53,28 @@ export const commentsQueryRepo = {
                 }
             }
 
-                const likesCount = await LikeModel.countDocuments({commentId, status: LikeEnum.Like})
-                const dislikesCount = await LikeModel.countDocuments({commentId, status: LikeEnum.Dislike})
+            const likesCount = await LikeModel.countDocuments({commentId, status: LikeEnum.Like})
+            const dislikesCount = await LikeModel.countDocuments({commentId, status: LikeEnum.Dislike})
 
-                return {
-                    id: getComment._id.toString(),
-                    content: getComment.content,
-                    commentatorInfo: {
-                        userId: getComment.commentatorInfo.userId,
-                        userLogin: getComment.commentatorInfo.userLogin
-                    },
-                    createdAt: getComment.createdAt,
-                    likesInfo: {
-                        likesCount,
-                        dislikesCount,
-                        myStatus: myStatus
-                    }
+            return {
+                id: getComment._id.toString(),
+                content: getComment.content,
+                commentatorInfo: {
+                    userId: getComment.commentatorInfo.userId,
+                    userLogin: getComment.commentatorInfo.userLogin
+                },
+                createdAt: getComment.createdAt,
+                likesInfo: {
+                    likesCount,
+                    dislikesCount,
+                    myStatus: myStatus
                 }
+            }
 
         }catch (e) {
             return null
         }
     }
 }
+
+export const commentsQueryRepo = new CommentsQueryRepo()
