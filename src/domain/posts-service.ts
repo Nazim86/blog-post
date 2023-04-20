@@ -5,7 +5,7 @@ import {postRepository} from "../repositories/post-in-db-repository";
 import {blogRepository} from "../repositories/blog-in-db-repository";
 
 
-export const postService = {
+class PostsService{
 
     async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<PostsViewType | null> {
 
@@ -25,7 +25,7 @@ export const postService = {
 
         return await postRepository.createPost(newPost)
 
-    },
+    }
 
 
     async createPostForBlog (title: string, shortDescription: string, content: string, blogId:string): Promise<PostsViewType | null> {
@@ -47,21 +47,21 @@ export const postService = {
 
         return await postRepository.createPostForBlog(createPostForBlog)
 
-    },
+    }
 
     async getPost():Promise<PostsViewType[]>{
         return await postRepository.getPost()
-    },
+    }
 
     async getPostById(id:string): Promise<PostsViewType |boolean> {
         return await postRepository.getPostById(id)
     }
-    ,
+
 
     async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
         return await postRepository.updatePost(id, title, shortDescription, content, blogId)
-    },
+    }
 
     async deletePostById(id:string):Promise <boolean>{
         return postRepository.deletePostById(id)
@@ -70,3 +70,5 @@ export const postService = {
 
 
 }
+
+export const postService = new PostsService()

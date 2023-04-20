@@ -35,15 +35,12 @@ class PostController {
 
     async getPostById(req: Request, res: Response) {
 
-        const {pageNumber, pageSize, sortBy, sortDirection} = getPaginationValues(req.query)
+        const getPost:PostsViewType|boolean = await postQueryRepo.getPostById(req.params.id)
 
-        const getCommentsForPost: QueryPaginationType<CommentsViewType[]> | null =
-            await commentsQueryRepo.getCommentsForPost(req.params.postId, pageNumber, pageSize, sortBy, sortDirection)
-
-        if (!getCommentsForPost) {
-            return res.sendStatus(404)
+        if (!getPost) {
+           return res.sendStatus(404)
         }
-        res.status(200).send(getCommentsForPost)
+            res.status(200).send(getPost)
     }
 
     async getCommentByPostId(req: Request, res: Response) {
