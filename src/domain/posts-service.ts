@@ -1,8 +1,8 @@
 import {ObjectId} from "mongodb";
 import {PostsViewType} from "../repositories/types/posts-view-type";
-import {PostsDbType} from "../repositories/types/posts-db-type";
 import {postRepository} from "../repositories/post-in-db-repository";
 import {blogRepository} from "../repositories/blog-in-db-repository";
+import {PostsDbType} from "../repositories/types/posts-db-type";
 
 
 class PostsService{
@@ -12,16 +12,7 @@ class PostsService{
         const blog = await blogRepository.getBlogById(blogId)
         if (!blog) return null
 
-        const newPost: PostsDbType ={
-            _id: new ObjectId(),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId: blogId,
-            blogName: blog.name,
-            createdAt: new Date().toISOString()
-
-        }
+        const newPost = new PostsDbType(new ObjectId(),title,shortDescription,content,blogId,blog.name,new Date().toISOString())
 
         return await postRepository.createPost(newPost)
 
@@ -34,16 +25,7 @@ class PostsService{
 
         if(!blogById) return null
 
-        const createPostForBlog: PostsDbType = {
-            _id: new ObjectId(),
-            title: title,
-            shortDescription: shortDescription,
-            content: content,
-            blogId:blogId.toString(),
-            blogName: blogById.name,
-            createdAt: new Date().toISOString()
-
-        }
+        const createPostForBlog = new PostsDbType(new ObjectId(),title,shortDescription,content,blogId.toString(),blogById.name,new Date().toISOString())
 
         return await postRepository.createPostForBlog(createPostForBlog)
 
@@ -67,7 +49,6 @@ class PostsService{
         return postRepository.deletePostById(id)
 
     }
-
 
 }
 
