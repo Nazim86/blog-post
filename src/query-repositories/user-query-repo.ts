@@ -3,7 +3,9 @@ import {userMapping} from "../mapping/user-mapping";
 import {UserAccountModel} from "../db/db";
 
 
-export const userQueryRepo = {
+
+
+class UserQueryRepo {
     async getUsers(sortBy: string, sortDirection: string, pageNumber: number, pageSize: number, searchLoginTerm: string, searchEmailTerm: string) {
 
         const skipSize = (pageNumber - 1) * pageSize;
@@ -36,4 +38,6 @@ export const userQueryRepo = {
 
     }
 }
+
+export const userQueryRepo = new UserQueryRepo()
 

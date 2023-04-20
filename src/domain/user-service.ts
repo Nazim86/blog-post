@@ -8,10 +8,7 @@ import add from "date-fns/add";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {userRepository} from "../repositories/user-in-db-repository";
 
-
-
-export const userService = {
-
+class UserService{
     async createNewUser(login: string, password: string, email: string): Promise<UserViewType> {
 
         const passwordSalt = await bcrypt.genSalt(10)
@@ -52,16 +49,16 @@ export const userService = {
             createdAt: newUser.accountData.createdAt
         }
 
-    },
+    }
 
     async _generateHash(password: string, passwordSalt: string): Promise<string> {
 
         return await bcrypt.hash(password, passwordSalt)
-    },
+    }
 
     async deleteUser(id: string): Promise<boolean> {
         return await userRepositoryOld.deleteUser(id)
-    },
+    }
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
 
@@ -73,7 +70,7 @@ export const userService = {
 
         return bcrypt.compare(password, user.accountData.passwordHash)
 
-    },
+    }
 
     async findUserById (userId:string):Promise<UserByIdType |null>{
         return await userRepositoryOld.findUserById(userId)
@@ -81,3 +78,5 @@ export const userService = {
 
 
 }
+
+export const userService = new UserService()
