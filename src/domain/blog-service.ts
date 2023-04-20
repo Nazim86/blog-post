@@ -8,14 +8,12 @@ class BlogService {
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogsViewType> {
 
-        const newBlog: BlogsDbType = {
-            _id: new ObjectId(),
-            name: name,
-            description: description,
-            websiteUrl: websiteUrl,
-            createdAt: new Date().toISOString(),
-            isMembership: false
-        }
+        const newBlog: BlogsDbType = new BlogsDbType(
+            new ObjectId(),
+            name,
+            description,
+            websiteUrl,new Date().toISOString(),
+            false)
 
         return await blogRepository.createBlog(newBlog)
     }
