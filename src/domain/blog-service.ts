@@ -1,13 +1,10 @@
-
 import {ObjectId} from "mongodb";
 import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {BlogsDbType} from "../repositories/types/blogs-db-type";
 import {blogRepository} from "../repositories/blog-in-db-repository";
 
 
-
-
-export const blogService = {
+class BlogService {
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogsViewType> {
 
@@ -18,45 +15,28 @@ export const blogService = {
             websiteUrl: websiteUrl,
             createdAt: new Date().toISOString(),
             isMembership: false
-
-
         }
 
-        const result = await blogRepository.createBlog(newBlog)
-
-
-        return result
-
-    },
-
-
-
+        return await blogRepository.createBlog(newBlog)
+    }
 
     async getBlog(): Promise<BlogsViewType[]> {
 
-        const getBlog = await blogRepository.getBlog()
-
-        return getBlog
-    },
+        return await blogRepository.getBlog()
+    }
 
     async getBlogById(id: string): Promise<BlogsViewType | null> {
 
-        const foundBlog = await blogRepository.getBlogById(id)
-        return foundBlog
-
-    },
-
-    async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
-        const result = await blogRepository.updateBlog(id,name,description,websiteUrl)
-        return result
-
-    },
-
-    async deleteBlogById(id: string): Promise<boolean> {
-        const result = await blogRepository.deleteBlogById(id)
-
-        return result
+        return await blogRepository.getBlogById(id)
     }
 
+    async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
+        return await blogRepository.updateBlog(id, name, description, websiteUrl)
+    }
 
+    async deleteBlogById(id: string): Promise<boolean> {
+        return await blogRepository.deleteBlogById(id)
+    }
 }
+
+export const blogService = new BlogService()
