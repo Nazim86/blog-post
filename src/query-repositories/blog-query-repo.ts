@@ -4,39 +4,35 @@ import {blogMapping} from "../mapping/blog-mapping";
 import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 
-
-export const blogQueryRepo = {
+class BlogQueryRepo {
 
     async getBlogById(id: string): Promise<BlogsViewType | boolean> {
 
         try {
-
             const foundBlog = await BlogModel.findOne({_id: new ObjectId(id)})
-            if (foundBlog) {
-                return {
-                    id: foundBlog._id.toString(),
-                    name: foundBlog.name,
-                    description: foundBlog.description,
-                    websiteUrl: foundBlog.websiteUrl,
-                    createdAt: foundBlog.createdAt,
-                    isMembership: foundBlog.isMembership
-                }
-            } else {
+
+            if (!foundBlog) {
                 return false
             }
-        }
-        catch (e){
+            return {
+                id: foundBlog._id.toString(),
+                name: foundBlog.name,
+                description: foundBlog.description,
+                websiteUrl: foundBlog.websiteUrl,
+                createdAt: foundBlog.createdAt,
+                isMembership: foundBlog.isMembership
+            }
+        } catch (e) {
             return false
         }
-
-    },
+    }
 
     async getBlog(
         searchNameTerm: string, sortBy: string = "createdAt", sortDirection: string = 'desc',
         pageNumber: number = 1, pageSize: number = 10): Promise<QueryPaginationType<BlogsViewType[]>> {
 
 
-        const filter= {name: {$regex: searchNameTerm ?? '', $options: 'i'}}
+        const filter = {name: {$regex: searchNameTerm ?? '', $options: 'i'}}
         const skipSize = (pageNumber - 1) * pageSize
         const totalCount = await BlogModel.countDocuments(filter)
         const pagesCount = Math.ceil(totalCount / pageSize)
@@ -58,5 +54,7 @@ export const blogQueryRepo = {
 
     }
 }
+
+export const blogQueryRepo = new BlogQueryRepo()
 
 
