@@ -15,9 +15,7 @@ class PostsService{
         const newPost = new PostsDbType(new ObjectId(),title,shortDescription,content,blogId,blog.name,new Date().toISOString())
 
         return await postRepository.createPost(newPost)
-
     }
-
 
     async createPostForBlog (title: string, shortDescription: string, content: string, blogId:string): Promise<PostsViewType | null> {
 
@@ -28,7 +26,6 @@ class PostsService{
         const createPostForBlog = new PostsDbType(new ObjectId(),title,shortDescription,content,blogId.toString(),blogById.name,new Date().toISOString())
 
         return await postRepository.createPostForBlog(createPostForBlog)
-
     }
 
     async getPost():Promise<PostsViewType[]>{
@@ -39,7 +36,6 @@ class PostsService{
         return await postRepository.getPostById(id)
     }
 
-
     async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
         return await postRepository.updatePost(id, title, shortDescription, content, blogId)
@@ -47,9 +43,7 @@ class PostsService{
 
     async deletePostById(id:string):Promise <boolean>{
         return postRepository.deletePostById(id)
-
     }
-
 }
 
 export const postService = new PostsService()

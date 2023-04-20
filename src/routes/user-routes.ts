@@ -1,4 +1,4 @@
-import {Request,Response, Router} from "express";
+import {Request, Response, Router} from "express";
 import {getPaginationValues} from "../functions/pagination-values";
 import {userInputValidations} from "../validations/user-validations";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
@@ -9,39 +9,55 @@ import {userService} from "../domain/user-service";
 
 export const userRoutes = Router({})
 
-userRoutes.get("/", baseAuthorizationMiddleware,async (req:Request, res:Response)=>{
+class UserController {
 
-const {sortBy,sortDirection,pageNumber,pageSize,searchLoginTerm,searchEmailTerm} = getPaginationValues(req.query)
+    async getUsers(req: Request, res: Response) {
 
-    const getUsers = await userQueryRepo.getUsers (sortBy,sortDirection,pageNumber,pageSize,searchLoginTerm,searchEmailTerm)
+        const {
+            sortBy,
+            sortDirection,
+            pageNumber,
+            pageSize,
+            searchLoginTerm,
+            searchEmailTerm
+        } = getPaginationValues(req.query)
 
-       res.status(200).send(getUsers)
-})
+        const getUsers = await userQueryRepo.getUsers(sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm)
 
-userRoutes.post("/", baseAuthorizationMiddleware,userInputValidations,checkUserCredentialsMiddleware,inputValidationErrorsMiddleware,async (req:Request, res:Response)=>{
-
-const login = req.body.login
-    const password = req.body.password
-    const email = req.body.email
-
-
-    const newUser = await userService.createNewUser(login,password,email)
-    if (newUser){
-        res.status(201).send(newUser)
-    }
-})
-
-userRoutes.delete("/:id", baseAuthorizationMiddleware,async (req:Request, res:Response)=>{
-
-    const id = req.params.id
-
-    const deleteUser = await userService.deleteUser(id)
-
-    if(!deleteUser) {
-        res.sendStatus(404)
+        res.status(200).send(getUsers)
     }
 
-    res.sendStatus(204)
+    async createUser(req: Request, res: Response) {
+
+        const login = req.body.login
+        const password = req.body.password
+        const email = req.body.email
 
 
-})
+        const newUser = await userService.createNewUser(login, password, email)
+        if (newUser) {
+            res.status(201).send(newUser)
+        }
+    }
+
+    async deleteUser(req: Request, res: Response) {
+
+        const id = req.params.id
+
+        const deleteUser = await userService.deleteUser(id)
+
+        if (!deleteUser) {
+            return res.sendStatus(404)
+        }
+        res.sendStatus(204)
+    }
+}
+
+const userController = new UserController()
+
+userRoutes.get("/", baseAuthorizationMiddleware, userController.getUsers)
+
+userRoutes.post("/", baseAuthorizationMiddleware, userInputValidations, checkUserCredentialsMiddleware, inputValidationErrorsMiddleware,
+    userController.createUser)
+
+userRoutes.delete("/:id", baseAuthorizationMiddleware, userController.deleteUser)

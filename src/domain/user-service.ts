@@ -9,6 +9,7 @@ import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {userRepository} from "../repositories/user-in-db-repository";
 
 
+
 export const userService = {
 
     async createNewUser(login: string, password: string, email: string): Promise<UserViewType> {
