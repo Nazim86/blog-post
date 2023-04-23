@@ -14,7 +14,7 @@ class UserService{
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newUser = {
+        const newUser:UserAccountDbType = {
             _id: new ObjectId(),
             accountData: {
                 login: login,
@@ -34,7 +34,6 @@ class UserService{
                     minutes: 3
                 }),
                 isConfirmed: true,
-                sentEmailsByDate: new Date()
             }
         }
 
