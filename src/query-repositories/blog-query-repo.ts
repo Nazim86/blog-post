@@ -4,7 +4,7 @@ import {blogMapping} from "../mapping/blog-mapping";
 import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 
-class BlogQueryRepo {
+export class BlogQueryRepo {
 
     async getBlogById(id: string): Promise<BlogsViewType | boolean> {
 
@@ -55,6 +55,6 @@ class BlogQueryRepo {
     }
 }
 
-export const blogQueryRepo = new BlogQueryRepo()
+
 
 

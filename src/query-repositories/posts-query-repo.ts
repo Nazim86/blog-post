@@ -5,7 +5,7 @@ import {PostsDbType} from "../repositories/types/posts-db-type";
 import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 
-class PostsQueryRepo{
+export class PostsQueryRepo{
     async getPostById(id:string): Promise<PostsViewType |boolean>{
         try {
             const postById = await PostModel.findOne({_id: new ObjectId(id)})
@@ -83,5 +83,3 @@ class PostsQueryRepo{
         }
     }
 }
-
-export const postQueryRepo = new PostsQueryRepo()

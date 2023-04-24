@@ -4,7 +4,7 @@ import {BlogsDbType} from "../repositories/types/blogs-db-type";
 import {BlogRepository} from "../repositories/blog-in-db-repository";
 
 
-class BlogService {
+export class BlogService {
 
     private blogRepository: BlogRepository
     constructor() {
@@ -41,5 +41,3 @@ class BlogService {
         return await this.blogRepository.deleteBlogById(id)
     }
 }
-
-export const blogService = new BlogService()

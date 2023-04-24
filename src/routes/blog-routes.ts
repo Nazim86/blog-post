@@ -7,13 +7,13 @@ import {
     websiteUrl
 } from "../validations/blog-validations";
 import {BlogsViewType} from "../repositories/types/blogs-view-type";
-import {blogService} from "../domain/blog-service";
-import {blogQueryRepo} from "../query-repositories/blog-query-repo";
+import {BlogService} from "../domain/blog-service";
+import {BlogQueryRepo} from "../query-repositories/blog-query-repo";
 import {getPaginationValues} from "../functions/pagination-values";
-import {postQueryRepo} from "../query-repositories/posts-query-repo";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {postService} from "../domain/posts-service";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
+import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 
 
 export const blogRoutes = Router({})
@@ -21,11 +21,25 @@ export const blogRoutes = Router({})
 const createPostValidations = [nameValidation, description, websiteUrl, inputValidationErrorsMiddleware]
 
 class BlogController {
+
+    private blogService:BlogService
+    private blogQueryRepo:BlogQueryRepo
+    private postsQueryRepo:PostsQueryRepo
+
+    constructor() {
+        this.blogService = new BlogService()
+        this.blogQueryRepo = new BlogQueryRepo()
+        this.postsQueryRepo = new PostsQueryRepo()
+    }
+
+
+
+
     async getBlogs(req: Request, res: Response) {
 
         const {searchName, sortBy, sortDirection, pageNumber, pageSize} = getPaginationValues(req.query)
 
-        const getBlog: QueryPaginationType<BlogsViewType[]> = await blogQueryRepo.getBlog(searchName, sortBy,
+        const getBlog: QueryPaginationType<BlogsViewType[]> = await this.blogQueryRepo.getBlog(searchName, sortBy,
             sortDirection, pageNumber, pageSize)
 
         res.status(200).send(getBlog)
@@ -36,7 +50,7 @@ class BlogController {
         const {pageNumber, pageSize, sortBy, sortDirection} = getPaginationValues(req.query)
 
         const blogId = req.params.blogId
-        const getBlogByBlogId: QueryPaginationType<PostsViewType[]> | boolean = await postQueryRepo.getPostsByBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId)
+        const getBlogByBlogId: QueryPaginationType<PostsViewType[]> | boolean = await this.postQueryRepo.getPostsByBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId)
 
         if (!getBlogByBlogId) {
             return res.sendStatus(404)
@@ -50,7 +64,7 @@ class BlogController {
         const description = req.body.description;
         const websiteUrl = req.body.websiteUrl;
 
-        const newBlog: BlogsViewType = await blogService.createBlog(name, description, websiteUrl)
+        const newBlog: BlogsViewType = await this.blogService.createBlog(name, description, websiteUrl)
 
         if (newBlog) {
             res.status(201).send(newBlog)
@@ -76,7 +90,7 @@ class BlogController {
 
     async getBlogById(req: Request, res: Response) {
 
-        const getBlog: BlogsViewType | boolean = await blogQueryRepo.getBlogById(req.params.id)
+        const getBlog: BlogsViewType | boolean = await this.blogQueryRepo.getBlogById(req.params.id)
 
         if (!getBlog) {
             return res.sendStatus(404)
@@ -93,7 +107,7 @@ class BlogController {
     const description = req.body.description;
     const websiteUrl = req.body.websiteUrl;
 
-    const updateBlog: boolean = await blogService.updateBlog(req.params.id, name, description, websiteUrl)
+    const updateBlog: boolean = await this.blogService.updateBlog(req.params.id, name, description, websiteUrl)
 
     if (!updateBlog) {
         return res.sendStatus(404)
@@ -103,7 +117,7 @@ class BlogController {
 
 async deleteBlog (req: Request, res: Response) {
 
-    const deleteBlog: boolean = await blogService.deleteBlogById(req.params.id)
+    const deleteBlog: boolean = await this.blogService.deleteBlogById(req.params.id)
 
     if (!deleteBlog) {
         return res.sendStatus(404)
@@ -116,16 +130,16 @@ async deleteBlog (req: Request, res: Response) {
 const blogController = new BlogController()
 
 
-blogRoutes.get('/', queryValidations, blogController.getBlogs);
+blogRoutes.get('/', queryValidations, blogController.getBlogs.bind(blogController));
 
-blogRoutes.get('/:blogId/posts', queryValidations, blogController.getPostsByBlogId);
+blogRoutes.get('/:blogId/posts', queryValidations, blogController.getPostsByBlogId.bind(blogController));
 
-blogRoutes.post('/', baseAuthorizationMiddleware, createPostValidations,blogController.createBlog);
+blogRoutes.post('/', baseAuthorizationMiddleware, createPostValidations,blogController.createBlog.bind(blogController));
 
-blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware, postForBlogValidations, inputValidationErrorsMiddleware,blogController.createPostByBlogId);
+blogRoutes.post('/:blogId/posts', baseAuthorizationMiddleware, postForBlogValidations, inputValidationErrorsMiddleware,blogController.createPostByBlogId.bind(blogController));
 
-blogRoutes.get('/:id', blogController.getBlogById);
+blogRoutes.get('/:id', blogController.getBlogById.bind(blogController));
 
-blogRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidations, blogController.updateBlog);
+blogRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidations, blogController.updateBlog.bind(blogController));
 
-blogRoutes.delete('/:id', baseAuthorizationMiddleware, blogController.deleteBlog);
+blogRoutes.delete('/:id', baseAuthorizationMiddleware, blogController.deleteBlog.bind(blogController));
