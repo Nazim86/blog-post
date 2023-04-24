@@ -32,9 +32,6 @@ class BlogController {
         this.postsQueryRepo = new PostsQueryRepo()
     }
 
-
-
-
     async getBlogs(req: Request, res: Response) {
 
         const {searchName, sortBy, sortDirection, pageNumber, pageSize} = getPaginationValues(req.query)
