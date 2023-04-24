@@ -30,8 +30,6 @@ class UserService{
         const newUser:UserAccountDbType = new UserAccountDbType(new ObjectId(),
             userType,emailConfirmationType)
 
-
-
         // const newUser:UserAccountDbType = {
         //     _id: new ObjectId(),
         //     accountData: {
