@@ -9,7 +9,7 @@ export class EmailConfirmationType {
 }
 
 
-export class UserType {
+export class AccountDataType {
     constructor(
    public login: string,
    public passwordHash: string,
@@ -22,12 +22,7 @@ export class UserType {
 export class UserAccountDbType {
     constructor(
         public _id: ObjectId,
-        public accountData: UserType,
+        public accountData: AccountDataType,
         public emailConfirmation: EmailConfirmationType) {}
 }
 
-// export type UserAccountDbType = {
-//     _id:ObjectId
-//     accountData: UserType
-//     emailConfirmation:EmailConfirmationType
-// }

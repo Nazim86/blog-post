@@ -22,7 +22,7 @@ import {userRepository} from "../repositories/user-in-db-repository";
 
 export const authRoutes = Router({});
 
-class AuthController {
+export class AuthController {
 
     async userRegistration(req: Request, res: Response) {
 

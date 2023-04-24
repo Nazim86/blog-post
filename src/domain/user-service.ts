@@ -5,7 +5,7 @@ import {UserViewType} from "../repositories/types/user-view-type";
 import {UserByIdType} from "../repositories/types/user-by-id-type";
 import {v4 as uuid} from "uuid";
 import add from "date-fns/add";
-import {EmailConfirmationType, UserAccountDbType, UserType} from "../repositories/types/user-account-db-type";
+import {EmailConfirmationType, UserAccountDbType, AccountDataType} from "../repositories/types/user-account-db-type";
 import {userRepository} from "../repositories/user-in-db-repository";
 
 class UserService{
@@ -23,13 +23,13 @@ class UserService{
             }),
             true)
 
-        const userType = new UserType(login,passwordHash,email,new Date().toISOString(),uuid(),add(new Date(), {
+        const accountData = new AccountDataType(login,passwordHash,email,new Date().toISOString(),uuid(),add(new Date(), {
                         hours: 1,
                         minutes: 3
                     }))
 
         const newUser:UserAccountDbType = new UserAccountDbType(new ObjectId(),
-            userType,emailConfirmationType)
+            accountData,emailConfirmationType)
 
         // const newUser:UserAccountDbType = {
         //     _id: new ObjectId(),

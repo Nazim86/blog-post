@@ -33,21 +33,6 @@ export class CommentService {
                 myStatus:"None"
             })
 
-        // {
-            //     _id: new ObjectId(),
-            //     postId:postById.id,
-            //     content: content,
-            //     commentatorInfo: {
-            //         userId: userId,
-            //         userLogin: userLogin
-            //     },
-            //     createdAt: new Date().toISOString(),
-            //     likesInfo:{
-            //         likesCount:0,
-            //         dislikesCount: 0,
-            //         myStatus:"None"
-            //     }
-            // }
             return await this.commentDbRepository.createPostComment(postComment, userId, userLogin)
     }
 

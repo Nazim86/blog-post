@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {EmailConfirmationType, UserAccountDbType, UserType} from "../types/user-account-db-type";
+import {EmailConfirmationType, UserAccountDbType, AccountDataType} from "../types/user-account-db-type";
 import {ObjectId} from "mongodb";
 const { Schema } = mongoose;
 
@@ -9,7 +9,7 @@ const EmailConfirmationSchema = new Schema<EmailConfirmationType>({
     isConfirmed:{type:Boolean,required:true},
 })
 
-const UserSchema = new Schema<UserType>({
+const UserSchema = new Schema<AccountDataType>({
     login: {type:String,required:true},
     passwordHash:{type:String,required:true},
     email: {type:String,required:true},

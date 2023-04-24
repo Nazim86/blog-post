@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import {userRepository} from "../repositories/user-in-db-repository";
 import {v4 as uuid} from 'uuid';
 import add from "date-fns/add"
-import {UserAccountDbType} from "../repositories/types/user-account-db-type";
+import {EmailConfirmationType, UserAccountDbType, AccountDataType} from "../repositories/types/user-account-db-type";
 import {emailManager} from "../managers/email-manager";
 import {UserAccountModel} from "../db/db";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
@@ -17,28 +17,21 @@ export const authService = {
 
         const passwordHash = await bcrypt.hash(password, 10)
 
-        const newUser: UserAccountDbType = {
-            _id: new ObjectId(),
-            accountData: {
-                login: login,
-                passwordHash,
-                email: email,
-                createdAt: new Date().toISOString(),
-                recoveryCode:uuid(),
-                recoveryCodeExpiration:add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                })
-            },
-            emailConfirmation: {
-                confirmationCode: uuid(),
-                emailExpiration: add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                }),
-                isConfirmed: false,
-            }
-        }
+        const emailConfirmationType = new EmailConfirmationType(
+            uuid(),
+            add(new Date(), {
+                hours: 1,
+                minutes: 3
+            }),
+            false)
+
+        const accountData = new AccountDataType(login,passwordHash,email,new Date().toISOString(),uuid(),add(new Date(), {
+            hours: 1,
+            minutes: 3
+        }))
+
+        const newUser:UserAccountDbType = new UserAccountDbType(new ObjectId(),
+            accountData,emailConfirmationType)
 
         const createUser = await userRepository.createNewUser(newUser)
 
