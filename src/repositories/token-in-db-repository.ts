@@ -4,12 +4,10 @@ import {DeviceViewType} from "./types/device-view-type";
 import {deviceMapping} from "../mapping/device-mapping";
 
 
-
 class TokenInDbRepository {
 
     async insertRefreshTokenMetaData(refreshTokenMeta: RefreshTokenMetaDbType) {
         await TokenModel.create(refreshTokenMeta)
-
     }
 
     async getDevices(ip: string, userId: string): Promise<DeviceViewType[]> {
@@ -19,23 +17,22 @@ class TokenInDbRepository {
 
     }
 
-    async getDevicesByDeviceId(deviceId: string): Promise<RefreshTokenMetaDbType|null> {
+    async getDevicesByDeviceId(deviceId: string): Promise<RefreshTokenMetaDbType | null> {
         return TokenModel.findOne({deviceId: deviceId})
-
     }
 
-    async updateDevice(deviceId:string,lastActiveDate:string):Promise<boolean> {
-       const result= await TokenModel.updateOne({deviceId:deviceId},{$set:{lastActiveDate:lastActiveDate}})
-   return result.modifiedCount === 1
+    async updateDevice(deviceId: string, lastActiveDate: string): Promise<boolean> {
+        const result = await TokenModel.updateOne({deviceId: deviceId}, {$set: {lastActiveDate: lastActiveDate}})
+        return result.modifiedCount === 1
     }
 
-    async deleteDevices(deviceId: string):Promise<boolean> {
+    async deleteDevices(deviceId: string): Promise<boolean> {
         const result = await TokenModel.deleteMany({deviceId: {$not: {$eq: deviceId}}});
         return result.deletedCount === 1
     }
 
-    async deleteDeviceById(deviceId: string,userId:string) {
-        const result = await TokenModel.deleteOne({deviceId: deviceId,userId:userId});
+    async deleteDeviceById(deviceId: string, userId: string) {
+        const result = await TokenModel.deleteOne({deviceId: deviceId, userId: userId});
         return result.deletedCount === 1
     }
 }
