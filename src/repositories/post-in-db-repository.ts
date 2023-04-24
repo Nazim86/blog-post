@@ -36,24 +36,6 @@ export class PostRepository {
 
     }
 
-
-    // async  getPostById(id:string): Promise<PostsViewType |boolean>{
-    //     const postById = await PostModel.findOne({_id: new ObjectId(id)})
-    //
-    //     if (!postById) {
-    //         return false
-    //     }
-    //         return {
-    //             id: postById._id.toString(),
-    //             title: postById.title,
-    //             shortDescription: postById.shortDescription,
-    //             content: postById.content,
-    //             blogId: postById.blogId,
-    //             blogName: postById.blogName,
-    //             createdAt: postById.createdAt
-    //     }
-    // }
-
     async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
         try {
