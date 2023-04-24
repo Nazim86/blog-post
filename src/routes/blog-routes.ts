@@ -11,9 +11,9 @@ import {BlogService} from "../domain/blog-service";
 import {BlogQueryRepo} from "../query-repositories/blog-query-repo";
 import {getPaginationValues} from "../functions/pagination-values";
 import {PostsViewType} from "../repositories/types/posts-view-type";
-import {postService} from "../domain/posts-service";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
+import {PostsService} from "../domain/posts-service";
 
 
 export const blogRoutes = Router({})
@@ -25,11 +25,13 @@ class BlogController {
     private blogService:BlogService
     private blogQueryRepo:BlogQueryRepo
     private postQueryRepo:PostsQueryRepo
+    private postService:PostsService
 
     constructor() {
         this.blogService = new BlogService()
         this.blogQueryRepo = new BlogQueryRepo()
         this.postQueryRepo = new PostsQueryRepo()
+        this.postService = new PostsService()
     }
 
     async getBlogs(req: Request, res: Response) {
@@ -75,7 +77,7 @@ class BlogController {
         const content = req.body.content;
         const blogId = req.params.blogId
 
-        const newPostForBlog: PostsViewType | null = await postService.createPostForBlog(title, shortDescription, content, blogId)
+        const newPostForBlog: PostsViewType | null = await this.postService.createPostForBlog(title, shortDescription, content, blogId)
 
         if (!newPostForBlog) {
             return res.sendStatus(404)
