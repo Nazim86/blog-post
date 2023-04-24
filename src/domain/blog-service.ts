@@ -1,10 +1,15 @@
 import {ObjectId} from "mongodb";
 import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {BlogsDbType} from "../repositories/types/blogs-db-type";
-import {blogRepository} from "../repositories/blog-in-db-repository";
+import {BlogRepository} from "../repositories/blog-in-db-repository";
 
 
 class BlogService {
+
+    private blogRepository: BlogRepository
+    constructor() {
+        this.blogRepository = new BlogRepository()
+    }
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogsViewType> {
 
@@ -15,25 +20,25 @@ class BlogService {
             websiteUrl,new Date().toISOString(),
             false)
 
-        return await blogRepository.createBlog(newBlog)
+        return await this.blogRepository.createBlog(newBlog)
     }
 
     async getBlog(): Promise<BlogsViewType[]> {
 
-        return await blogRepository.getBlog()
+        return await this.blogRepository.getBlog()
     }
 
     async getBlogById(id: string): Promise<BlogsViewType | null> {
 
-        return await blogRepository.getBlogById(id)
+        return await this.blogRepository.getBlogById(id)
     }
 
     async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean> {
-        return await blogRepository.updateBlog(id, name, description, websiteUrl)
+        return await this.blogRepository.updateBlog(id, name, description, websiteUrl)
     }
 
     async deleteBlogById(id: string): Promise<boolean> {
-        return await blogRepository.deleteBlogById(id)
+        return await this.blogRepository.deleteBlogById(id)
     }
 }
 

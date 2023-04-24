@@ -9,6 +9,7 @@ import {EmailConfirmationType, UserAccountDbType, UserType} from "../repositorie
 import {userRepository} from "../repositories/user-in-db-repository";
 
 class UserService{
+
     async createNewUser(login: string, password: string, email: string): Promise<UserViewType> {
 
         const passwordSalt = await bcrypt.genSalt(10)

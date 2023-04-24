@@ -4,7 +4,7 @@ import {blogMapping} from "../mapping/blog-mapping";
 import {BlogsViewType} from "./types/blogs-view-type";
 import {BlogsDbType} from "./types/blogs-db-type";
 
-class BlogRepository {
+export class BlogRepository {
 
     async createBlog(newBlog: BlogsDbType): Promise<BlogsViewType> {
 
@@ -69,4 +69,3 @@ class BlogRepository {
     }
 }
 
-export const blogRepository = new BlogRepository()

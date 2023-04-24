@@ -42,7 +42,7 @@ startApp()
 
 // module.exports = app
 
-
+//
 // //exercises
 // const user = {
 //     age:18,
@@ -51,7 +51,20 @@ startApp()
 //     }
 // }
 //
-// // const showAge = user.showAge
-// // showAge()
+// const animal = {
+//     age:2,
+//     getMyAge:user.showAge
+// }
 //
-// setTimeout(user.showAge,1000)
+// const tap = {
+//     age:null
+//     getMyAge:user.showAge
+// }
+//
+//
+// // const showAge = user.showAge
+// // user.showAge()
+// //
+// // animal.getMyAge
+//
+// setTimeout(user.showAge.bind(tap),1000)
