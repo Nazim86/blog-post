@@ -7,7 +7,9 @@ import {
 
 export const deleteRoutes = Router({})
 
-deleteRoutes.delete('/', async (req: Request, res: Response) => {
+class DeleteController {
+
+    async deleteRoutes (req: Request, res: Response){
     await BlogModel.deleteMany({})
     await PostModel.deleteMany({})
     await CommentModel.deleteMany({})
@@ -17,4 +19,10 @@ deleteRoutes.delete('/', async (req: Request, res: Response) => {
     await LikeModel.deleteMany({})
 
     return res.sendStatus(204)
-})
+}
+
+}
+
+const deleteController = new DeleteController()
+
+deleteRoutes.delete('/', deleteController.deleteRoutes.bind(deleteController))
