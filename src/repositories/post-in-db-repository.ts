@@ -4,7 +4,7 @@ import {PostsViewType} from "./types/posts-view-type";
 import {PostsDbType} from "./types/posts-db-type";
 import {postMapping} from "../mapping/post-mapping";
 
-export const postRepository = {
+export class PostRepository {
 
     async createPost(newPost: PostsDbType):Promise<PostsViewType> {
 
@@ -19,7 +19,7 @@ export const postRepository = {
             blogName: newPost.blogName,
             createdAt: newPost.createdAt
         }
-    },
+    }
 
     async  createPostForBlog (createPostForBlog:PostsDbType): Promise<PostsViewType> {
 
@@ -35,13 +35,13 @@ export const postRepository = {
             createdAt: createPostForBlog.createdAt
         }
 
-    },
+    }
 
 
     async getPost():Promise<PostsViewType[]>{
         const getPosts = await PostModel.find({}).lean()
         return postMapping(getPosts)
-    },
+    }
 
     async  getPostById(id:string): Promise<PostsViewType |boolean>{
         const postById = await PostModel.findOne({_id: new ObjectId(id)})
@@ -59,7 +59,7 @@ export const postRepository = {
         }else{
             return false
         }
-    },
+    }
 
     async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
@@ -77,7 +77,7 @@ export const postRepository = {
             return false
         }
 
-    },
+    }
 
     async deletePostById(id:string):Promise <boolean>{
         try {

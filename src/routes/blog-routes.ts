@@ -24,12 +24,12 @@ class BlogController {
 
     private blogService:BlogService
     private blogQueryRepo:BlogQueryRepo
-    private postsQueryRepo:PostsQueryRepo
+    private postQueryRepo:PostsQueryRepo
 
     constructor() {
         this.blogService = new BlogService()
         this.blogQueryRepo = new BlogQueryRepo()
-        this.postsQueryRepo = new PostsQueryRepo()
+        this.postQueryRepo = new PostsQueryRepo()
     }
 
     async getBlogs(req: Request, res: Response) {
