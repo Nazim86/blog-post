@@ -2,24 +2,32 @@ import {Request, Response, Router} from "express";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 import {postCommentContentValidation} from "../validations/post-validations";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
-import {commentService} from "../domain/comment-service";
-import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-credentials-middleware";
 import {likeValidation} from "../validations/like-validation";
 import {jwtService} from "../domain/jwt-service";
 import {settings} from "../settings";
+import {CommentService} from "../domain/comment-service";
+import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
 
 
 export const commentRoutes = Router({})
 
 class CommentController {
 
+    private commentService: CommentService
+    private commentsQueryRepo:CommentsQueryRepo
+
+    constructor() {
+        this.commentService = new CommentService()
+        this.commentsQueryRepo = new CommentsQueryRepo()
+    }
+
     async updateCommentByCommentId(req: Request, res: Response) {
 
         const content = req.body.content;
 
-        const updateComment: boolean = await commentService.updateComment(req.params.commentId, content)
+        const updateComment: boolean = await this.commentService.updateComment(req.params.commentId, content)
 
         if (!updateComment) {
             return res.sendStatus(404)
@@ -31,7 +39,7 @@ class CommentController {
 
     async deleteCommentByCommentId(req: Request, res: Response) {
 
-        const deleteComment: boolean = await commentService.deleteComment(req.params.commentId)
+        const deleteComment: boolean = await this.commentService.deleteComment(req.params.commentId)
 
         if (!deleteComment) {
             return res.sendStatus(404)
@@ -53,7 +61,7 @@ class CommentController {
             }
 
         }
-        const getComment: CommentsViewType | null = await commentsQueryRepo.getComment(req.params.commentId, userId)
+        const getComment: CommentsViewType | null = await this.commentsQueryRepo.getComment(req.params.commentId, userId)
 
         if (!getComment) {
             return res.sendStatus(404)
@@ -67,7 +75,7 @@ class CommentController {
         const commentId = req.params.commentId
         const userId = req.context.user!._id.toString()
 
-        const updateComment: boolean = await commentService.updateLikeStatus(commentId, userId, likeStatus)
+        const updateComment: boolean = await this.commentService.updateLikeStatus(commentId, userId, likeStatus)
 
         if (!updateComment) {
             return res.sendStatus(404)
@@ -79,13 +87,13 @@ class CommentController {
 const commentController = new CommentController()
 
 commentRoutes.put('/:commentId', checkUserByAccessTokenMiddleware, checkCommentCredentialsMiddleware, postCommentContentValidation, inputValidationErrorsMiddleware,
-    commentController.updateCommentByCommentId)
+    commentController.updateCommentByCommentId.bind(commentController))
 
 commentRoutes.delete('/:commentId', checkUserByAccessTokenMiddleware, checkCommentCredentialsMiddleware,
-    commentController.deleteCommentByCommentId)
+    commentController.deleteCommentByCommentId.bind(commentController))
 
 commentRoutes.get('/:commentId',
-    commentController.getCommentByCommentId)
+    commentController.getCommentByCommentId.bind(commentController))
 
 commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware, likeValidation, inputValidationErrorsMiddleware,
-    commentController.updateLikeStatus)
+    commentController.updateLikeStatus.bind(commentController))
