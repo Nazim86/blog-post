@@ -8,14 +8,14 @@ import {
     postNameValidation
 } from "../validations/post-validations";
 import {PostsViewType} from "../repositories/types/posts-view-type";
-import {postService} from "../domain/posts-service";
 import {getPaginationValues} from "../functions/pagination-values";
-import {postQueryRepo} from "../query-repositories/posts-query-repo";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 import {commentService} from "../domain/comment-service";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
-import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
+import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
+import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
+import {PostsService} from "../domain/posts-service";
 
 
 export const postRoutes = Router({})
@@ -24,23 +24,35 @@ export const postRoutes = Router({})
 const createPostValidation = [postNameValidation, descriptionValidation, contentValidation, blogIdValidation, inputValidationErrorsMiddleware] //
 
 class PostController {
+
+    private postQueryRepo: PostsQueryRepo
+    private commentsQueryRepo: CommentsQueryRepo
+    private postService: PostsService
+
+    constructor() {
+        this.postQueryRepo = new PostsQueryRepo()
+        this.commentsQueryRepo = new CommentsQueryRepo()
+        this.postService = new PostsService()
+
+    }
+
     async getPosts(req: Request, res: Response) {
 
         const {pageNumber, pageSize, sortBy, sortDirection} = getPaginationValues(req.query)
 
-        const getPost: QueryPaginationType<PostsViewType[]> = await postQueryRepo.getPost(pageNumber, pageSize, sortBy, sortDirection);
+        const getPost: QueryPaginationType<PostsViewType[]> = await this.postQueryRepo.getPost(pageNumber, pageSize, sortBy, sortDirection);
 
         res.status(200).send(getPost)
     }
 
     async getPostById(req: Request, res: Response) {
 
-        const getPost:PostsViewType|boolean = await postQueryRepo.getPostById(req.params.id)
+        const getPost: PostsViewType | boolean = await this.postQueryRepo.getPostById(req.params.id)
 
         if (!getPost) {
-           return res.sendStatus(404)
+            return res.sendStatus(404)
         }
-            res.status(200).send(getPost)
+        res.status(200).send(getPost)
     }
 
     async getCommentByPostId(req: Request, res: Response) {
@@ -48,7 +60,7 @@ class PostController {
         const {pageNumber, pageSize, sortBy, sortDirection} = getPaginationValues(req.query)
 
         const getCommentsForPost: QueryPaginationType<CommentsViewType[]> | null =
-            await commentsQueryRepo.getCommentsForPost(req.params.postId, pageNumber, pageSize, sortBy, sortDirection)
+            await this.commentsQueryRepo.getCommentsForPost(req.params.postId, pageNumber, pageSize, sortBy, sortDirection)
 
         if (!getCommentsForPost) {
             return res.sendStatus(404)
@@ -63,7 +75,7 @@ class PostController {
         const content = req.body.content;
         const blogId = req.body.blogId;
 
-        const newPost: PostsViewType | null = await postService.createPost(title, shortDescription, content, blogId)
+        const newPost: PostsViewType | null = await this.postService.createPost(title, shortDescription, content, blogId)
         if (!newPost) {
             return res.sendStatus(404)
         }
@@ -91,7 +103,7 @@ class PostController {
         const content = req.body.content;
         const blogId = req.body.blogId;
 
-        const updatePost: boolean = await postService.updatePost(req.params.id, title, shortDescription, content, blogId)
+        const updatePost: boolean = await this.postService.updatePost(req.params.id, title, shortDescription, content, blogId)
 
         if (!updatePost) {
             return res.sendStatus(404)
@@ -101,7 +113,7 @@ class PostController {
 
     async deletePost(req: Request, res: Response) {
 
-        const deletePost: boolean = await postService.deletePostById(req.params.id)
+        const deletePost: boolean = await this.postService.deletePostById(req.params.id)
 
         if (!deletePost) {
             return res.sendStatus(404)
@@ -113,21 +125,21 @@ class PostController {
 
 const postController = new PostController()
 
-postRoutes.get('/', postController.getPosts)
+postRoutes.get('/', postController.getPosts.bind(postController))
 
-postRoutes.get('/:id', postController.getPostById)
+postRoutes.get('/:id', postController.getPostById.bind(postController))
 
 
-postRoutes.get('/:postId/comments', postController.getCommentByPostId)
+postRoutes.get('/:postId/comments', postController.getCommentByPostId.bind(postController))
 
 postRoutes.post('/', baseAuthorizationMiddleware, createPostValidation,
     postController.createPost)
 
 postRoutes.post('/:postId/comments', checkUserByAccessTokenMiddleware, postCommentContentValidation, inputValidationErrorsMiddleware,
-    postController.createCommentByPostId)
+    postController.createCommentByPostId.bind(postController))
 
 
 postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
-    postController.updatePost)
+    postController.updatePost.bind(postController))
 
-postRoutes.delete('/:id', baseAuthorizationMiddleware, postController.deletePost)
+postRoutes.delete('/:id', baseAuthorizationMiddleware, postController.deletePost.bind(postController))

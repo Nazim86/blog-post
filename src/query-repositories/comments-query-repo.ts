@@ -4,15 +4,20 @@ import {commentMapping} from "../mapping/comment-mapping";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {PostsViewType} from "../repositories/types/posts-view-type";
-import {postRepository} from "../repositories/post-in-db-repository";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
+import {PostRepository} from "../repositories/post-in-db-repository";
 
-class CommentsQueryRepo{
+export class CommentsQueryRepo{
+
+    private postRepository:PostRepository
+    constructor() {
+        this.postRepository = new PostRepository()
+    }
 
     async getCommentsForPost(postId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<QueryPaginationType<CommentsViewType[]> | null> {
 
-        const postById: PostsViewType | boolean = await postRepository.getPostById(postId)
+        const postById: PostsViewType | boolean = await this.postRepository.getPostById(postId)
         if (!postById) return null
         const skipSize = (pageNumber - 1) * pageSize
         const totalCount = await CommentModel.countDocuments({postId: postId})
@@ -77,4 +82,3 @@ class CommentsQueryRepo{
     }
 }
 
-export const commentsQueryRepo = new CommentsQueryRepo()
