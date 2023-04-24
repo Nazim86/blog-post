@@ -7,10 +7,9 @@ import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {LikeEnum} from "../repositories/enums/like-enum";
 
-export const commentService = {
+export class CommentService {
 
     async createPostComment(postId:string,content: string,userId:string, userLogin:string):Promise<CommentsViewType|null> {
-
 
             const postById: PostsViewType|boolean = await postRepository.getPostById(postId)
 
@@ -32,12 +31,12 @@ export const commentService = {
                 }
             }
             return await commentDbRepository.createPostComment(postComment, userId, userLogin)
-    },
+    }
 
     async updateComment(commentId:string,content:string):Promise<boolean>{
         return await commentDbRepository.updateComment(commentId,content)
 
-    },
+    }
 
     async updateLikeStatus(commentId:string, userId: string, likeStatus:LikeEnum):Promise<boolean>{
 
@@ -45,15 +44,12 @@ export const commentService = {
 
         if(!getComment) return false
 
-        const result = await commentDbRepository.updateLikeStatus(commentId,userId,likeStatus)
-
-        return result
-
-    },
+        return await commentDbRepository.updateLikeStatus(commentId, userId, likeStatus)
+    }
 
     async deleteComment(commentId:string):Promise<boolean>{
         return await commentDbRepository.deleteComment(commentId)
-
-
     }
 }
+
+export const commentService = new CommentService()
