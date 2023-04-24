@@ -8,6 +8,8 @@ import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-e
 import {handleErrorResult} from "../error-handler/handle-error-result";
 import {ResultCode} from "../error-handler/result-code-enum";
 
+
+
 export const securityRoutes = Router({})
 
 class SecurityController {
