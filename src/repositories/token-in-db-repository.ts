@@ -4,7 +4,7 @@ import {DeviceViewType} from "./types/device-view-type";
 import {deviceMapping} from "../mapping/device-mapping";
 
 
-class TokenInDbRepository {
+export class TokenInDbRepository {
 
     async insertRefreshTokenMetaData(refreshTokenMeta: RefreshTokenMetaDbType) {
         await TokenModel.create(refreshTokenMeta)
@@ -37,4 +37,3 @@ class TokenInDbRepository {
     }
 }
 
-export const tokenInDbRepository = new TokenInDbRepository()

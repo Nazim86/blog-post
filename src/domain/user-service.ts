@@ -6,9 +6,14 @@ import {UserByIdType} from "../repositories/types/user-by-id-type";
 import {v4 as uuid} from "uuid";
 import add from "date-fns/add";
 import {EmailConfirmationType, UserAccountDbType, AccountDataType} from "../repositories/types/user-account-db-type";
-import {userRepository} from "../repositories/user-in-db-repository";
+import {UserRepository} from "../repositories/user-in-db-repository";
 
-class UserService{
+export class UserService{
+
+    private userRepository: UserRepository
+    constructor() {
+        this.userRepository = new UserRepository()
+    }
 
     async createNewUser(login: string, password: string, email: string): Promise<UserViewType> {
 
@@ -56,7 +61,7 @@ class UserService{
 
         // return await userRepositoryOld.createNewUser(newUser) old version
 
-        await userRepository.createNewUser(newUser)
+        await this.userRepository.createNewUser(newUser)
 
         return {
             id: newUser._id.toString(),
@@ -72,12 +77,12 @@ class UserService{
     }
 
     async deleteUser(id: string): Promise<boolean> {
-        return await userRepository.deleteUser(id)
+        return await this.userRepository.deleteUser(id)
     }
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await userRepository.findUserByLoginOrEmail(loginOrEmail)
+        const user: UserAccountDbType | null = await this.userRepository.findUserByLoginOrEmail(loginOrEmail)
 
         if (!user) return false
 
@@ -90,5 +95,3 @@ class UserService{
         return await userRepositoryOld.findUserById(userId)
     }
 }
-
-export const userService = new UserService()

@@ -3,13 +3,21 @@ import {getPaginationValues} from "../functions/pagination-values";
 import {userInputValidations} from "../validations/user-validations";
 import {baseAuthorizationMiddleware} from "../middlewares/base-auth-middlewares";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
-import {userQueryRepo} from "../query-repositories/user-query-repo";
 import {checkUserCredentialsMiddleware} from "../middlewares/check-user-credentials-middleware";
-import {userService} from "../domain/user-service";
+import {UserQueryRepo} from "../query-repositories/user-query-repo";
+import {UserService} from "../domain/user-service";
 
 export const userRoutes = Router({})
 
 class UserController {
+
+    private userQueryRepo: UserQueryRepo
+    private userService: UserService
+    constructor() {
+        this.userQueryRepo = new UserQueryRepo()
+        this.userService = new UserService()
+
+    }
 
     async getUsers(req: Request, res: Response) {
 
@@ -22,7 +30,7 @@ class UserController {
             searchEmailTerm
         } = getPaginationValues(req.query)
 
-        const getUsers = await userQueryRepo.getUsers(sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm)
+        const getUsers = await this.userQueryRepo.getUsers(sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm)
 
         res.status(200).send(getUsers)
     }
@@ -34,7 +42,7 @@ class UserController {
         const email = req.body.email
 
 
-        const newUser = await userService.createNewUser(login, password, email)
+        const newUser = await this.userService.createNewUser(login, password, email)
         if (newUser) {
             res.status(201).send(newUser)
         }
@@ -44,7 +52,7 @@ class UserController {
 
         const id = req.params.id
 
-        const deleteUser = await userService.deleteUser(id)
+        const deleteUser = await this.userService.deleteUser(id)
 
         if (!deleteUser) {
             return res.sendStatus(404)

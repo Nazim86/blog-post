@@ -3,7 +3,8 @@ import {ObjectId} from "mongodb";
 import {settings} from "../settings";
 import {randomUUID} from "crypto";
 
-export const jwtService = {
+
+export class JwtService {
 
     async createJWT(userId: ObjectId, secretKey: string, expirationTime: string,deviceId:string|null=null){
         let newDeviceId = randomUUID()
@@ -13,9 +14,7 @@ export const jwtService = {
 
         return jwt.sign({userId: userId, deviceId:newDeviceId}, secretKey, {expiresIn: expirationTime})
 
-    },
-
-
+    }
 
     async getTokenMetaData(refreshToken: string, secretKey: string = settings.REFRESH_TOKEN_SECRET):Promise<any>{
         try {

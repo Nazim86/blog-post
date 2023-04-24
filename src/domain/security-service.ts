@@ -1,33 +1,41 @@
 import {DeviceViewType} from "../repositories/types/device-view-type";
-import {tokenInDbRepository} from "../repositories/token-in-db-repository";
-import {jwtService} from "./jwt-service";
 import {settings} from "../settings";
 import {ResultCode} from "../error-handler/result-code-enum";
 import {Result} from "../error-handler/result-type";
+import {JwtService} from "./jwt-service";
+import {TokenInDbRepository} from "../repositories/token-in-db-repository";
 
 
 
 
-class SecurityService {
+export class SecurityService {
+
+    private jwtService: JwtService
+    private tokenInDbRepository: TokenInDbRepository
+    constructor() {
+        this.jwtService = new JwtService()
+        this.tokenInDbRepository = new TokenInDbRepository()
+    }
+
 
     async getDevices(ip: string, userId: string): Promise<DeviceViewType[]> {
-        return await tokenInDbRepository.getDevices(ip, userId)
+        return await this.tokenInDbRepository.getDevices(ip, userId)
 
     }
 
    async updateDevice(refreshToken:string):Promise<boolean>{
-       const {deviceId,lastActiveDate}= await jwtService.getTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
+       const {deviceId,lastActiveDate}= await this.jwtService.getTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
 
-      return await tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
+      return await this.tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
 
    }
 
     async deleteDevices(deviceId:string):Promise<boolean> {
-       return await tokenInDbRepository.deleteDevices(deviceId);
+       return await this.tokenInDbRepository.deleteDevices(deviceId);
     }
 
     async deleteDeviceById(deviceId:string,userId:string): Promise<Result<boolean|null>> {
-        const device = await tokenInDbRepository.getDevicesByDeviceId(deviceId);
+        const device = await this.tokenInDbRepository.getDevicesByDeviceId(deviceId);
 
         if (device && device.userId!==userId){
             return {
@@ -36,7 +44,7 @@ class SecurityService {
             }
         }
 
-        const isDeleted =  await tokenInDbRepository.deleteDeviceById(deviceId,userId);
+        const isDeleted =  await this.tokenInDbRepository.deleteDeviceById(deviceId,userId);
 
         return {
             data: isDeleted,
@@ -44,8 +52,6 @@ class SecurityService {
         }
     }
 }
-
-export const securityService = new SecurityService()
 
 
 

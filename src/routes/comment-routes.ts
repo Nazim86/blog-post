@@ -5,10 +5,10 @@ import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-e
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-credentials-middleware";
 import {likeValidation} from "../validations/like-validation";
-import {jwtService} from "../domain/jwt-service";
 import {settings} from "../settings";
 import {CommentService} from "../domain/comment-service";
 import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
+import {JwtService} from "../domain/jwt-service";
 
 
 export const commentRoutes = Router({})
@@ -17,10 +17,12 @@ class CommentController {
 
     private commentService: CommentService
     private commentsQueryRepo:CommentsQueryRepo
+    private jwtService: JwtService
 
     constructor() {
         this.commentService = new CommentService()
         this.commentsQueryRepo = new CommentsQueryRepo()
+        this.jwtService = new JwtService()
     }
 
     async updateCommentByCommentId(req: Request, res: Response) {
@@ -55,7 +57,7 @@ class CommentController {
         let userId = undefined
 
         if (accessToken) {
-            const tokenData = await jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
+            const tokenData = await this.jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
             if (tokenData) {
                 userId = tokenData.userId
             }

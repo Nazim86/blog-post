@@ -1,9 +1,15 @@
-import {emailAdapter} from "../adapters/email-adapter";
 import {emailMessageType} from "../repositories/types/email-message-type";
+import {EmailAdapter} from "../adapters/email-adapter";
 
-export const emailManager = {
+export class EmailManager {
+
+    private emailAdapter: EmailAdapter
+    constructor() {
+        this.emailAdapter = new EmailAdapter()
+    }
+
     async sendConfirmationEmail(confirmationCode:string, email:string, message:emailMessageType){
-        await emailAdapter.sendConfirmationEmail(confirmationCode, email, message)
+        await this.emailAdapter.sendConfirmationEmail(confirmationCode, email, message)
 
     }
 }

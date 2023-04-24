@@ -1,7 +1,7 @@
-import nodemailer, {SentMessageInfo} from "nodemailer"
+import nodemailer from "nodemailer"
 import {emailMessageType} from "../repositories/types/email-message-type";
 
-export const emailAdapter = {
+export class EmailAdapter {
     async sendConfirmationEmail(code: string, email: string, message: emailMessageType) {
 
         // create reusable transporter object using the default SMTP transport
@@ -40,5 +40,5 @@ export const emailAdapter = {
             transporter.sendMail(
                 mailData,
             );
-    },
+    }
 }
