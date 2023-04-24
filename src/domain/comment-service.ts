@@ -1,55 +1,72 @@
 import {PostsViewType} from "../repositories/types/posts-view-type";
-import {postRepository} from "../repositories/post-in-db-repository";
 import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {ObjectId} from "mongodb";
-import {commentDbRepository} from "../repositories/comment-db-repository";
+import {CommentDbRepository} from "../repositories/comment-db-repository";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
-import {commentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {LikeEnum} from "../repositories/enums/like-enum";
+import {PostRepository} from "../repositories/post-in-db-repository";
+import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
 
 export class CommentService {
 
+    private commentsQueryRepo: CommentsQueryRepo
+    private postRepository:PostRepository
+    private commentDbRepository:CommentDbRepository
+    constructor() {
+        this.postRepository = new PostRepository()
+        this.commentsQueryRepo = new CommentsQueryRepo()
+        this.commentDbRepository = new CommentDbRepository()
+    }
+
     async createPostComment(postId:string,content: string,userId:string, userLogin:string):Promise<CommentsViewType|null> {
 
-            const postById: PostsViewType|boolean = await postRepository.getPostById(postId)
+            const postById: PostsViewType|boolean = await this.postRepository.getPostById(postId)
 
             if (!postById || typeof postById === "boolean") return null
 
-            const postComment: CommentsDbType = {
-                _id: new ObjectId(),
-                postId:postById.id,
-                content: content,
-                commentatorInfo: {
-                    userId: userId,
-                    userLogin: userLogin
-                },
-                createdAt: new Date().toISOString(),
-                likesInfo:{
-                    likesCount:0,
-                    dislikesCount: 0,
-                    myStatus:"None"
-                }
-            }
-            return await commentDbRepository.createPostComment(postComment, userId, userLogin)
+            const postComment = new CommentsDbType (new ObjectId(),postById.id,content,{
+                userId: userId,
+                userLogin: userLogin
+            }, new Date().toISOString(),{
+                likesCount:0,
+                dislikesCount: 0,
+                myStatus:"None"
+            })
+
+        // {
+            //     _id: new ObjectId(),
+            //     postId:postById.id,
+            //     content: content,
+            //     commentatorInfo: {
+            //         userId: userId,
+            //         userLogin: userLogin
+            //     },
+            //     createdAt: new Date().toISOString(),
+            //     likesInfo:{
+            //         likesCount:0,
+            //         dislikesCount: 0,
+            //         myStatus:"None"
+            //     }
+            // }
+            return await this.commentDbRepository.createPostComment(postComment, userId, userLogin)
     }
 
     async updateComment(commentId:string,content:string):Promise<boolean>{
-        return await commentDbRepository.updateComment(commentId,content)
+        return await this.commentDbRepository.updateComment(commentId,content)
 
     }
 
     async updateLikeStatus(commentId:string, userId: string, likeStatus:LikeEnum):Promise<boolean>{
 
-        const getComment:CommentsViewType|null = await commentsQueryRepo.getComment(commentId,userId)
+        const getComment:CommentsViewType|null = await this.commentsQueryRepo.getComment(commentId,userId)
 
         if(!getComment) return false
 
-        return await commentDbRepository.updateLikeStatus(commentId, userId, likeStatus)
+        return await this.commentDbRepository.updateLikeStatus(commentId, userId, likeStatus)
     }
 
     async deleteComment(commentId:string):Promise<boolean>{
-        return await commentDbRepository.deleteComment(commentId)
+        return await this.commentDbRepository.deleteComment(commentId)
     }
 }
 
-export const commentService = new CommentService()

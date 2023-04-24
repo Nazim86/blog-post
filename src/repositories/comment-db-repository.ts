@@ -4,7 +4,7 @@ import {CommentModel, LikeModel} from "../db/db";
 import {ObjectId, UpdateResult} from "mongodb";
 import {LikeEnum} from "./enums/like-enum";
 
-export const commentDbRepository = {
+export class CommentDbRepository {
 
     async createPostComment(postComment:CommentsDbType,userId:string, userLogin:string):Promise<CommentsViewType>{
         const comment:CommentsDbType = await CommentModel.create(postComment)
@@ -36,22 +36,20 @@ export const commentDbRepository = {
                 myStatus:myStatus
             }
         }
-    },
+    }
 
     async updateComment(commentId:string,content:string):Promise<boolean>{
         const result = await CommentModel.updateOne({_id:new ObjectId(commentId)},{$set:{content:content}})
 
         return result.matchedCount === 1
-    },
+    }
 
     async updateLikeStatus(commentId:string,userId:string,likeStatus:LikeEnum):Promise<boolean>{
 
         const result:UpdateResult = await LikeModel.updateOne({commentId,userId}, {$set: {addedAt: new Date().toISOString(), status: likeStatus}}, {upsert: true})
 
         return result.upsertedCount===1 || result.modifiedCount ===1
-    },
-
-
+    }
 
     async deleteComment(commentId:string):Promise<boolean>{
         const result = await CommentModel.deleteOne({_id:new ObjectId(commentId)})

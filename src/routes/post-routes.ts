@@ -10,7 +10,7 @@ import {
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {getPaginationValues} from "../functions/pagination-values";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
-import {commentService} from "../domain/comment-service";
+import {CommentService} from "../domain/comment-service";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
@@ -28,12 +28,13 @@ class PostController {
     private postQueryRepo: PostsQueryRepo
     private commentsQueryRepo: CommentsQueryRepo
     private postService: PostsService
+    private commentService: CommentService
 
     constructor() {
         this.postQueryRepo = new PostsQueryRepo()
         this.commentsQueryRepo = new CommentsQueryRepo()
         this.postService = new PostsService()
-
+        this.commentService = new CommentService()
     }
 
     async getPosts(req: Request, res: Response) {
@@ -89,7 +90,7 @@ class PostController {
         const userId = req.context.user!._id.toString()
         const userLogin = req.context.user!.accountData.login
 
-        const postComment: CommentsViewType | null = await commentService.createPostComment(postId, content, userId, userLogin)
+        const postComment: CommentsViewType | null = await this.commentService.createPostComment(postId, content, userId, userLogin)
 
         if (!postComment) {
             return res.sendStatus(404)
@@ -120,7 +121,6 @@ class PostController {
         }
         res.sendStatus(204)
     }
-
 }
 
 const postController = new PostController()
@@ -133,7 +133,7 @@ postRoutes.get('/:id', postController.getPostById.bind(postController))
 postRoutes.get('/:postId/comments', postController.getCommentByPostId.bind(postController))
 
 postRoutes.post('/', baseAuthorizationMiddleware, createPostValidation,
-    postController.createPost)
+    postController.createPost.bind(postController))
 
 postRoutes.post('/:postId/comments', checkUserByAccessTokenMiddleware, postCommentContentValidation, inputValidationErrorsMiddleware,
     postController.createCommentByPostId.bind(postController))
