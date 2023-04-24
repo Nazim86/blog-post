@@ -5,7 +5,7 @@ import {UserViewType} from "../repositories/types/user-view-type";
 import {UserByIdType} from "../repositories/types/user-by-id-type";
 import {v4 as uuid} from "uuid";
 import add from "date-fns/add";
-import {UserAccountDbType} from "../repositories/types/user-account-db-type";
+import {EmailConfirmationType, UserAccountDbType, UserType} from "../repositories/types/user-account-db-type";
 import {userRepository} from "../repositories/user-in-db-repository";
 
 class UserService{
@@ -14,28 +14,46 @@ class UserService{
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const newUser:UserAccountDbType = {
-            _id: new ObjectId(),
-            accountData: {
-                login: login,
-                passwordHash,
-                email: email,
-                createdAt: new Date().toISOString(),
-                recoveryCode:uuid(),
-                recoveryCodeExpiration:add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                })
-            },
-            emailConfirmation: {
-                confirmationCode: uuid(),
-                emailExpiration: add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                }),
-                isConfirmed: true,
-            }
-        }
+        const emailConfirmationType = new EmailConfirmationType(
+            uuid(),
+            add(new Date(), {
+                hours: 1,
+                minutes: 3
+            }),
+            true)
+
+        const userType = new UserType(login,passwordHash,email,new Date().toISOString(),uuid(),add(new Date(), {
+                        hours: 1,
+                        minutes: 3
+                    }))
+
+        const newUser:UserAccountDbType = new UserAccountDbType(new ObjectId(),
+            userType,emailConfirmationType)
+
+
+
+        // const newUser:UserAccountDbType = {
+        //     _id: new ObjectId(),
+        //     accountData: {
+        //         login: login,
+        //         passwordHash,
+        //         email: email,
+        //         createdAt: new Date().toISOString(),
+        //         recoveryCode:uuid(),
+        //         recoveryCodeExpiration:add(new Date(), {
+        //             hours: 1,
+        //             minutes: 3
+        //         })
+        //     },
+        //     emailConfirmation: {
+        //         confirmationCode: uuid(),
+        //         emailExpiration: add(new Date(), {
+        //             hours: 1,
+        //             minutes: 3
+        //         }),
+        //         isConfirmed: true,
+        //     }
+        // }
 
         // return await userRepositoryOld.createNewUser(newUser) old version
 
