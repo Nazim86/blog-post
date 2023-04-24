@@ -10,28 +10,38 @@ import {ResultCode} from "../error-handler/result-code-enum";
 
 export const securityRoutes = Router({})
 
-securityRoutes.get("/devices", checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
+class SecurityController {
 
-    const devices: DeviceViewType[] = await securityService.getDevices(req.ip, req.context.user!._id.toString())
-    res.status(200).send(devices)
-})
+    async getDevices(req: Request, res: Response) {
+        const devices: DeviceViewType[] = await securityService.getDevices(req.ip, req.context.user!._id.toString())
+        res.status(200).send(devices)
+    }
 
-securityRoutes.delete("/devices", checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
-const {deviceId} = await jwtService.getTokenMetaData(req.cookies.refreshToken)
-    await securityService.deleteDevices(deviceId)
-    res.sendStatus(204)
-})
+    async deleteDevices(req: Request, res: Response) {
+        const {deviceId} = await jwtService.getTokenMetaData(req.cookies.refreshToken)
+        await securityService.deleteDevices(deviceId)
+        res.sendStatus(204)
+    }
 
-securityRoutes.delete("/devices/:id", deviceIdValidation,inputValidationErrorsMiddleware,checkRefreshTokenMiddleware,
-    async (req: Request, res: Response) => {
+    async deleteDeviceByDeviceId(req: Request, res: Response) {
         const {userId} = await jwtService.getTokenMetaData(req.cookies.refreshToken)
 
-        const result = await securityService.deleteDeviceById(req.params.id,userId)
+        const result = await securityService.deleteDeviceById(req.params.id, userId)
 
-        if(result.code !== ResultCode.Success) {
+        if (result.code !== ResultCode.Success) {
             return handleErrorResult(res, result.code)
         }
+        res.sendStatus(204)
+    }
 
-    res.sendStatus(204)
-})
+}
+
+const securityController = new SecurityController()
+
+securityRoutes.get("/devices", checkRefreshTokenMiddleware, securityController.getDevices)
+
+securityRoutes.delete("/devices", checkRefreshTokenMiddleware, securityController.deleteDevices)
+
+securityRoutes.delete("/devices/:id", deviceIdValidation, inputValidationErrorsMiddleware, checkRefreshTokenMiddleware,
+    securityController.deleteDeviceByDeviceId)
 

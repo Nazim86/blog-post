@@ -1548,7 +1548,7 @@ describe("auth testing", () => {
 
 });
 
-describe("comments testing", () => {
+describe("comments testing", () =>  {
     //TODO should replace any with type
     let blog: any
     let post: any
