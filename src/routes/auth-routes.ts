@@ -22,37 +22,32 @@ import {userRepository} from "../repositories/user-in-db-repository";
 
 export const authRoutes = Router({});
 
-authRoutes.post('/registration', checkIpLimitMiddleware, userInputValidations, checkUsersAccountsCredentialsMiddleware, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
+class AuthController {
+
+    async userRegistration(req: Request, res: Response) {
 
         const {login, password, email} = req.body
 
         const newUser = await authService.createNewUser(login, password, email)
 
         if (newUser) {
-            res.sendStatus(204)
+            return res.sendStatus(204)
         }
+    }
 
-    });
-
-authRoutes.post('/registration-email-resending', checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
+    async reSendRegistrationEmail(req: Request, res: Response) {
 
         const email = req.body.email
-
 
         const emailResending: string | boolean = await authService.resendEmail(email)
 
         if (!emailResending) {
             return res.status(400).send(errorMessage("wrong email", "email"))
         }
-
         res.sendStatus(204)
+    }
 
-    });
-
-authRoutes.post('/registration-confirmation', checkIpLimitMiddleware, confirmationCodeValidation, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
+    async confirmRegistration(req: Request, res: Response) {
 
         const confirmationCode = req.body.code
 
@@ -62,44 +57,43 @@ authRoutes.post('/registration-confirmation', checkIpLimitMiddleware, confirmati
             return res.status(400).send(errorMessage("Wrong code", "code"))
         }
         res.sendStatus(204)
-    });
-
-authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidationErrorsMiddleware, async (req: Request, res: Response) => {
-
-    const {loginOrEmail, password} = req.body;
-
-    const isCredentialsExist = await authService.checkCredentials(loginOrEmail, password)
-
-    if (!isCredentialsExist) {
-        return res.sendStatus(401)
-    }
-    const user = await userRepository.findUserByLoginOrEmail(loginOrEmail)
-
-    if (!user) {
-        return res.sendStatus(401)
     }
 
-    const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10m")
-    const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20m")
+    async userLogining(req: Request, res: Response) {
 
-    const ipAddress = req.ip;
-    const deviceName = req.headers['user-agent'] ?? "chrome"
+        const {loginOrEmail, password} = req.body;
+
+        const isCredentialsExist = await authService.checkCredentials(loginOrEmail, password)
+
+        if (!isCredentialsExist) {
+            return res.sendStatus(401)
+        }
+        const user = await userRepository.findUserByLoginOrEmail(loginOrEmail)
+
+        if (!user) {
+            return res.sendStatus(401)
+        }
+
+        const accessToken = await jwtService.createJWT(user._id, settings.ACCESS_TOKEN_SECRET, "10m")
+        const refreshToken = await jwtService.createJWT(user._id, settings.REFRESH_TOKEN_SECRET, "20m")
+
+        const ipAddress = req.ip;
+        const deviceName = req.headers['user-agent'] ?? "chrome"
 
 
-    await authService.insertRefreshTokenMetaData(refreshToken, ipAddress!, deviceName!)
+        await authService.insertRefreshTokenMetaData(refreshToken, ipAddress!, deviceName!)
 
 
-    res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        sameSite: 'strict', secure: true,
-        maxAge: 24 * 60 * 60 * 1000
-    });
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            sameSite: 'strict', secure: true,
+            maxAge: 24 * 60 * 60 * 1000
+        });
 
-    res.status(200).send({accessToken: accessToken})
-});
+        res.status(200).send({accessToken: accessToken})
+    }
 
-authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
-    async (req: Request, res: Response) => {
+    async getNewRefreshToken(req: Request, res: Response) {
 
         clearExpiredTokens.start();
 
@@ -117,49 +111,42 @@ authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
             sameSite: 'strict', secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
-
         res.status(200).send({accessToken: accessToken})
+    }
 
-    });
+    async getCurrentUser(req: Request, res: Response) {
 
-authRoutes.get('/me', checkRefreshTokenMiddleware, async (req: Request, res: Response) => {
+        const getCurrentUser: UserAccountViewType = await authService.getCurrentUser(req.context.user!)
 
-    const getCurrentUser: UserAccountViewType = await authService.getCurrentUser(req.context.user!)
+        res.status(200).send(getCurrentUser)
+    }
 
-    res.status(200).send(getCurrentUser)
-
-})
-
-authRoutes.post('/password-recovery', checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
+    async sendPasswordRecoveryCode(req: Request, res: Response) {
 
         const email = req.body.email
 
 
-        const isRecoveryEmailSent:boolean = await authService.sendingRecoveryCode(email)
+        const isRecoveryEmailSent: boolean = await authService.sendingRecoveryCode(email)
 
         if (!isRecoveryEmailSent) {
             return res.status(400).send(errorMessage("wrong email", "email"))
         }
         res.sendStatus(204)
+    }
 
-    });
-authRoutes.post('/new-password', checkIpLimitMiddleware,newPasswordValidation,recoveryCodeValidation, inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
+    async setNewPassword(req: Request, res: Response) {
         const newPassword = req.body.newPassword
         const recoveryCode = req.body.recoveryCode
 
-        const isNewPasswordSet: boolean = await authService.setNewPasswordByRecoveryCode(newPassword,recoveryCode)
+        const isNewPasswordSet: boolean = await authService.setNewPasswordByRecoveryCode(newPassword, recoveryCode)
 
         if (!isNewPasswordSet) {
             return res.status(400).send(errorMessage("Wrong code", "recoveryCode"))
         }
         res.sendStatus(204)
-    });
+    }
 
-
-authRoutes.post('/logout', checkRefreshTokenMiddleware,
-    async (req: Request, res: Response) => {
+    async logout(req: Request, res: Response) {
 
         const {
             deviceId,
@@ -174,8 +161,39 @@ authRoutes.post('/logout', checkRefreshTokenMiddleware,
         } catch (e) {
             res.sendStatus(401)
         }
+    }
+}
 
-    });
+
+
+const authController = new AuthController()
+
+
+authRoutes.post('/registration', checkIpLimitMiddleware, userInputValidations, checkUsersAccountsCredentialsMiddleware, inputValidationErrorsMiddleware,
+    authController.userRegistration.bind(authController));
+
+authRoutes.post('/registration-email-resending', checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
+    authController.reSendRegistrationEmail.bind(authController));
+
+authRoutes.post('/registration-confirmation', checkIpLimitMiddleware, confirmationCodeValidation, inputValidationErrorsMiddleware,
+    authController.confirmRegistration.bind(authController));
+
+authRoutes.post('/login', checkIpLimitMiddleware, authValidations, inputValidationErrorsMiddleware,
+    authController.userLogining.bind(authController));
+
+authRoutes.post('/refresh-token', checkRefreshTokenMiddleware,
+    authController.getNewRefreshToken.bind(authController));
+
+authRoutes.get('/me', checkRefreshTokenMiddleware, authController.getCurrentUser.bind(authController))
+
+authRoutes.post('/password-recovery', checkIpLimitMiddleware, emailValidation, inputValidationErrorsMiddleware,
+    authController.sendPasswordRecoveryCode.bind(authController));
+
+authRoutes.post('/new-password', checkIpLimitMiddleware, newPasswordValidation, recoveryCodeValidation, inputValidationErrorsMiddleware,
+   authController.setNewPassword.bind(authController));
+
+authRoutes.post('/logout', checkRefreshTokenMiddleware,
+    authController.logout.bind(authController));
 
 
 
