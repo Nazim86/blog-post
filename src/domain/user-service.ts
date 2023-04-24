@@ -63,7 +63,6 @@ class UserService{
             email: newUser.accountData.email,
             createdAt: newUser.accountData.createdAt
         }
-
     }
 
     async _generateHash(password: string, passwordSalt: string): Promise<string> {
@@ -72,26 +71,23 @@ class UserService{
     }
 
     async deleteUser(id: string): Promise<boolean> {
-        return await userRepositoryOld.deleteUser(id)
+        return await userRepository.deleteUser(id)
     }
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await userRepositoryOld.findUserByLoginOrEmail(loginOrEmail)
+        const user: UserAccountDbType | null = await userRepository.findUserByLoginOrEmail(loginOrEmail)
 
         if (!user) return false
 
         if (!user.emailConfirmation.isConfirmed) return false
 
         return bcrypt.compare(password, user.accountData.passwordHash)
-
     }
 
     async findUserById (userId:string):Promise<UserByIdType |null>{
         return await userRepositoryOld.findUserById(userId)
     }
-
-
 }
 
 export const userService = new UserService()

@@ -13,68 +13,79 @@ import {settings} from "../settings";
 
 export const commentRoutes = Router({})
 
-commentRoutes.put('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware, postCommentContentValidation,inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
+class CommentController {
+
+    async updateCommentByCommentId(req: Request, res: Response) {
 
         const content = req.body.content;
 
-        const updateComment:boolean = await commentService.updateComment(req.params.commentId, content)
+        const updateComment: boolean = await commentService.updateComment(req.params.commentId, content)
 
         if (!updateComment) {
-            res.sendStatus(404)
+            return res.sendStatus(404)
         }
 
         res.sendStatus(204)
 
-    })
+    }
 
-commentRoutes.delete('/:commentId', checkUserByAccessTokenMiddleware,checkCommentCredentialsMiddleware,
-    async (req: Request, res: Response) => {
+    async deleteCommentByCommentId(req: Request, res: Response) {
 
-        const deleteComment:boolean = await commentService.deleteComment(req.params.commentId)
+        const deleteComment: boolean = await commentService.deleteComment(req.params.commentId)
 
         if (!deleteComment) {
-            res.sendStatus(404)
+            return res.sendStatus(404)
         }
 
         res.sendStatus(204)
-    })
+    }
 
-commentRoutes.get('/:commentId',
-    async (req: Request, res: Response) => {
+    async getCommentByCommentId(req: Request, res: Response) {
 
-    const accessToken: string | undefined = req.headers.authorization?.split(" ")[1]
+        const accessToken: string | undefined = req.headers.authorization?.split(" ")[1]
 
-    let userId = undefined
+        let userId = undefined
 
-    if (accessToken) {
-        const tokenData = await jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
-        if(tokenData){
-            userId = tokenData.userId
+        if (accessToken) {
+            const tokenData = await jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
+            if (tokenData) {
+                userId = tokenData.userId
+            }
+
         }
+        const getComment: CommentsViewType | null = await commentsQueryRepo.getComment(req.params.commentId, userId)
 
+        if (!getComment) {
+            return res.sendStatus(404)
+        }
+        res.status(200).send(getComment)
     }
 
-    const getComment: CommentsViewType | null = await commentsQueryRepo.getComment(req.params.commentId, userId)
-
-    if (!getComment) {
-        return res.sendStatus(404)
-    }
-    res.status(200).send(getComment)
-    })
-
-
-commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware,likeValidation,inputValidationErrorsMiddleware,
-    async (req: Request, res: Response) => {
+    async updateLikeStatus(req: Request, res: Response) {
 
         const likeStatus = req.body.likeStatus;
         const commentId = req.params.commentId
         const userId = req.context.user!._id.toString()
 
-        const updateComment:boolean = await commentService.updateLikeStatus(commentId, userId, likeStatus)
+        const updateComment: boolean = await commentService.updateLikeStatus(commentId, userId, likeStatus)
 
-        if(!updateComment) {
+        if (!updateComment) {
             return res.sendStatus(404)
         }
         res.sendStatus(204)
-    })
+    }
+}
+
+const commentController = new CommentController()
+
+commentRoutes.put('/:commentId', checkUserByAccessTokenMiddleware, checkCommentCredentialsMiddleware, postCommentContentValidation, inputValidationErrorsMiddleware,
+    commentController.updateCommentByCommentId)
+
+commentRoutes.delete('/:commentId', checkUserByAccessTokenMiddleware, checkCommentCredentialsMiddleware,
+    commentController.deleteCommentByCommentId)
+
+commentRoutes.get('/:commentId',
+    commentController.getCommentByCommentId)
+
+commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware, likeValidation, inputValidationErrorsMiddleware,
+    commentController.updateLikeStatus)
