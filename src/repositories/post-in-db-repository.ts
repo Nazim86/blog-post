@@ -1,7 +1,8 @@
-import {PostModel} from "../db/db";
-import {ObjectId} from "mongodb";
+import {LikeModel, PostLikeModel, PostModel} from "../db/db";
+import {ObjectId, UpdateResult} from "mongodb";
 import {PostsViewType} from "./types/posts-view-type";
 import {PostsDbType} from "./types/posts-db-type";
+import {LikeEnum} from "./enums/like-enum";
 
 export class PostRepository {
 
@@ -16,7 +17,20 @@ export class PostRepository {
             content: newPost.content,
             blogId: newPost.blogId,
             blogName: newPost.blogName,
-            createdAt: newPost.createdAt
+            createdAt: newPost.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeEnum.None,
+                newestLikes: [
+                    {
+                        addedAt: string
+                        userId: string
+                        login: string
+                    }
+                ]
+            }
+
         }
     }
 
@@ -51,6 +65,13 @@ export class PostRepository {
         catch (e){
             return false
         }
+
+    }
+
+    async updatePostLikeStatus(postId:string, userId:string, likeStatus:string){
+        const result:UpdateResult = await PostLikeModel.updateOne({postId,userId}, {$set: {addedAt: new Date().toISOString(), status: likeStatus}}, {upsert: true})
+
+        return result.upsertedCount===1 || result.modifiedCount ===1
 
     }
 

@@ -40,10 +40,6 @@ export class PostsService{
         return await this.postRepository.createPostForBlog(createPostForBlog)
     }
 
-    // async getPost():Promise<PostsViewType[]>{
-    //     return await this.postRepository.getPost()
-    // }
-
     async getPostById(id:string): Promise<PostsViewType |boolean> {
         return await this.postQueryRepo.getPostById(id)
     }
@@ -59,8 +55,7 @@ export class PostsService{
 
         if (!getPost) return false
 
-        // return await this.postRepository.updatePostLikeStatus(postId,userId,likeStatus)
-return true
+        return await this.postRepository.updatePostLikeStatus(postId,userId,likeStatus)
     }
 
     async deletePostById(id:string):Promise <boolean>{
