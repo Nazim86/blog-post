@@ -164,10 +164,7 @@ class AuthController {
     }
 }
 
-
-
 const authController = new AuthController()
-
 
 authRoutes.post('/registration', checkIpLimitMiddleware, userInputValidations, checkUsersAccountsCredentialsMiddleware, inputValidationErrorsMiddleware,
     authController.userRegistration.bind(authController));
