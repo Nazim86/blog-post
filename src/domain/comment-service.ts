@@ -4,23 +4,23 @@ import {ObjectId} from "mongodb";
 import {CommentDbRepository} from "../repositories/comment-db-repository";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
-import {PostRepository} from "../repositories/post-in-db-repository";
 import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
+import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 
 export class CommentService {
 
     private commentsQueryRepo: CommentsQueryRepo
-    private postRepository:PostRepository
+    private postQueryRepo: PostsQueryRepo
     private commentDbRepository:CommentDbRepository
     constructor() {
-        this.postRepository = new PostRepository()
+        this.postQueryRepo = new PostsQueryRepo()
         this.commentsQueryRepo = new CommentsQueryRepo()
         this.commentDbRepository = new CommentDbRepository()
     }
 
     async createPostComment(postId:string,content: string,userId:string, userLogin:string):Promise<CommentsViewType|null> {
 
-            const postById: PostsViewType|boolean = await this.postRepository.getPostById(postId)
+            const postById: PostsViewType|boolean = await this.postQueryRepo.getPostById(postId)
 
             if (!postById || typeof postById === "boolean") return null
 
@@ -41,13 +41,13 @@ export class CommentService {
 
     }
 
-    async updateLikeStatus(commentId:string, userId: string, likeStatus:LikeEnum):Promise<boolean>{
+    async updateCommentLikeStatus(commentId:string, userId: string, likeStatus:LikeEnum):Promise<boolean>{
 
         const getComment:CommentsViewType|null = await this.commentsQueryRepo.getComment(commentId,userId)
 
         if(!getComment) return false
 
-        return await this.commentDbRepository.updateLikeStatus(commentId, userId, likeStatus)
+        return await this.commentDbRepository.updateCommentLikeStatus(commentId, userId, likeStatus)
     }
 
     async deleteComment(commentId:string):Promise<boolean>{

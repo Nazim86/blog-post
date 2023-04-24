@@ -1,13 +1,8 @@
 import {MongoClient} from 'mongodb'
 import mongoose from "mongoose";
-import {BlogsDbType} from "../repositories/types/blogs-db-type";
-import {PostsDbType} from "../repositories/types/posts-db-type";
+
 
 import * as dotenv from 'dotenv'
-import {CommentsDbType} from "../repositories/types/comments-db-type";
-import {UserAccountDbType} from "../repositories/types/user-account-db-type";
-import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-db-type";
-import {IpDataType} from "../repositories/types/ip-type";
 import {BlogSchema} from "../repositories/schemas/blog-schema";
 import {PostSchema} from "../repositories/schemas/post-schema";
 import {UserAccountSchema} from "../repositories/schemas/user-schema";
@@ -15,6 +10,7 @@ import {CommentSchema} from "../repositories/schemas/comment-schema";
 import {TokenSchema} from "../repositories/schemas/token-schema";
 import {IpSchema} from "../repositories/schemas/ip-schema";
 import {LikeSchema} from "../repositories/schemas/like-schema";
+import {PostLikeSchema} from "../repositories/schemas/post-like-schema";
 
 
 // getting-started.js
@@ -41,6 +37,7 @@ export const PostModel = mongoose.model('posts',PostSchema)
 export const UserAccountModel = mongoose.model('usersAccounts',UserAccountSchema)
 export const CommentModel = mongoose.model("comments", CommentSchema)
 export const LikeModel = mongoose.model("likes", LikeSchema)
+export const PostLikeModel = mongoose.model("postLikes", PostLikeSchema)
 export const TokenModel = mongoose.model("validTokenList",TokenSchema)
 export const IpModel = mongoose.model('ipData',IpSchema)
 

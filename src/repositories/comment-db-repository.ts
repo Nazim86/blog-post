@@ -44,7 +44,7 @@ export class CommentDbRepository {
         return result.matchedCount === 1
     }
 
-    async updateLikeStatus(commentId:string,userId:string,likeStatus:LikeEnum):Promise<boolean>{
+    async updateCommentLikeStatus(commentId:string, userId:string, likeStatus:LikeEnum):Promise<boolean>{
 
         const result:UpdateResult = await LikeModel.updateOne({commentId,userId}, {$set: {addedAt: new Date().toISOString(), status: likeStatus}}, {upsert: true})
 

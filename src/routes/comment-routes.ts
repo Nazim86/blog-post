@@ -1,14 +1,14 @@
 import {Request, Response, Router} from "express";
 import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
-import {postCommentContentValidation} from "../validations/post-validations";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-credentials-middleware";
-import {likeValidation} from "../validations/like-validation";
 import {settings} from "../settings";
 import {CommentService} from "../domain/comment-service";
 import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {JwtService} from "../domain/jwt-service";
+import {postCommentContentValidation} from "../validations/post-validations";
+import {likeValidation} from "../validations/like-validation";
 
 
 export const commentRoutes = Router({})
@@ -71,13 +71,13 @@ class CommentController {
         res.status(200).send(getComment)
     }
 
-    async updateLikeStatus(req: Request, res: Response) {
+    async updateCommentLikeStatus(req: Request, res: Response) {
 
         const likeStatus = req.body.likeStatus;
         const commentId = req.params.commentId
         const userId = req.context.user!._id.toString()
 
-        const updateComment: boolean = await this.commentService.updateLikeStatus(commentId, userId, likeStatus)
+        const updateComment: boolean = await this.commentService.updateCommentLikeStatus(commentId, userId, likeStatus)
 
         if (!updateComment) {
             return res.sendStatus(404)
@@ -98,4 +98,4 @@ commentRoutes.get('/:commentId',
     commentController.getCommentByCommentId.bind(commentController))
 
 commentRoutes.put('/:commentId/like-status', checkUserByAccessTokenMiddleware, likeValidation, inputValidationErrorsMiddleware,
-    commentController.updateLikeStatus.bind(commentController))
+    commentController.updateCommentLikeStatus.bind(commentController))

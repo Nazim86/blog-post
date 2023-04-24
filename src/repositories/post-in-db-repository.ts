@@ -2,7 +2,6 @@ import {PostModel} from "../db/db";
 import {ObjectId} from "mongodb";
 import {PostsViewType} from "./types/posts-view-type";
 import {PostsDbType} from "./types/posts-db-type";
-import {postMapping} from "../mapping/post-mapping";
 
 export class PostRepository {
 
@@ -38,28 +37,22 @@ export class PostRepository {
     }
 
 
-    async getPost():Promise<PostsViewType[]>{
-        const getPosts = await PostModel.find({}).lean()
-        return postMapping(getPosts)
-    }
-
-    async  getPostById(id:string): Promise<PostsViewType |boolean>{
-        const postById = await PostModel.findOne({_id: new ObjectId(id)})
-
-        if (postById) {
-            return {
-                id: postById._id.toString(),
-                title: postById.title,
-                shortDescription: postById.shortDescription,
-                content: postById.content,
-                blogId: postById.blogId,
-                blogName: postById.blogName,
-                createdAt: postById.createdAt
-            }
-        }else{
-            return false
-        }
-    }
+    // async  getPostById(id:string): Promise<PostsViewType |boolean>{
+    //     const postById = await PostModel.findOne({_id: new ObjectId(id)})
+    //
+    //     if (!postById) {
+    //         return false
+    //     }
+    //         return {
+    //             id: postById._id.toString(),
+    //             title: postById.title,
+    //             shortDescription: postById.shortDescription,
+    //             content: postById.content,
+    //             blogId: postById.blogId,
+    //             blogName: postById.blogName,
+    //             createdAt: postById.createdAt
+    //     }
+    // }
 
     async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 

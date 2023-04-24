@@ -6,10 +6,15 @@ import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 
 export class PostsQueryRepo{
+
     async getPostById(id:string): Promise<PostsViewType |boolean>{
+
         try {
-            const postById = await PostModel.findOne({_id: new ObjectId(id)})
-            if (postById) {
+            const postById:PostsDbType|null = await PostModel.findOne({_id: new ObjectId(id)})
+
+            if (!postById) {
+                return false
+            }
                 return {
                     id: postById._id.toString(),
                     title: postById.title,
@@ -18,15 +23,11 @@ export class PostsQueryRepo{
                     blogId: postById.blogId,
                     blogName: postById.blogName,
                     createdAt: postById.createdAt
-                }
-            }else{
-                return false
             }
         }
         catch(e){
             return false
         }
-
     }
 
     async getPost(pageNumber:number,pageSize:number,sortBy:string,sortDirection:string):Promise<QueryPaginationType<PostsViewType[]>>{
@@ -55,11 +56,9 @@ export class PostsQueryRepo{
     async getPostsByBlogId(pageNumber: number, pageSize: number, sortBy: string, sortDirection: string, blogId: string):
         Promise<QueryPaginationType<PostsViewType[]> | boolean> {
 
-
         const skipSize = (pageNumber - 1) * pageSize
         const totalCount = await PostModel.countDocuments({blogId: blogId})
         const pagesCount = Math.ceil(totalCount / pageSize)
-
 
         const getPostsByBlogId:PostsDbType[] = await PostModel.find({blogId: blogId})
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
@@ -67,11 +66,9 @@ export class PostsQueryRepo{
             .limit(pageSize)
             .lean()
 
-
         if (getPostsByBlogId.length ===0) return false
 
         const mappedBlog:PostsViewType[] = postMapping(getPostsByBlogId)
-
 
         return {
             pagesCount: pagesCount,

@@ -6,18 +6,18 @@ import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
-import {PostRepository} from "../repositories/post-in-db-repository";
+import {PostsQueryRepo} from "./posts-query-repo";
 
 export class CommentsQueryRepo{
 
-    private postRepository:PostRepository
+    private postQueryRepo: PostsQueryRepo
     constructor() {
-        this.postRepository = new PostRepository()
+        this.postQueryRepo = new PostsQueryRepo()
     }
 
     async getCommentsForPost(postId: string, pageNumber: number, pageSize: number, sortBy: string, sortDirection: string): Promise<QueryPaginationType<CommentsViewType[]> | null> {
 
-        const postById: PostsViewType | boolean = await this.postRepository.getPostById(postId)
+        const postById: PostsViewType | boolean = await this.postQueryRepo.getPostById(postId)
         if (!postById) return null
         const skipSize = (pageNumber - 1) * pageSize
         const totalCount = await CommentModel.countDocuments({postId: postId})

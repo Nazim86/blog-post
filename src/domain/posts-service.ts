@@ -3,15 +3,20 @@ import {PostsViewType} from "../repositories/types/posts-view-type";
 import {PostRepository} from "../repositories/post-in-db-repository";
 import {BlogRepository} from "../repositories/blog-in-db-repository";
 import {PostsDbType} from "../repositories/types/posts-db-type";
+import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 
 
 export class PostsService{
 
     private blogRepository:BlogRepository
     private postRepository:PostRepository
+    private postQueryRepo: PostsQueryRepo
+
     constructor() {
         this.blogRepository = new BlogRepository()
         this.postRepository = new PostRepository()
+        this.postQueryRepo = new PostsQueryRepo()
+
     }
 
     async createPost(title: string, shortDescription:string, content: string, blogId:string):Promise<PostsViewType | null> {
@@ -35,17 +40,27 @@ export class PostsService{
         return await this.postRepository.createPostForBlog(createPostForBlog)
     }
 
-    async getPost():Promise<PostsViewType[]>{
-        return await this.postRepository.getPost()
-    }
+    // async getPost():Promise<PostsViewType[]>{
+    //     return await this.postRepository.getPost()
+    // }
 
     async getPostById(id:string): Promise<PostsViewType |boolean> {
-        return await this.postRepository.getPostById(id)
+        return await this.postQueryRepo.getPostById(id)
     }
 
     async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
         return await this.postRepository.updatePost(id, title, shortDescription, content, blogId)
+    }
+
+    async updatePostLikeStatus(postId:string, userId:string, likeStatus:string){
+
+        const getPost:PostsViewType | boolean = await this.postQueryRepo.getPostById(postId)
+
+        if (!getPost) return false
+
+        // return await this.postRepository.updatePostLikeStatus(postId,userId,likeStatus)
+return true
     }
 
     async deletePostById(id:string):Promise <boolean>{

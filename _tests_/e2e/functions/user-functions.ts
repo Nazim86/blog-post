@@ -11,7 +11,6 @@ export const userFunctions = {
                 .set("Authorization",authorizationData)
                 .send(paginationData)
 
-        console.log(result.body)
             return {status:result.status,body:result.body}
     },
 

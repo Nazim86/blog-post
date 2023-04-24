@@ -16,6 +16,7 @@ import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {PostsService} from "../domain/posts-service";
+import {likeValidation} from "../validations/like-validation";
 
 
 export const postRoutes = Router({})
@@ -112,6 +113,20 @@ class PostController {
         res.sendStatus(204)
     }
 
+    async updatePostLikeStatus (req: Request, res: Response) {
+
+        const likeStatus = req.body.likeStatus;
+        const postId = req.params.postId
+        const userId = req.context.user!._id.toString()
+
+        const updateLikeStatus: boolean = await this.postService.updatePostLikeStatus(postId, userId, likeStatus)
+
+        if (!updateLikeStatus) {
+            return res.sendStatus(404)
+        }
+        res.sendStatus(204)
+    }
+
     async deletePost(req: Request, res: Response) {
 
         const deletePost: boolean = await this.postService.deletePostById(req.params.id)
@@ -141,5 +156,8 @@ postRoutes.post('/:postId/comments', checkUserByAccessTokenMiddleware, postComme
 
 postRoutes.put('/:id', baseAuthorizationMiddleware, createPostValidation,
     postController.updatePost.bind(postController))
+
+postRoutes.put('/:id/like-status', checkUserByAccessTokenMiddleware, likeValidation,inputValidationErrorsMiddleware,
+    postController.updatePostLikeStatus.bind(postController))
 
 postRoutes.delete('/:id', baseAuthorizationMiddleware, postController.deletePost.bind(postController))

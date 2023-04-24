@@ -6,7 +6,6 @@ import {UserAccountModel} from "../db/db";
 export class UserQueryRepo {
 
     async getUsers(sortBy: string, sortDirection: string, pageNumber: number, pageSize: number, searchLoginTerm: string, searchEmailTerm: string) {
-        console.log('popali v repo')
         const skipSize = (pageNumber - 1) * pageSize;
         const filter = {
             $or:
@@ -14,10 +13,8 @@ export class UserQueryRepo {
                     {"accountData.email": {$regex: searchEmailTerm ?? "", $options: "i"}}
                 ]
         };
-        console.log('before req')
         const totalCount = await UserAccountModel.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize)
-        console.log('users count', totalCount)
 
         const getUsers = await UserAccountModel.find(filter)
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
@@ -25,7 +22,6 @@ export class UserQueryRepo {
             .limit(pageSize)
             .lean()
 
-        console.log('after users')
         const mappedUsers = userMapping(getUsers)
 
         return {

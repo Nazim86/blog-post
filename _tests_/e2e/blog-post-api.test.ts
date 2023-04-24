@@ -369,7 +369,6 @@ describe("Blogs pagination testing", () => {
     });
 
     it(`should return right pagination values `, async () => {
-        console.log('create')
         let newBlogData
         for (let i = 0; i < countOfBlogs; i++) {
             newBlogData = {...baseBlog, name: `Testing pag${i}`}
@@ -989,14 +988,11 @@ describe("auth testing", () => {
     });
 
     it('should create new user and send confirmation email and return 204', async () => {
-        console.log('before new user')
         newUser = await authFunctions.registerUser(newUserData)
-        console.log(newUser.body)
         expect(newUser.status).toBe(204)
 
         //checking that user created
         const users = await userFunctions.getUsers(paginationValues, authorizationData)
-        console.log(users.body)
         expect(users.body).toEqual(createdUserWithPagination)
 
     });
@@ -1224,28 +1220,22 @@ describe("auth testing", () => {
         async () => {
             //getDevices
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
-            console.log(refreshToken)
             const devicesWithOldLastActive = await authFunctions.getCurrentDevices(refreshToken)
-            console.log('devicesWithOldLastActive', devicesWithOldLastActive.body)
 
-            // await delay(1000); // Wait for 1 second
-            // console.log("old time",new Date())
+
             await delay(1000); // Wait for 1 second
 
-            // await new Promise(resolve => setTimeout(resolve, 2000));
-            // console.log("new time",new Date())
+
             getRefreshToken = await authFunctions.refreshToken(refreshToken)
             const newRefreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
 
             //getDevices
             const deviceWithUpdatedLastActive = await authFunctions.getCurrentDevices(newRefreshToken)
-            // console.log(devicesWithOldLastActive.body[3].lastActiveDate)
-            // console.log(deviceWithUpdatedLastActive.body[3].lastActiveDate)
+
             expect(devicesWithOldLastActive.body[3].lastActiveDate).not.toEqual(deviceWithUpdatedLastActive.body[3].lastActiveDate)
 
             expect(getRefreshToken.status).toBe(200)
             expect(getRefreshToken.body).toEqual({accessToken: expect.any(String)})
-            // expect(device!.lastActiveDate).toEqual(verifyRefreshToken.iat)
         });
 
     it('should NOT get current user with wrong refreshToken dat return 401', async () => {
@@ -1908,7 +1898,6 @@ describe("comments testing", () =>  {
 
         //checking by user1
         getComment = await commentFunctions.getCommentByPostId(post.body.id)
-        console.log(getComment.body.items)
         expect(getComment.status).toBe(200)
         expect(getComment.body.items).toEqual({...likeData, likesCount: 1, dislikesCount: 3, myStatus: "Like"})
 

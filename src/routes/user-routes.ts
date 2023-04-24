@@ -16,7 +16,6 @@ class UserController {
     constructor() {
         this.userQueryRepo = new UserQueryRepo()
         this.userService = new UserService()
-        console.log(this.userQueryRepo)
     }
 
     async getUsers(req: Request, res: Response) {
@@ -30,10 +29,7 @@ class UserController {
             searchEmailTerm
         } = getPaginationValues(req.query)
 
-        console.log('popali v contr')
-        console.log(this.userQueryRepo, 'qr')
         const getUsers = await this.userQueryRepo.getUsers(sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm)
-        console.log('get users in contr', getUsers)
         res.status(200).send(getUsers)
     }
 
