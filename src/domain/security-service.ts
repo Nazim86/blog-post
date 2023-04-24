@@ -4,6 +4,7 @@ import {ResultCode} from "../error-handler/result-code-enum";
 import {Result} from "../error-handler/result-type";
 import {JwtService} from "./jwt-service";
 import {TokenInDbRepository} from "../repositories/token-in-db-repository";
+import {clearExpiredTokens} from "../db/db-clearing-expired-tokens";
 
 
 
@@ -15,6 +16,10 @@ export class SecurityService {
     constructor() {
         this.jwtService = new JwtService()
         this.tokenInDbRepository = new TokenInDbRepository()
+    }
+
+    private deleteOldDevices(){
+        clearExpiredTokens.start();
     }
 
 

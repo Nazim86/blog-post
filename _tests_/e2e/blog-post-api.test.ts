@@ -989,9 +989,9 @@ describe("auth testing", () => {
     });
 
     it('should create new user and send confirmation email and return 204', async () => {
-
+        console.log('before new user')
         newUser = await authFunctions.registerUser(newUserData)
-
+        console.log(newUser.body)
         expect(newUser.status).toBe(204)
 
         //checking that user created
@@ -1224,7 +1224,9 @@ describe("auth testing", () => {
         async () => {
             //getDevices
             const refreshToken = loginUser.headers['set-cookie'][0].split(";")[0]
+            console.log(refreshToken)
             const devicesWithOldLastActive = await authFunctions.getCurrentDevices(refreshToken)
+            console.log('devicesWithOldLastActive', devicesWithOldLastActive.body)
 
             // await delay(1000); // Wait for 1 second
             // console.log("old time",new Date())

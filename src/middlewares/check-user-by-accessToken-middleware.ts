@@ -5,17 +5,19 @@ import {AuthService} from "../domain/auth-service";
 
 
 
-class CheckUserByAccessTokenMiddlewareController {
+class CheckUserByAccessTokenMiddleware {
 
     private jwtService: JwtService
     private authService: AuthService
+
+
     constructor() {
         this.jwtService = new JwtService()
         this.authService = new AuthService()
     }
 
 
-    async checkUserByAccessToken(req: Request, res: Response, next: NextFunction) {
+    async use(req: Request, res: Response, next: NextFunction) {
 
         if (!req.headers.authorization) {
             res.sendStatus(401)
@@ -35,18 +37,21 @@ class CheckUserByAccessTokenMiddlewareController {
 
         req.context = {}
         req.context.user = await this.authService.findUserById(userId)
-        next()
+        return next()
     }
 }
 
-const checkUserByAccessTokenMiddlewareController =  new CheckUserByAccessTokenMiddlewareController()
+const checkUserByAccessTokenMiddlewareController =  new CheckUserByAccessTokenMiddleware()
 
-export const checkUserByAccessTokenMiddleware = checkUserByAccessTokenMiddlewareController.checkUserByAccessToken.bind(checkUserByAccessTokenMiddlewareController)
+export const checkUserByAccessTokenMiddleware = checkUserByAccessTokenMiddlewareController.use.bind(checkUserByAccessTokenMiddlewareController)
 
 
-//
+
+
 // export const checkUserByAccessTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 //
+//     const jwtService = new JwtService()
+//     const authService
 //     if (!req.headers.authorization) {
 //         res.sendStatus(401)
 //         return

@@ -16,7 +16,7 @@ class UserController {
     constructor() {
         this.userQueryRepo = new UserQueryRepo()
         this.userService = new UserService()
-
+        console.log(this.userQueryRepo)
     }
 
     async getUsers(req: Request, res: Response) {
@@ -30,8 +30,10 @@ class UserController {
             searchEmailTerm
         } = getPaginationValues(req.query)
 
+        console.log('popali v contr')
+        console.log(this.userQueryRepo, 'qr')
         const getUsers = await this.userQueryRepo.getUsers(sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm)
-
+        console.log('get users in contr', getUsers)
         res.status(200).send(getUsers)
     }
 
@@ -63,9 +65,9 @@ class UserController {
 
 const userController = new UserController()
 
-userRoutes.get("/", baseAuthorizationMiddleware, userController.getUsers)
+userRoutes.get("/", baseAuthorizationMiddleware, userController.getUsers.bind(userController))
 
 userRoutes.post("/", baseAuthorizationMiddleware, userInputValidations, checkUserCredentialsMiddleware, inputValidationErrorsMiddleware,
-    userController.createUser)
+    userController.createUser.bind(userController))
 
-userRoutes.delete("/:id", baseAuthorizationMiddleware, userController.deleteUser)
+userRoutes.delete("/:id", baseAuthorizationMiddleware, userController.deleteUser.bind(userController))

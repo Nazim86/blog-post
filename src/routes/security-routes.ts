@@ -47,10 +47,10 @@ class SecurityController {
 
 const securityController = new SecurityController()
 
-securityRoutes.get("/devices", checkRefreshTokenMiddleware, securityController.getDevices)
+securityRoutes.get("/devices", checkRefreshTokenMiddleware, securityController.getDevices.bind(securityController))
 
-securityRoutes.delete("/devices", checkRefreshTokenMiddleware, securityController.deleteDevices)
+securityRoutes.delete("/devices", checkRefreshTokenMiddleware, securityController.deleteDevices.bind(securityController))
 
 securityRoutes.delete("/devices/:id", deviceIdValidation, inputValidationErrorsMiddleware, checkRefreshTokenMiddleware,
-    securityController.deleteDeviceByDeviceId)
+    securityController.deleteDeviceByDeviceId.bind(securityController))
 

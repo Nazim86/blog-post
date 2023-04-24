@@ -8,9 +8,10 @@ export const userFunctions = {
     async getUsers(paginationData:object,authorizationData:string):Promise<TestResultType<UserViewType>>{
             const result = await request(app)
                 .get(`/users`)
-                .send(paginationData)
                 .set("Authorization",authorizationData)
+                .send(paginationData)
 
+        console.log(result.body)
             return {status:result.status,body:result.body}
     },
 

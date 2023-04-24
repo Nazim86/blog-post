@@ -6,8 +6,7 @@ import {JwtService} from "../domain/jwt-service";
 import {AuthService} from "../domain/auth-service";
 
 
-
-class CheckRefreshTokenMiddlewareController {
+class CheckRefreshTokenMiddleware{
 
     private jwtService: JwtService
     private authService: AuthService
@@ -18,7 +17,7 @@ class CheckRefreshTokenMiddlewareController {
     }
 
 
-    async checkRefreshToken(req: Request, res: Response, next: NextFunction) {
+    async use(req: Request, res: Response, next: NextFunction) {
 
         const refreshToken = req.cookies.refreshToken
 
@@ -39,22 +38,23 @@ class CheckRefreshTokenMiddlewareController {
         if (!getTokenDataFromDb) {
             // console.log(`refreshTokenFromMiddleware ${x++}`)
             return res.sendStatus(401)
-
         }
         req.context = {}
         req.context.user = await this.authService.findUserById(userId)
-        next()
-
+        return next()
     }
 }
 
-const checkRefreshTokenMiddlewareController =  new CheckRefreshTokenMiddlewareController()
+const checkRefreshTokenMiddlewareClass =  new CheckRefreshTokenMiddleware()
 
 
-export const checkRefreshTokenMiddleware = checkRefreshTokenMiddlewareController.checkRefreshToken.bind(checkRefreshTokenMiddlewareController)
+export const checkRefreshTokenMiddleware = checkRefreshTokenMiddlewareClass.use.bind(checkRefreshTokenMiddlewareClass)
 
 
 // export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+//
+//     const jwtService = new JwtService()
+//     const authService = new AuthService()
 //
 //     const refreshToken = req.cookies.refreshToken
 //

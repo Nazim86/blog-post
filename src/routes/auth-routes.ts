@@ -15,7 +15,6 @@ import {settings} from "../settings";
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
 import {checkIpLimitMiddleware} from "../middlewares/check-ip-limit-middleware";
-import {clearExpiredTokens} from "../db/db-clearing-expired-tokens";
 import {SecurityService} from "../domain/security-service";
 import {AuthService} from "../domain/auth-service";
 import {UserRepository} from "../repositories/user-in-db-repository";
@@ -105,8 +104,6 @@ export class AuthController {
     }
 
     async getNewRefreshToken(req: Request, res: Response) {
-
-        clearExpiredTokens.start();
 
         const user = req.context.user!
 
