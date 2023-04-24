@@ -5,22 +5,24 @@ import add from "date-fns/add"
 import {EmailConfirmationType, UserAccountDbType, AccountDataType} from "../repositories/types/user-account-db-type";
 import {UserAccountModel} from "../db/db";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
-import {tokenInDbRepository} from "../repositories/token-in-db-repository";
 import {passwordRecoveryMessage, registrationMessage} from "../managers/email-messages-repo";
 import {UserRepository} from "../repositories/user-in-db-repository";
 import {JwtService} from "./jwt-service";
 import {EmailManager} from "../managers/email-manager";
+import {TokenInDbRepository} from "../repositories/token-in-db-repository";
 
 export class AuthService {
 
     private userRepository:UserRepository
     private jwtService:JwtService
     private emailManager: EmailManager
+    private tokenInDbRepository: TokenInDbRepository
 
     constructor() {
         this.userRepository = new UserRepository()
         this.jwtService =  new JwtService()
         this.emailManager = new EmailManager()
+        this.tokenInDbRepository = new TokenInDbRepository()
     }
 
 
@@ -170,7 +172,7 @@ export class AuthService {
             userId: userId,
             expiration: expiration
         }
-        await tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)
+        await this.tokenInDbRepository.insertRefreshTokenMetaData(refreshTokenMeta)
     }
 
 

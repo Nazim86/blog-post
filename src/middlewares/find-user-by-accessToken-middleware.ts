@@ -42,6 +42,12 @@ export class FindUserByAccessTokenMiddlewareController {
 
 }
 
+const findUserByAccessTokenMiddlewareController = new FindUserByAccessTokenMiddlewareController()
+
+export const findUserByAccessTokenMiddleware = findUserByAccessTokenMiddlewareController.findUserByAccessToken.bind(findUserByAccessTokenMiddlewareController)
+
+
+
 // export const findUserByAccessTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 //
 //
