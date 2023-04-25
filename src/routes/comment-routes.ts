@@ -61,7 +61,6 @@ class CommentController {
             if (tokenData) {
                 userId = tokenData.userId
             }
-
         }
         const getComment: CommentsViewType | null = await this.commentsQueryRepo.getComment(req.params.commentId, userId)
 

@@ -6,6 +6,6 @@ export type PostLikesDbType = {
     _id: ObjectId
     postId: string
     userId: string
-    addedAt: string
+    addedAt: Date
     status: LikeEnum
 }

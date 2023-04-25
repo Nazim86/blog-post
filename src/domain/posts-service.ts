@@ -24,7 +24,8 @@ export class PostsService{
         const blog = await this.blogRepository.getBlogById(blogId)
         if (!blog) return null
 
-        const newPost = new PostsDbType(new ObjectId(),title,shortDescription,content,blogId,blog.name,new Date().toISOString())
+        const newPost = new PostsDbType(new ObjectId(),title,shortDescription,content,blogId,blog.name,new Date().toISOString(),
+            {likesCount:0,dislikesCount:0,myStatus:"None",newestLikes:[]})
 
         return await this.postRepository.createPost(newPost)
     }
@@ -35,14 +36,15 @@ export class PostsService{
 
         if(!blogById) return null
 
-        const createPostForBlog = new PostsDbType(new ObjectId(),title,shortDescription,content,blogId.toString(),blogById.name,new Date().toISOString())
+        const createPostForBlog = new PostsDbType(new ObjectId(),title,shortDescription,content,blogId.toString(),blogById.name,new Date().toISOString(),
+            {likesCount:0,dislikesCount:0,myStatus:"None",newestLikes:[]})
 
         return await this.postRepository.createPostForBlog(createPostForBlog)
     }
 
-    async getPostById(id:string): Promise<PostsViewType |boolean> {
-        return await this.postQueryRepo.getPostById(id)
-    }
+    // async getPostById(postId:string,userId?:string): Promise<PostsViewType |boolean> {
+    //     return await this.postQueryRepo.getPostById(postId,userId)
+    // }
 
     async updatePost(id:string,title: string, shortDescription:string, content: string, blogId:string): Promise<boolean> {
 
@@ -51,7 +53,7 @@ export class PostsService{
 
     async updatePostLikeStatus(postId:string, userId:string, likeStatus:string){
 
-        const getPost:PostsViewType | boolean = await this.postQueryRepo.getPostById(postId)
+        const getPost:PostsViewType | boolean = await this.postQueryRepo.getPostById(postId,userId)
 
         if (!getPost) return false
 

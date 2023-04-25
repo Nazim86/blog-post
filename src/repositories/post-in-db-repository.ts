@@ -1,4 +1,4 @@
-import {LikeModel, PostLikeModel, PostModel} from "../db/db";
+import {PostLikeModel, PostModel} from "../db/db";
 import {ObjectId, UpdateResult} from "mongodb";
 import {PostsViewType} from "./types/posts-view-type";
 import {PostsDbType} from "./types/posts-db-type";
@@ -6,9 +6,9 @@ import {LikeEnum} from "./enums/like-enum";
 
 export class PostRepository {
 
-    async createPost(newPost: PostsDbType):Promise<PostsViewType> {
+    async createPost(newPost: PostsDbType): Promise<PostsViewType> {
 
-        const result =  await PostModel.create(newPost)
+        const result = await PostModel.create(newPost)
 
         return {
             id: result._id.toString(),
@@ -22,18 +22,18 @@ export class PostRepository {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: LikeEnum.None,
-                newestLikes: [
-                    {
-                        addedAt: string
-                        userId: string
-                        login: string
-                    }
-                ]
+                newestLikes:[]
             }
 
         }
     }
 
+
+// {
+//     addedAt: new Date(),
+//     userId: "string",
+//     login: "string"
+// }
     async  createPostForBlog (createPostForBlog:PostsDbType): Promise<PostsViewType> {
 
         const result = await PostModel.create(createPostForBlog)
@@ -45,7 +45,13 @@ export class PostRepository {
             content: createPostForBlog.content,
             blogId: createPostForBlog.blogId,
             blogName: createPostForBlog.blogName,
-            createdAt: createPostForBlog.createdAt
+            createdAt: createPostForBlog.createdAt,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeEnum.None,
+                newestLikes: []
+            }
         }
 
     }
@@ -59,13 +65,11 @@ export class PostRepository {
                         content: content,
                         blogId:blogId}})
 
-
             return result.matchedCount===1
         }
         catch (e){
             return false
         }
-
     }
 
     async updatePostLikeStatus(postId:string, userId:string, likeStatus:string){

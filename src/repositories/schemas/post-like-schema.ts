@@ -8,7 +8,7 @@ export const PostLikeSchema = new Schema<PostLikesDbType>({
     _id: {type: ObjectId, required: true},
     postId: {type: String, required: true},
     userId: {type: String, required: true},
-    addedAt: {type: String, required: true},
+    addedAt: {type: Date, required: true},
     status: {type: String, required: true, enum: LikeEnum}
 
 })

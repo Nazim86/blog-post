@@ -18,36 +18,47 @@ export const createdPostWithPagination = {
         content: "About Ai technologies",
         blogId: expect.any(String),
         blogName: expect.any(String),
-        createdAt: expect.any(String)
+        createdAt: expect.any(String),
+        extendedLikesInfo: {
+            likesCount:0,
+            dislikesCount:0,
+            myStatus: "None",
+            newestLikes:[]
+        }
     }
     ]
 }
 
-export const createdTwoPostWithPagination = {
-    pagesCount: expect.any(Number) ?? 1,
-    page: expect.any(Number) ?? 1,
-    pageSize: expect.any(Number) ?? 10,
-    totalCount: expect.any(Number) ?? 2,
-    items:[ {
-        id: expect.any(String),
-        title: "ChatGPT",
-        shortDescription: "AI",
-        content: "About Ai technologies",
-        blogId: expect.any(String),
-        blogName: expect.any(String),
-        createdAt: expect.any(String)
-    },{
-        id: expect.any(String),
-        title: "ChatGPT",
-        shortDescription: "AI",
-        content: "About Ai technologies",
-        blogId: expect.any(String),
-        blogName: expect.any(String),
-        createdAt: expect.any(String)
-    }
-    ]
-}
-
+// export const createdTwoPostWithPagination = {
+//     pagesCount: expect.any(Number) ?? 1,
+//     page: expect.any(Number) ?? 1,
+//     pageSize: expect.any(Number) ?? 10,
+//     totalCount: expect.any(Number) ?? 2,
+//     items:[ {
+//         id: expect.any(String),
+//         title: "ChatGPT",
+//         shortDescription: "AI",
+//         content: "About Ai technologies",
+//         blogId: expect.any(String),
+//         blogName: expect.any(String),
+//         createdAt: expect.any(String)
+//     },{
+//         id: expect.any(String),
+//         title: "ChatGPT",
+//         shortDescription: "AI",
+//         content: "About Ai technologies",
+//         blogId: expect.any(String),
+//         blogName: expect.any(String),
+//         createdAt: expect.any(String),
+//         extendedLikesInfo: {
+//             likesCount:0,
+//             dislikesCount:0,
+//             myStatus: "None",
+//             newestLikes:[]
+//         }
+//     }
+//     ]
+// }
 
 export const updatedPostWithPagination = {
     pagesCount: expect.any(Number) | 1,
@@ -61,7 +72,13 @@ export const updatedPostWithPagination = {
         content: "Usage of Merlin",
         blogId: expect.any(String),
         blogName: expect.any(String),
-        createdAt: expect.any(String)
+        createdAt: expect.any(String),
+        extendedLikesInfo: {
+            likesCount:0,
+            dislikesCount:0,
+            myStatus: "None",
+            newestLikes:[]
+        }
     }
     ]
 }
@@ -100,5 +117,12 @@ export const returnedCreatedPost = {
     content: "About Ai technologies",
     blogId: "6409dca9e947f5d966149e41",
     blogName: "createdBlog[0].name",
-    createdAt: expect.any(String)
+    createdAt: expect.any(String),
+    extendedLikesInfo: {
+        likesCount:0,
+        dislikesCount:0,
+        myStatus: "None",
+        newestLikes:[]
+    }
+
 }

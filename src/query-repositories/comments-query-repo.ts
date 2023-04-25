@@ -43,7 +43,7 @@ export class CommentsQueryRepo{
         }
     }
 
-    async getComment(commentId: string, userId?: string): Promise<CommentsViewType | null> {
+    async  getComment(commentId: string, userId?: string): Promise<CommentsViewType | null> {
 
         try {
             const getComment: CommentsDbType | null = await CommentModel.findOne({_id: new ObjectId(commentId)})

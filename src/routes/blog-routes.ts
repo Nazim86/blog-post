@@ -14,6 +14,8 @@ import {PostsViewType} from "../repositories/types/posts-view-type";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 import {PostsService} from "../domain/posts-service";
+import {settings} from "../settings";
+import {JwtService} from "../domain/jwt-service";
 
 
 export const blogRoutes = Router({})
@@ -26,12 +28,14 @@ class BlogController {
     private blogQueryRepo:BlogQueryRepo
     private postQueryRepo:PostsQueryRepo
     private postService:PostsService
+    private jwtService:JwtService
 
     constructor() {
         this.blogService = new BlogService()
         this.blogQueryRepo = new BlogQueryRepo()
         this.postQueryRepo = new PostsQueryRepo()
         this.postService = new PostsService()
+        this.jwtService = new JwtService()
     }
 
     async getBlogs(req: Request, res: Response) {
@@ -46,10 +50,21 @@ class BlogController {
 
     async getPostsByBlogId(req: Request, res: Response) {
 
+        const accessToken: string | undefined = req.headers.authorization?.split(" ")[1]
+
+        let userId = undefined
+
+        if (accessToken) {
+            const tokenData = await this.jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
+            if (tokenData) {
+                userId = tokenData.userId
+            }
+        }
+
         const {pageNumber, pageSize, sortBy, sortDirection} = getPaginationValues(req.query)
 
         const blogId = req.params.blogId
-        const getBlogByBlogId: QueryPaginationType<PostsViewType[]> | boolean = await this.postQueryRepo.getPostsByBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId)
+        const getBlogByBlogId: QueryPaginationType<PostsViewType[]> | boolean = await this.postQueryRepo.getPostsByBlogId(pageNumber, pageSize, sortBy, sortDirection, blogId,userId)
 
         if (!getBlogByBlogId) {
             return res.sendStatus(404)

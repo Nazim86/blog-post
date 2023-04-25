@@ -17,6 +17,8 @@ import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {PostsService} from "../domain/posts-service";
 import {likeValidation} from "../validations/like-validation";
+import {settings} from "../settings";
+import {JwtService} from "../domain/jwt-service";
 
 
 export const postRoutes = Router({})
@@ -30,26 +32,50 @@ class PostController {
     private commentsQueryRepo: CommentsQueryRepo
     private postService: PostsService
     private commentService: CommentService
+    private jwtService:JwtService
 
     constructor() {
         this.postQueryRepo = new PostsQueryRepo()
         this.commentsQueryRepo = new CommentsQueryRepo()
         this.postService = new PostsService()
         this.commentService = new CommentService()
+        this.jwtService = new JwtService()
     }
 
     async getPosts(req: Request, res: Response) {
 
+        const accessToken: string | undefined = req.headers.authorization?.split(" ")[1]
+
+        let userId = undefined
+
+        if (accessToken) {
+            const tokenData = await this.jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
+            if (tokenData) {
+                userId = tokenData.userId
+            }
+        }
+
         const {pageNumber, pageSize, sortBy, sortDirection} = getPaginationValues(req.query)
 
-        const getPost: QueryPaginationType<PostsViewType[]> = await this.postQueryRepo.getPost(pageNumber, pageSize, sortBy, sortDirection);
+        const getPost: QueryPaginationType<PostsViewType[]> = await this.postQueryRepo.getPost(pageNumber, pageSize, sortBy, sortDirection,userId);
 
         res.status(200).send(getPost)
     }
 
     async getPostById(req: Request, res: Response) {
 
-        const getPost: PostsViewType | boolean = await this.postQueryRepo.getPostById(req.params.id)
+        const accessToken: string | undefined = req.headers.authorization?.split(" ")[1]
+
+        let userId = undefined
+
+        if (accessToken) {
+            const tokenData = await this.jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
+            if (tokenData) {
+                userId = tokenData.userId
+            }
+        }
+
+        const getPost: PostsViewType | boolean = await this.postQueryRepo.getPostById(req.params.id,userId)
 
         if (!getPost) {
             return res.sendStatus(404)
