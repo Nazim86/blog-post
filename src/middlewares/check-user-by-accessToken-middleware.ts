@@ -3,19 +3,15 @@ import {settings} from "../settings";
 import {JwtService} from "../domain/jwt-service";
 import {AuthService} from "../domain/auth-service";
 
-
-
 class CheckUserByAccessTokenMiddleware {
 
     private jwtService: JwtService
     private authService: AuthService
 
-
     constructor() {
         this.jwtService = new JwtService()
         this.authService = new AuthService()
     }
-
 
     async use(req: Request, res: Response, next: NextFunction) {
 
@@ -33,7 +29,6 @@ class CheckUserByAccessTokenMiddleware {
         }
 
         const {userId} = tokenMetaData;
-
 
         req.context = {}
         req.context.user = await this.authService.findUserById(userId)

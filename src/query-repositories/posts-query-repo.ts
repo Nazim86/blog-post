@@ -7,11 +7,11 @@ import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
 import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {PostLikesDbType} from "../repositories/types/post-likes-db-type";
-import {newestLikesMapping} from "../mapping/likes-mapping";
+import {newestLikesMapping} from "../mapping/post-likes-mapping";
 
 export class PostsQueryRepo {
 
-    async getPostById(postId: string, userId?: string): Promise<PostsViewType | boolean> {
+    async getPostById(postId: string, userId?: string|undefined): Promise<PostsViewType | boolean> {
 
         try {
             const postById: PostsDbType | null = await PostModel.findOne({_id: new ObjectId(postId)})
@@ -21,19 +21,12 @@ export class PostsQueryRepo {
             }
 
             let myStatus = "None"
-            let login = "undefined"
 
             if (userId) {
-                const getUserByUserId: UserAccountDbType | null = await UserAccountModel.findOne({_id: new ObjectId(userId)})
-                if (getUserByUserId) {
-                    login = getUserByUserId.accountData.login
-                }
                 const likeInDb = await PostLikeModel.findOne({postId, userId})
                 if (likeInDb) {
                     myStatus = likeInDb.status
                 }
-            }else{
-                userId = "undefined"
             }
 
             const likesCount = await PostLikeModel.countDocuments({postId, status: LikeEnum.Like})
@@ -47,7 +40,7 @@ export class PostsQueryRepo {
                 .limit(3) // limit to 3 results
                 .lean();
 
-            const newestLikes:NewestLikesType[] = newestLikesMapping(getLast3Likes,login,userId)
+            const newestLikes:NewestLikesType[] = newestLikesMapping(getLast3Likes)
 
             return {
                 id: postById._id.toString(),

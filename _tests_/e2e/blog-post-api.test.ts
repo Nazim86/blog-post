@@ -13,7 +13,7 @@ import {
 } from "./data/blogs-data";
 import {
     createdPostWithPagination,
-    emptyPostData, newPostByBlogIdData, newPostCreatingData,
+    emptyPostData, likedPostData, newPostByBlogIdData, newPostCreatingData,
 
     postPaginationValues,
     returnedCreatedPost, updatedPostData, updatedPostWithPagination
@@ -43,7 +43,7 @@ import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
 import mongoose from "mongoose";
 import {ObjectId} from "mongodb";
-import {IpModel, UserAccountModel} from "../../src/db/db";
+import {IpModel, PostLikeModel, UserAccountModel} from "../../src/db/db";
 
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -469,8 +469,10 @@ describe("blogs CRUD testing", () => {
 
 describe("post testing", () => {
     let createdPost: Array<PostsViewType> = [];
-    //TODO should replace any with type
     let blog: any;
+    let user: any[] = []
+    let loggedUser: any[] = []
+
     beforeAll(async () => {
 
         //clearAllData()
@@ -481,6 +483,34 @@ describe("post testing", () => {
 
         //blog = create blog()
         blog = await blogFunctions.createBlog({...baseBlog}, authorizationData)
+
+        //Create 4 new user
+        async function createUser() {
+            for (let i = 0; i <= 3; i++) {
+                const userData = {
+                    login: `Leo${i}`,
+                    password: `123456${i}`,
+                    email: `nazim86mammadov@yandex.ru${i}`
+                }
+                const newUser = await userFunctions.createUser(userData, authorizationData)
+                user.push(newUser.body)
+            }
+        }
+
+        await createUser();
+
+        //Log 4 users
+        async function loginUsers() {
+            for (let i = 0; i <= 3; i++) {
+                const userData = {
+                    loginOrEmail: `Leo${i}`,
+                    password: `123456${i}`
+                }
+                const logUser = await authFunctions.loginUser(userData, "chrome")
+                loggedUser.push(logUser.body)
+            }
+        }
+        await loginUsers();
 
     });
 
@@ -518,421 +548,543 @@ describe("post testing", () => {
         expect(body).toEqual(expectedGetResult)
     });
 
-
-    // Get Post By Id
-    it('should NOT get post with wrong ID and return 404', async () => {
-
-        const id = 'sdf'
-
-        const {status} = await postFunctions.getPostById(id)
-        expect(status).toBe(404)
-
-    });
-
-    it('should get post by ID and return 200', async () => {
-        const postById = {
-            ...returnedCreatedPost, blogId: blog.body.id,
-            blogName: blog.body.name
-        }
-        const id = createdPost[0].id
-
-        const {body, status} = await postFunctions.getPostById(id)
-        expect(status).toBe(200)
-        expect(body).toEqual(postById)
-    });
-
-
-    //Update post by id
-    it('should NOT Update post with wrong Authorization data and return 401', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, 'asd', 401)
-    });
-
-    it('should NOT Update post with wrong ID and return 404', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id
-        }
-
-        await notUpdate('sdsf', updatePost, authorizationData, 404)
-    });
-
-    it('should NOT Update post by ID with wrong long title and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, title: "x".repeat(500)
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by ID with title is not string and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, title: 233
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by ID without title and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, title: null
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by ID without shortDescription and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, shortDescription: null
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by id long shortDescription and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, shortDescription: "null".repeat(1000)
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by id with number in shortDescription and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, shortDescription: 123
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-
-    it('should NOT Update post by id with number in content and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, content: 123
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by id with long content and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, content: "asda".repeat(1000)
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by id without content and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id, content: null
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by id without blogId and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: null
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-
-    });
-
-    it('should NOT Update post by id with wrong blogId and return 400', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: "sdsdfsdf"
-        }
-
-        await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
-    });
-
-    it('should Update post by ID and return 204', async () => {
-        const updatePost = {
-            ...updatedPostData, blogId: blog.body.id
-        }
-
-        const id = createdPost[0].id
-
-        const updatedBlog = await postFunctions.updatePostById(id, updatePost, authorizationData)
-        expect(updatedBlog.status).toBe(204)
-
-        const {status, body} = await postFunctions.getPost(postPaginationValues)
-        expect(status).toBe(200)
-        expect(body).toEqual(updatedPostWithPagination)
-
-    });
-
-
-    // Delete Post By Id
-
-    it('should NOT Delete post with wrong Authorization data and return 401', async () => {
-
-        const id = createdPost[0].id
-
-        const deletePost = await postFunctions.deletePostById(id, "ssdfsdf")
-        expect(deletePost.status).toBe(401)
-
-        const {body, status} = await postFunctions.getPost(postPaginationValues)
-        expect(status).toBe(200)
-        expect(body).toEqual(updatedPostWithPagination)
-
-    });
-
-
-    it('should NOT Delete post with wrong ID and return 404', async () => {
-
-        const id = "sdfsf"
-
-        const deletePost = await postFunctions.deletePostById(id, authorizationData)
-        expect(deletePost.status).toBe(404)
-
-        const {body, status} = await postFunctions.getPost(postPaginationValues)
-        expect(status).toBe(200)
-        expect(body).toEqual(updatedPostWithPagination)
-
-    });
-
-
-    it('should Delete post by ID and return 204', async () => {
-
-        const id = createdPost[0].id
-
-        const deletePost = await postFunctions.deletePostById(id, authorizationData)
-        expect(deletePost.status).toBe(204)
-
-        const {body, status} = await postFunctions.getPost(postPaginationValues)
-        expect(status).toBe(200)
-        expect(body).toEqual(emptyPostData)
-
-    });
-
-    it('should create Post for specific blog by blogId return 201 and created Post', async () => {
-
-        //TODO build Should NOT for Create
-        //TODO solve problem with get after creating two posts
-
-        const newPostData = {...newPostByBlogIdData}
-        const expectedNewPost = {
-            ...returnedCreatedPost, blogId: blog.body.id,
-            blogName: blog.body.name
-        }
-
-        const createPost = await postFunctions.createPostByBlogId(blog.body.id, newPostData, authorizationData)
-        expect(createPost.status).toBe(201)
-        expect(createPost.body).toEqual(expectedNewPost)
-
-        createdPost.push(createPost.body)
-
-        const {status, body} = await postFunctions.getPost(postPaginationValues)
-        expect(status).toBe(200)
-        expect(body).toEqual(createdPostWithPagination)
-    });
-
-    it('should NOT get post wrong blogId and return 404', async () => {
-        const postByBlogId = cloneDeep(createdPostWithPagination)
-        postByBlogId.items[0].blogId = blog.body.id
-        postByBlogId.items[0].blogName = blog.body.name
-
-        const {status} = await postFunctions.getPostByBlogId(postPaginationValues, 'sdf')
-        expect(status).toBe(404)
-    });
-
-
-    it('should get post by blogId for specified blog and return 200', async () => {
-
-        //TODO solve problem with get after creating two posts
-
-        const postByBlogId = cloneDeep(createdPostWithPagination)
-        postByBlogId.items[0].blogId = blog.body.id
-        postByBlogId.items[0].blogName = blog.body.name
-
-        const {body, status} = await postFunctions.getPostByBlogId(postPaginationValues, blog.body.id)
-        expect(status).toBe(200)
-        expect(body).toEqual(createdPostWithPagination)
-    });
-
-});
-
-describe("user testing", () => {
-    let users: PostsViewType[] = [];
-    beforeAll(async () => {
-        await request(app)
-            .delete('/testing/all-data')
-    })
-
-
-    it('should NOT get user with wrong Authorization and return 401 ', async () => {
-
-        const {status} = await userFunctions.getUsers(userPaginationValues, 'ssd')
-        expect(status).toBe(401)
-
-    });
-
-    it('should get users and return 200 ', async () => {
-
-        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
-        expect(status).toBe(200)
-        expect(body).toEqual(getEmptyUsersData)
-
-    });
-
-    it('should NOT create users with number in login and 400 ', async () => {
-        const userData = {...userCreateData, login: 123}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users long login and 400 ', async () => {
-        const userData = {...userCreateData, login: "sd".repeat(500)}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users short login and 400 ', async () => {
-        const userData = {...userCreateData, login: "sd"}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users without login and 400 ', async () => {
-        const userData = {...userCreateData, login: null}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users without password and 400 ', async () => {
-        const userData = {...userCreateData, password: null}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users short password and 400 ', async () => {
-        const userData = {...userCreateData, password: '1234'}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users long password and 400 ', async () => {
-        const userData = {...userCreateData, password: '1234'.repeat(20)}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users number in password and 400 ', async () => {
-        const userData = {...userCreateData, password: 123}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users without email and 400 ', async () => {
-        const userData = {...userCreateData, email: null}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users number in email and 400 ', async () => {
-        const userData = {...userCreateData, email: 123}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users with wrong email pattern and 400 ', async () => {
-        const userData = {...userCreateData, email: "nazim@.com"}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, authorizationData)
-    });
-
-    it('should NOT create users with wrong authorization data and 401 ', async () => {
-        const userData = {...userCreateData}
-
-        //this function includes trying to create user and checking this with GET
-        await notCreateUser(userData, 'sds', 401)
-    });
-
-
-    it('should create users and return newly created user and 201 ', async () => {
-
-        const newUser = await userFunctions.createUser(userCreateData, authorizationData)
-        expect(newUser.status).toBe(201)
-        expect(newUser.body).toEqual(userCreatedData)
-
-
-        users.push(newUser.body)
-
-        const expectedResult = {...createdUserWithPagination}
-
-        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
-        expect(status).toBe(200)
-        expect(body).toEqual(expectedResult)
-
-    });
-
-    it('should NOT create existing user and 400 ', async () => {
-
-        const newUser = await userFunctions.createUser(userCreateData, authorizationData)
-        expect(newUser.status).toBe(400)
-        expect(newUser.body).toEqual({})
-
-        users.push(newUser.body)
-
-        const expectedResult = {...createdUserWithPagination}
-
-        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
-        expect(status).toBe(200)
-        expect(body).toEqual(expectedResult)
-    });
-
-
-    it('should NOT Delete User with wrong ID and return 404', async () => {
-
-        const id = 'asd'
-
-        const deleteUser = await userFunctions.deleteUserById(id, authorizationData)
-        expect(deleteUser.status).toBe(404)
-
-        const expectedResult = {...createdUserWithPagination}
-
-        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
-        expect(status).toBe(200)
-        expect(body).toEqual(expectedResult)
-
-    });
-
-    it('should Delete User by ID and return 204', async () => {
-
-        const id = users[0].id
-
-        const deleteUser = await userFunctions.deleteUserById(id, authorizationData)
-        expect(deleteUser.status).toBe(204)
-
-        const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
-        expect(status).toBe(200)
-        expect(body).toEqual(getEmptyUsersData)
-
-    });
+//like tests
+//     it('should get post by unauthorized user. Should return liked post with myStatus: None and return 204',
+//         async () => {
+//
+//             const postId = createdPost[0].id
+//             const likeStatus = {likeStatus:"Like"}
+//
+//             const likedPost = await postFunctions.updatePostLikeStatus(postId,likeStatus,loggedUser[0].accessToken)
+//
+//             const {body, status} = await postFunctions.getPostById(postId)
+//             expect(status).toBe(200)
+//             expect(body).toEqual(    {
+//                 ...likedPostData,
+//                 extendedLikesInfo: {
+//                     ...likedPostData.extendedLikesInfo,likesCount:1,
+//                 }})
+//         });
+
+    it('should like the post by user 1, user 2, user 3, user 4. get the post after each like by user 1.' +
+        'NewestLikes should be sorted in descending and return 204',
+        async () => {
+
+           let likedPost:any
+            let getPost:any
+
+            const postId = createdPost[0].id
+            const likeStatus = {likeStatus:"Like"}
+
+            //user1 like
+            likedPost = await postFunctions.updatePostLikeStatus(postId,likeStatus,loggedUser[0].accessToken)
+            expect(likedPost.status).toBe(204)
+
+            //user1 get post
+            getPost = await postFunctions.getPostById(postId,loggedUser[0].accessToken)
+            expect(getPost.status).toBe(200)
+            expect(getPost.body).toEqual(likedPostData[1])
+
+            //user2 like
+            likedPost = await postFunctions.updatePostLikeStatus(postId,likeStatus,loggedUser[1].accessToken)
+            expect(likedPost.status).toBe(204)
+
+            //user1 get post
+            getPost = await postFunctions.getPostById(postId,loggedUser[0].accessToken)
+            expect(getPost.status).toBe(200)
+            expect(getPost.body).toEqual(likedPostData[2])
+
+            //user3 like
+            likedPost = await postFunctions.updatePostLikeStatus(postId,likeStatus,loggedUser[2].accessToken)
+            expect(likedPost.status).toBe(204)
+
+            //user1 get post
+            getPost = await postFunctions.getPostById(postId,loggedUser[0].accessToken)
+            expect(getPost.status).toBe(200)
+            expect(getPost.body).toEqual(likedPostData[3])
+
+            // //user4 like
+            // likedPost = await postFunctions.updatePostLikeStatus(postId,likeStatus,loggedUser[3].accessToken)
+            // expect(likedPost.status).toBe(204)
+            //
+            // //user1 get post
+            // getPost = await postFunctions.getPostById(postId,loggedUser[0].accessToken)
+            // expect(getPost.status).toBe(200)
+            // expect(getPost.body).toEqual(likedPostData[4])
+
+        });
+
+    it('should dislike the post by user 1, user 2; like the post by user 3; get the post after each like by user 1 and return 204',
+        async () => {
+
+        await PostLikeModel.deleteMany({})
+
+            let likedPost:any
+            let getPost:any
+
+            const postId = createdPost[0].id
+            const likeStatus = {likeStatus:"Dislike"}
+
+            //user1 dislike
+            likedPost = await postFunctions.updatePostLikeStatus(postId,likeStatus,loggedUser[0].accessToken)
+            expect(likedPost.status).toBe(204)
+
+            //user1 get post
+            getPost = await postFunctions.getPostById(postId,loggedUser[0].accessToken)
+            expect(getPost.status).toBe(200)
+            expect(getPost.body).toEqual({
+                ...likedPostData[1],
+                extendedLikesInfo: {
+                    ...likedPostData[1].extendedLikesInfo,myStatus:"Dislike",likesCount:0,dislikesCount:1}})
+
+            //user2 dislike
+            likedPost = await postFunctions.updatePostLikeStatus(postId,likeStatus,loggedUser[1].accessToken)
+            expect(likedPost.status).toBe(204)
+
+            //user1 get post
+            getPost = await postFunctions.getPostById(postId,loggedUser[0].accessToken)
+            expect(getPost.status).toBe(200)
+            expect(getPost.body).toEqual({
+                ...likedPostData[2],
+                extendedLikesInfo: {
+                    ...likedPostData[2].extendedLikesInfo,myStatus:"Dislike",likesCount:0,dislikesCount:2}})
+
+            //user3 like
+            likedPost = await postFunctions.updatePostLikeStatus(postId, {likeStatus:"Like"},loggedUser[2].accessToken)
+            expect(likedPost.status).toBe(204)
+
+            //user1 get post
+            getPost = await postFunctions.getPostById(postId,loggedUser[0].accessToken)
+            expect(getPost.status).toBe(200)
+            expect(getPost.body).toEqual({
+                ...likedPostData[3],
+                extendedLikesInfo: {
+                    ...likedPostData[3].extendedLikesInfo,myStatus:"Dislike",likesCount:1,dislikesCount:2}})
+
+        });
+
+
+
+//
+//     // Get Post By Id
+//     it('should NOT get post with wrong ID and return 404', async () => {
+//
+//         const id = 'sdf'
+//
+//         const {status} = await postFunctions.getPostById(id)
+//         expect(status).toBe(404)
+//
+//     });
+//
+//     it('should get post by ID and return 200', async () => {
+//         const postById = {
+//             ...returnedCreatedPost, blogId: blog.body.id,
+//             blogName: blog.body.name
+//         }
+//         const id = createdPost[0].id
+//
+//         const {body, status} = await postFunctions.getPostById(id)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(postById)
+//     });
+//
+//
+//     //Update post by id
+//     it('should NOT Update post with wrong Authorization data and return 401', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, 'asd', 401)
+//     });
+//
+//     it('should NOT Update post with wrong ID and return 404', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id
+//         }
+//
+//         await notUpdate('sdsf', updatePost, authorizationData, 404)
+//     });
+//
+//     it('should NOT Update post by ID with wrong long title and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, title: "x".repeat(500)
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by ID with title is not string and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, title: 233
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by ID without title and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, title: null
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by ID without shortDescription and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, shortDescription: null
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by id long shortDescription and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, shortDescription: "null".repeat(1000)
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by id with number in shortDescription and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, shortDescription: 123
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//
+//     it('should NOT Update post by id with number in content and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, content: 123
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by id with long content and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, content: "asda".repeat(1000)
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by id without content and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id, content: null
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by id without blogId and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: null
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//
+//     });
+//
+//     it('should NOT Update post by id with wrong blogId and return 400', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: "sdsdfsdf"
+//         }
+//
+//         await notUpdate(createdPost[0].id, updatePost, authorizationData, 400)
+//     });
+//
+//     it('should Update post by ID and return 204', async () => {
+//         const updatePost = {
+//             ...updatedPostData, blogId: blog.body.id
+//         }
+//
+//         const id = createdPost[0].id
+//
+//         const updatedBlog = await postFunctions.updatePostById(id, updatePost, authorizationData)
+//         expect(updatedBlog.status).toBe(204)
+//
+//         const {status, body} = await postFunctions.getPost(postPaginationValues)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(updatedPostWithPagination)
+//
+//     });
+//
+//
+//
+//
+//
+//
+//     // Delete Post By Id
+//
+//     it('should NOT Delete post with wrong Authorization data and return 401', async () => {
+//
+//         const id = createdPost[0].id
+//
+//         const deletePost = await postFunctions.deletePostById(id, "ssdfsdf")
+//         expect(deletePost.status).toBe(401)
+//
+//         const {body, status} = await postFunctions.getPost(postPaginationValues)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(updatedPostWithPagination)
+//
+//     });
+//
+//
+//     it('should NOT Delete post with wrong ID and return 404', async () => {
+//
+//         const id = "sdfsf"
+//
+//         const deletePost = await postFunctions.deletePostById(id, authorizationData)
+//         expect(deletePost.status).toBe(404)
+//
+//         const {body, status} = await postFunctions.getPost(postPaginationValues)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(updatedPostWithPagination)
+//
+//     });
+//
+//
+//     it('should Delete post by ID and return 204', async () => {
+//
+//         const id = createdPost[0].id
+//
+//         const deletePost = await postFunctions.deletePostById(id, authorizationData)
+//         expect(deletePost.status).toBe(204)
+//
+//         const {body, status} = await postFunctions.getPost(postPaginationValues)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(emptyPostData)
+//
+//     });
+//
+//     it('should create Post for specific blog by blogId return 201 and created Post', async () => {
+//
+//         const newPostData = {...newPostByBlogIdData}
+//         const expectedNewPost = {
+//             ...returnedCreatedPost, blogId: blog.body.id,
+//             blogName: blog.body.name
+//         }
+//
+//         const createPost = await postFunctions.createPostByBlogId(blog.body.id, newPostData, authorizationData)
+//         expect(createPost.status).toBe(201)
+//         expect(createPost.body).toEqual(expectedNewPost)
+//
+//         createdPost.push(createPost.body)
+//
+//         const {status, body} = await postFunctions.getPost(postPaginationValues)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(createdPostWithPagination)
+//     });
+//
+//     it('should NOT get post wrong blogId and return 404', async () => {
+//         const postByBlogId = cloneDeep(createdPostWithPagination)
+//         postByBlogId.items[0].blogId = blog.body.id
+//         postByBlogId.items[0].blogName = blog.body.name
+//
+//         const {status} = await postFunctions.getPostByBlogId(postPaginationValues, 'sdf')
+//         expect(status).toBe(404)
+//     });
+//
+//
+//     it('should get post by blogId for specified blog and return 200', async () => {
+//
+//         const postByBlogId = cloneDeep(createdPostWithPagination)
+//         postByBlogId.items[0].blogId = blog.body.id
+//         postByBlogId.items[0].blogName = blog.body.name
+//
+//         const {body, status} = await postFunctions.getPostByBlogId(postPaginationValues, blog.body.id)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(createdPostWithPagination)
+//     });
+//
+//
+//
+//
+//
+//
+//
+// });
+//
+// describe("user testing", () => {
+//     let users: PostsViewType[] = [];
+//     beforeAll(async () => {
+//         await request(app)
+//             .delete('/testing/all-data')
+//     })
+//
+//
+//     it('should NOT get user with wrong Authorization and return 401 ', async () => {
+//
+//         const {status} = await userFunctions.getUsers(userPaginationValues, 'ssd')
+//         expect(status).toBe(401)
+//
+//     });
+//
+//     it('should get users and return 200 ', async () => {
+//
+//         const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(getEmptyUsersData)
+//
+//     });
+//
+//     it('should NOT create users with number in login and 400 ', async () => {
+//         const userData = {...userCreateData, login: 123}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users long login and 400 ', async () => {
+//         const userData = {...userCreateData, login: "sd".repeat(500)}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users short login and 400 ', async () => {
+//         const userData = {...userCreateData, login: "sd"}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users without login and 400 ', async () => {
+//         const userData = {...userCreateData, login: null}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users without password and 400 ', async () => {
+//         const userData = {...userCreateData, password: null}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users short password and 400 ', async () => {
+//         const userData = {...userCreateData, password: '1234'}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users long password and 400 ', async () => {
+//         const userData = {...userCreateData, password: '1234'.repeat(20)}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users number in password and 400 ', async () => {
+//         const userData = {...userCreateData, password: 123}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users without email and 400 ', async () => {
+//         const userData = {...userCreateData, email: null}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users number in email and 400 ', async () => {
+//         const userData = {...userCreateData, email: 123}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users with wrong email pattern and 400 ', async () => {
+//         const userData = {...userCreateData, email: "nazim@.com"}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, authorizationData)
+//     });
+//
+//     it('should NOT create users with wrong authorization data and 401 ', async () => {
+//         const userData = {...userCreateData}
+//
+//         //this function includes trying to create user and checking this with GET
+//         await notCreateUser(userData, 'sds', 401)
+//     });
+//
+//
+//     it('should create users and return newly created user and 201 ', async () => {
+//
+//         const newUser = await userFunctions.createUser(userCreateData, authorizationData)
+//         expect(newUser.status).toBe(201)
+//         expect(newUser.body).toEqual(userCreatedData)
+//
+//
+//         users.push(newUser.body)
+//
+//         const expectedResult = {...createdUserWithPagination}
+//
+//         const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(expectedResult)
+//
+//     });
+//
+//     it('should NOT create existing user and 400 ', async () => {
+//
+//         const newUser = await userFunctions.createUser(userCreateData, authorizationData)
+//         expect(newUser.status).toBe(400)
+//         expect(newUser.body).toEqual({})
+//
+//         users.push(newUser.body)
+//
+//         const expectedResult = {...createdUserWithPagination}
+//
+//         const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(expectedResult)
+//     });
+//
+//
+//     it('should NOT Delete User with wrong ID and return 404', async () => {
+//
+//         const id = 'asd'
+//
+//         const deleteUser = await userFunctions.deleteUserById(id, authorizationData)
+//         expect(deleteUser.status).toBe(404)
+//
+//         const expectedResult = {...createdUserWithPagination}
+//
+//         const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(expectedResult)
+//
+//     });
+//
+//     it('should Delete User by ID and return 204', async () => {
+//
+//         const id = users[0].id
+//
+//         const deleteUser = await userFunctions.deleteUserById(id, authorizationData)
+//         expect(deleteUser.status).toBe(204)
+//
+//         const {status, body} = await userFunctions.getUsers(userPaginationValues, authorizationData)
+//         expect(status).toBe(200)
+//         expect(body).toEqual(getEmptyUsersData)
+//
+//     });
 
 });
 
@@ -1588,10 +1740,7 @@ describe("comments testing", () =>  {
                 loggedUser.push(logUser.body)
             }
         }
-
         await loginUsers();
-
-
     });
 
 

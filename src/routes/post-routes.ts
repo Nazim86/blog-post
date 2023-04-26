@@ -142,7 +142,7 @@ class PostController {
     async updatePostLikeStatus (req: Request, res: Response) {
 
         const likeStatus = req.body.likeStatus;
-        const postId = req.params.postId
+        const postId = req.params.id
         const userId = req.context.user!._id.toString()
 
         const updateLikeStatus: boolean = await this.postService.updatePostLikeStatus(postId, userId, likeStatus)

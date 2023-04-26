@@ -5,29 +5,22 @@ import {PostLikeModel, UserAccountModel} from "../db/db";
 import {ObjectId} from "mongodb";
 import {LikeEnum} from "../repositories/enums/like-enum";
 import {PostLikesDbType} from "../repositories/types/post-likes-db-type";
-import {newestLikesMapping} from "./likes-mapping";
+import {newestLikesMapping} from "./post-likes-mapping";
 
 export const postMapping = (array: PostsDbType[], userId: string | undefined):Promise<PostsViewType>[]=>{
     return array.map(async (post: PostsDbType): Promise<PostsViewType> => {
 
         let myStatus = "None"
-        let login = "undefined"
 
         if (userId) {
-            const getUserByUserId: UserAccountDbType | null = await UserAccountModel.findOne({_id: new ObjectId(userId)})
-            if (getUserByUserId) {
-                login = getUserByUserId.accountData.login
-            }
             const likeInDb = await PostLikeModel.findOne({postId:post._id, userId})
             if (likeInDb) {
                 myStatus = likeInDb.status
             }
-        } else {
-            userId = "undefined"
         }
 
-        const likesCount = await PostLikeModel.countDocuments({postId:post._id, status: LikeEnum.Like})
-        const dislikesCount = await PostLikeModel.countDocuments({postId:post._id, status: LikeEnum.Dislike})
+        const likesCount = await PostLikeModel.countDocuments({postId:post._id.toString(), status: LikeEnum.Like})
+        const dislikesCount = await PostLikeModel.countDocuments({postId:post._id.toString(), status: LikeEnum.Dislike})
 
         // const getLikeInfoForPost = await PostLikeModel.findOne({postId})
 
@@ -37,7 +30,7 @@ export const postMapping = (array: PostsDbType[], userId: string | undefined):Pr
             .limit(3) // limit to 3 results
             .lean();
 
-        const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes, login, userId)
+        const newestLikes: NewestLikesType[] = newestLikesMapping(getLast3Likes)
 
 
         return {

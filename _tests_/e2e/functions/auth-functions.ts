@@ -25,8 +25,6 @@ export const authFunctions = {
         return  request(app)
             .post('/auth/registration')
             .send(newPostData)
-
-
     },
 
     async registrationConfirmation(code:object){

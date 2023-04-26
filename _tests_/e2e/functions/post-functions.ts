@@ -10,10 +10,12 @@ export type TestResultType<T> = {
 
 export const postFunctions = {
 
-    async getPost (paginationData:object):Promise<TestResultType<PostsViewType>>{
+    async getPost (paginationData:object,accessToken?:string):Promise<TestResultType<PostsViewType>>{
         const result = await request(app)
             .get(`/posts`)
             .send(paginationData)
+            .set("Authorization", `${accessToken ? `Bearer ${accessToken}` : undefined}`)
+
 
         return {status:result.status,body:result.body}
 
@@ -38,31 +40,42 @@ export const postFunctions = {
     },
 
 
-    async getPostByBlogId(paginationValues:object,id:string,):Promise<TestResultType<PostsViewType>>{
+    async getPostByBlogId(paginationValues:object,id:string,accessToken?:string):Promise<TestResultType<PostsViewType>>{
         const result = await request(app)
             .get(`/blogs/${id}/posts`)
             .send(paginationValues)
+            .set("Authorization", `${accessToken ? `Bearer ${accessToken}` : undefined}`)
+
 
         return {status:result.status,body:result.body}
 
     },
 
 
-    async getPostById(id:string):Promise<TestResultType<PostsViewType>>{
+    async getPostById(id:string,accessToken?:string):Promise<TestResultType<PostsViewType>>{
         const result = await request(app)
             .get(`/posts/${id}`)
             .send()
+            .set("Authorization", `${accessToken ? `Bearer ${accessToken}` : undefined}`)
+
 
         return {status:result.status,body:result.body}
 
 },
-    async updatePostById(id:string,updatePost:object,authorizationData:string):Promise<TestResultType<PostsViewType>> {
+    async updatePostById(id:string,updatePost:object,authorizationData:string)
+        :Promise<TestResultType<PostsViewType>> {
        return  request(app)
             .put(`/posts/${id}`)
             .send(updatePost)
             .set("Authorization", authorizationData)
+    },
 
-
+    async updatePostLikeStatus(id:string,likeStatus:object,accessToken:string)
+        :Promise<TestResultType<PostsViewType>> {
+        return  request(app)
+            .put(`/posts/${id}/like-status`)
+            .send(likeStatus)
+            .set("Authorization", `Bearer ${accessToken}`)
     },
 
     async deletePostById(id:string,authorizationData:string):Promise<TestResultType<PostsViewType>>{

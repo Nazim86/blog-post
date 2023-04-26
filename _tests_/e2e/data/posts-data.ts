@@ -126,3 +126,139 @@ export const returnedCreatedPost = {
     }
 
 }
+
+export const likedPostData =[ {
+    id: expect.any(String),
+    title: expect.any(String),
+    shortDescription: expect.any(String),
+    content: expect.any(String),
+    blogId: expect.any(String),
+    blogName: expect.any(String),
+    createdAt: expect.any(String),
+    extendedLikesInfo: {
+        likesCount:0,
+        dislikesCount:0,
+        myStatus: "None",
+        newestLikes:[{
+            addedAt:expect.any(String),
+            login:expect.any(String),
+            userId:expect.any(String)
+        }]
+    }
+},
+    {
+        id: expect.any(String),
+        title: expect.any(String),
+        shortDescription: expect.any(String),
+        content: expect.any(String),
+        blogId: expect.any(String),
+        blogName: expect.any(String),
+        createdAt: expect.any(String),
+        extendedLikesInfo: {
+            likesCount:1,
+            dislikesCount:0,
+            myStatus: "Like",
+            newestLikes:[{
+                addedAt:expect.any(String),
+                login:"Leo0",
+                userId:expect.any(String)
+            }]
+        }
+    },
+
+    {
+        id: expect.any(String),
+        title: expect.any(String),
+        shortDescription: expect.any(String),
+        content: expect.any(String),
+        blogId: expect.any(String),
+        blogName: expect.any(String),
+        createdAt: expect.any(String),
+        extendedLikesInfo: {
+            likesCount:2,
+            dislikesCount:0,
+            myStatus: "Like",
+            newestLikes:[{
+                addedAt:expect.any(String),
+                login:"Leo1",
+                userId:expect.any(String)
+            },
+                {
+                addedAt:expect.any(String),
+                login:"Leo0",
+                userId:expect.any(String)
+            }
+            ]
+        }
+    },
+
+    {
+        id: expect.any(String),
+        title: expect.any(String),
+        shortDescription: expect.any(String),
+        content: expect.any(String),
+        blogId: expect.any(String),
+        blogName: expect.any(String),
+        createdAt: expect.any(String),
+        extendedLikesInfo: {
+            likesCount:3,
+            dislikesCount:0,
+            myStatus: "Like",
+            newestLikes:[{
+                addedAt:expect.any(String),
+                login:"Leo2",
+                userId:expect.any(String)
+            },
+                {
+                    addedAt:expect.any(String),
+                    login:"Leo1",
+                    userId:expect.any(String)
+                },
+                {
+                    addedAt:expect.any(String),
+                    login:"Leo0",
+                    userId:expect.any(String)
+                }
+                ]
+        }
+    },
+
+    {
+        id: expect.any(String),
+        title: expect.any(String),
+        shortDescription: expect.any(String),
+        content: expect.any(String),
+        blogId: expect.any(String),
+        blogName: expect.any(String),
+        createdAt: expect.any(String),
+        extendedLikesInfo: {
+            likesCount:4,
+            dislikesCount:0,
+            myStatus: "Like",
+            newestLikes:[
+                {
+                addedAt:expect.any(String),
+                login:"Leo3",
+                userId:expect.any(String)
+            },
+                {
+                    addedAt:expect.any(String),
+                    login:"Leo2",
+                    userId:expect.any(String)
+                },
+                {
+                    addedAt:expect.any(String),
+                    login:"Leo1",
+                    userId:expect.any(String)
+                },
+                {
+                    addedAt:expect.any(String),
+                    login:"Leo0",
+                    userId:expect.any(String)
+                }
+                ]
+        }
+    },
+
+
+]

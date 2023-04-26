@@ -24,16 +24,9 @@ export class PostRepository {
                 myStatus: LikeEnum.None,
                 newestLikes:[]
             }
-
         }
     }
 
-
-// {
-//     addedAt: new Date(),
-//     userId: "string",
-//     login: "string"
-// }
     async  createPostForBlog (createPostForBlog:PostsDbType): Promise<PostsViewType> {
 
         const result = await PostModel.create(createPostForBlog)
@@ -72,8 +65,8 @@ export class PostRepository {
         }
     }
 
-    async updatePostLikeStatus(postId:string, userId:string, likeStatus:string){
-        const result:UpdateResult = await PostLikeModel.updateOne({postId,userId}, {$set: {addedAt: new Date().toISOString(), status: likeStatus}}, {upsert: true})
+    async updatePostLikeStatus(postId:string, userId:string, likeStatus:string,login:string){
+        const result:UpdateResult = await PostLikeModel.updateOne({postId,userId}, {$set: {addedAt: new Date().toISOString(), status: likeStatus,login:login}}, {upsert: true})
 
         return result.upsertedCount===1 || result.modifiedCount ===1
 

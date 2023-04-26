@@ -4,6 +4,7 @@ import {PostRepository} from "../repositories/post-in-db-repository";
 import {BlogRepository} from "../repositories/blog-in-db-repository";
 import {PostsDbType} from "../repositories/types/posts-db-type";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
+import {UserRepository} from "../repositories/user-in-db-repository";
 
 
 export class PostsService{
@@ -11,11 +12,14 @@ export class PostsService{
     private blogRepository:BlogRepository
     private postRepository:PostRepository
     private postQueryRepo: PostsQueryRepo
+    private userRepository: UserRepository
+
 
     constructor() {
         this.blogRepository = new BlogRepository()
         this.postRepository = new PostRepository()
         this.postQueryRepo = new PostsQueryRepo()
+        this.userRepository = new UserRepository()
 
     }
 
@@ -57,7 +61,15 @@ export class PostsService{
 
         if (!getPost) return false
 
-        return await this.postRepository.updatePostLikeStatus(postId,userId,likeStatus)
+        const getUser = await this.userRepository.findUserById(userId)
+
+        let login = "undefined"
+
+        if(getUser){
+            login = getUser.accountData.login
+        }
+
+        return await this.postRepository.updatePostLikeStatus(postId,userId,likeStatus,login)
     }
 
     async deletePostById(id:string):Promise <boolean>{
