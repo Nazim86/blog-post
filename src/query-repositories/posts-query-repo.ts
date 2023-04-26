@@ -1,11 +1,10 @@
-import { PostLikeModel, PostModel, UserAccountModel} from "../db/db";
+import { PostLikeModel, PostModel} from "../db/db";
 import {postMapping} from "../mapping/post-mapping";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {NewestLikesType, PostsDbType} from "../repositories/types/posts-db-type";
 import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
-import {UserAccountDbType} from "../repositories/types/user-account-db-type";
 import {PostLikesDbType} from "../repositories/types/post-likes-db-type";
 import {newestLikesMapping} from "../mapping/post-likes-mapping";
 
@@ -35,7 +34,7 @@ export class PostsQueryRepo {
             // const getLikeInfoForPost = await PostLikeModel.findOne({postId})
 
 
-            const getLast3Likes:PostLikesDbType[] = await PostLikeModel.find({postId})
+            const getLast3Likes:PostLikesDbType[] = await PostLikeModel.find({postId,status:LikeEnum.Like})
                 .sort({ addedAt: -1 }) // sort by addedAt in descending order
                 .limit(3) // limit to 3 results
                 .lean();

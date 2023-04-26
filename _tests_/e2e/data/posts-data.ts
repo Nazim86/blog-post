@@ -139,11 +139,7 @@ export const likedPostData =[ {
         likesCount:0,
         dislikesCount:0,
         myStatus: "None",
-        newestLikes:[{
-            addedAt:expect.any(String),
-            login:expect.any(String),
-            userId:expect.any(String)
-        }]
+        newestLikes:[]
     }
 },
     {

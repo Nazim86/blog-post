@@ -633,7 +633,7 @@ describe("post testing", () => {
             getPost = await postFunctions.getPostById(postId,loggedUser[0].accessToken)
             expect(getPost.status).toBe(200)
             expect(getPost.body).toEqual({
-                ...likedPostData[1],
+                ...likedPostData[0],
                 extendedLikesInfo: {
                     ...likedPostData[1].extendedLikesInfo,myStatus:"Dislike",likesCount:0,dislikesCount:1}})
 

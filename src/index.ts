@@ -40,7 +40,7 @@ const startApp = async ()=>
 
 startApp()
 
-module.exports = app
+// module.exports = app
 
 //
 // //exercises
