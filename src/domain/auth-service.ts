@@ -13,18 +13,13 @@ import {TokenInDbRepository} from "../repositories/token-in-db-repository";
 
 export class AuthService {
 
-    private userRepository:UserRepository
-    private jwtService:JwtService
-    private emailManager: EmailManager
-    private tokenInDbRepository: TokenInDbRepository
 
-    constructor() {
-        this.userRepository = new UserRepository()
-        this.jwtService =  new JwtService()
-        this.emailManager = new EmailManager()
-        this.tokenInDbRepository = new TokenInDbRepository()
+    constructor(protected userRepository: UserRepository,
+                protected jwtService: JwtService,
+                protected emailManager: EmailManager,
+                protected tokenInDbRepository: TokenInDbRepository) {
+
     }
-
 
     async createNewUser(login: string, password: string, email: string): Promise<UserAccountDbType | null> {
 
@@ -38,13 +33,13 @@ export class AuthService {
             }),
             false)
 
-        const accountData = new AccountDataType(login,passwordHash,email,new Date().toISOString(),uuid(),add(new Date(), {
+        const accountData = new AccountDataType(login, passwordHash, email, new Date().toISOString(), uuid(), add(new Date(), {
             hours: 1,
             minutes: 3
         }))
 
-        const newUser:UserAccountDbType = new UserAccountDbType(new ObjectId(),
-            accountData,emailConfirmationType)
+        const newUser: UserAccountDbType = new UserAccountDbType(new ObjectId(),
+            accountData, emailConfirmationType)
 
         const createUser = await this.userRepository.createNewUser(newUser)
 
@@ -102,13 +97,16 @@ export class AuthService {
 
             try {
                 const recoveryCode = uuid()
-                await UserAccountModel.updateOne({_id: user._id}, {$set:
+                await UserAccountModel.updateOne({_id: user._id}, {
+                    $set:
                         {
                             "accountData.recoveryCode": recoveryCode,
                             "accountData.recoveryCodeExpiration": add(new Date(), {
                                 hours: 1,
                                 minutes: 3
-                            })}})
+                            })
+                        }
+                })
 
                 await this.emailManager.sendConfirmationEmail(recoveryCode, user.accountData.email, passwordRecoveryMessage)
             } catch (e) {

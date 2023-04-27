@@ -7,18 +7,14 @@ import {TokenInDbRepository} from "../repositories/token-in-db-repository";
 import {clearExpiredTokens} from "../db/db-clearing-expired-tokens";
 
 
-
-
 export class SecurityService {
 
-    private jwtService: JwtService
-    private tokenInDbRepository: TokenInDbRepository
-    constructor() {
-        this.jwtService = new JwtService()
-        this.tokenInDbRepository = new TokenInDbRepository()
+
+    constructor(protected jwtService: JwtService,
+                protected tokenInDbRepository: TokenInDbRepository) {
     }
 
-    private deleteOldDevices(){
+    private deleteOldDevices() {
         clearExpiredTokens.start();
     }
 
@@ -28,28 +24,31 @@ export class SecurityService {
 
     }
 
-   async updateDevice(refreshToken:string):Promise<boolean>{
-       const {deviceId,lastActiveDate}= await this.jwtService.getTokenMetaData(refreshToken,settings.REFRESH_TOKEN_SECRET)
+    async updateDevice(refreshToken: string): Promise<boolean> {
+        const {
+            deviceId,
+            lastActiveDate
+        } = await this.jwtService.getTokenMetaData(refreshToken, settings.REFRESH_TOKEN_SECRET)
 
-      return await this.tokenInDbRepository.updateDevice(deviceId,lastActiveDate)
+        return await this.tokenInDbRepository.updateDevice(deviceId, lastActiveDate)
 
-   }
-
-    async deleteDevices(deviceId:string):Promise<boolean> {
-       return await this.tokenInDbRepository.deleteDevices(deviceId);
     }
 
-    async deleteDeviceById(deviceId:string,userId:string): Promise<Result<boolean|null>> {
+    async deleteDevices(deviceId: string): Promise<boolean> {
+        return await this.tokenInDbRepository.deleteDevices(deviceId);
+    }
+
+    async deleteDeviceById(deviceId: string, userId: string): Promise<Result<boolean | null>> {
         const device = await this.tokenInDbRepository.getDevicesByDeviceId(deviceId);
 
-        if (device && device.userId!==userId){
+        if (device && device.userId !== userId) {
             return {
-                data:false,
-                code:ResultCode.Forbidden
+                data: false,
+                code: ResultCode.Forbidden
             }
         }
 
-        const isDeleted =  await this.tokenInDbRepository.deleteDeviceById(deviceId,userId);
+        const isDeleted = await this.tokenInDbRepository.deleteDeviceById(deviceId, userId);
 
         return {
             data: isDeleted,
