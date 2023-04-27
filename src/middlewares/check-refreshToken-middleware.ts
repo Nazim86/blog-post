@@ -4,16 +4,16 @@ import {TokenModel} from "../db/db";
 import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-db-type";
 import {JwtService} from "../domain/jwt-service";
 import {AuthService} from "../domain/auth-service";
+import {authService} from "../composition-root";
 
 
 class CheckRefreshTokenMiddleware{
 
     private jwtService: JwtService
-    private authService: AuthService
 
-    constructor() {
+
+    constructor(protected authService: AuthService) {
         this.jwtService = new JwtService()
-        this.authService = new AuthService()
     }
 
 
@@ -45,7 +45,7 @@ class CheckRefreshTokenMiddleware{
     }
 }
 
-const checkRefreshTokenMiddlewareClass =  new CheckRefreshTokenMiddleware()
+const checkRefreshTokenMiddlewareClass =  new CheckRefreshTokenMiddleware(authService)
 
 
 export const checkRefreshTokenMiddleware = checkRefreshTokenMiddlewareClass.use.bind(checkRefreshTokenMiddlewareClass)

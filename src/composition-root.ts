@@ -50,7 +50,7 @@ const emailManager = new EmailManager(emailAdapter)
 
 const securityService = new SecurityService(jwtService,tokenInDbRepository)
 
-const authService = new AuthService(userRepository,jwtService,emailManager,tokenInDbRepository)
+export const authService = new AuthService(userRepository,jwtService,emailManager,tokenInDbRepository)
 
 export const blogController = new BlogController(blogQueryRepo,
     jwtService, blogService, postQueryRepo, postService)
@@ -66,3 +66,5 @@ export const authController = new AuthController(jwtService,authService,security
 export const securityController = new SecurityController (jwtService,securityService)
 
 export const deleteController = new DeleteController()
+
+
