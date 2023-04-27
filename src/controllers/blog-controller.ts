@@ -2,7 +2,7 @@ import {BlogQueryRepo} from "../query-repositories/blog-query-repo";
 import {JwtService} from "../domain/jwt-service";
 import {BlogService} from "../domain/blog-service";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
-import {PostsService} from "../domain/posts-service";
+import {PostService} from "../domain/post-service";
 import {Request, Response} from "express";
 import {getPaginationValues} from "../functions/pagination-values";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
@@ -15,7 +15,7 @@ export class BlogController {
                 protected jwtService: JwtService,
                 protected blogService: BlogService,
                 protected postQueryRepo: PostsQueryRepo,
-                protected postService: PostsService) {
+                protected postService: PostService) {
     }
 
     async getBlogs(req: Request, res: Response) {

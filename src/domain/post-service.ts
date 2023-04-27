@@ -7,7 +7,7 @@ import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 import {UserRepository} from "../repositories/user-in-db-repository";
 
 
-export class PostsService{
+export class PostService {
 
     private blogRepository:BlogRepository
     // private postRepository:PostRepository

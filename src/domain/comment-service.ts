@@ -9,48 +9,46 @@ import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 
 export class CommentService {
 
-    private commentsQueryRepo: CommentsQueryRepo
-    private postQueryRepo: PostsQueryRepo
-    private commentDbRepository:CommentDbRepository
-    constructor() {
-        this.postQueryRepo = new PostsQueryRepo()
-        this.commentsQueryRepo = new CommentsQueryRepo()
-        this.commentDbRepository = new CommentDbRepository()
+
+    constructor(protected commentsQueryRepo: CommentsQueryRepo,
+                protected postQueryRepo: PostsQueryRepo,
+                protected commentDbRepository: CommentDbRepository) {
     }
 
-    async createPostComment(postId:string,content: string,userId:string, userLogin:string):Promise<CommentsViewType|null> {
 
-            const postById: PostsViewType|boolean = await this.postQueryRepo.getPostById(postId)
+    async createPostComment(postId: string, content: string, userId: string, userLogin: string): Promise<CommentsViewType | null> {
 
-            if (!postById || typeof postById === "boolean") return null
+        const postById: PostsViewType | boolean = await this.postQueryRepo.getPostById(postId)
 
-            const postComment = new CommentsDbType (new ObjectId(),postById.id,content,{
-                userId: userId,
-                userLogin: userLogin
-            }, new Date().toISOString(),{
-                likesCount:0,
-                dislikesCount: 0,
-                myStatus:"None"
-            })
+        if (!postById || typeof postById === "boolean") return null
 
-            return await this.commentDbRepository.createPostComment(postComment, userId, userLogin)
+        const postComment = new CommentsDbType(new ObjectId(), postById.id, content, {
+            userId: userId,
+            userLogin: userLogin
+        }, new Date().toISOString(), {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: "None"
+        })
+
+        return await this.commentDbRepository.createPostComment(postComment, userId, userLogin)
     }
 
-    async updateComment(commentId:string,content:string):Promise<boolean>{
-        return await this.commentDbRepository.updateComment(commentId,content)
+    async updateComment(commentId: string, content: string): Promise<boolean> {
+        return await this.commentDbRepository.updateComment(commentId, content)
 
     }
 
-    async updateCommentLikeStatus(commentId:string, userId: string, likeStatus:LikeEnum):Promise<boolean>{
+    async updateCommentLikeStatus(commentId: string, userId: string, likeStatus: LikeEnum): Promise<boolean> {
 
-        const getComment:CommentsViewType|null = await this.commentsQueryRepo.getComment(commentId,userId)
+        const getComment: CommentsViewType | null = await this.commentsQueryRepo.getComment(commentId, userId)
 
-        if(!getComment) return false
+        if (!getComment) return false
 
         return await this.commentDbRepository.updateCommentLikeStatus(commentId, userId, likeStatus)
     }
 
-    async deleteComment(commentId:string):Promise<boolean>{
+    async deleteComment(commentId: string): Promise<boolean> {
         return await this.commentDbRepository.deleteComment(commentId)
     }
 }
