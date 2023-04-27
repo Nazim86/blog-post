@@ -22,6 +22,7 @@ import {TokenInDbRepository} from "./repositories/token-in-db-repository";
 import {SecurityService} from "./domain/security-service";
 import {AuthController} from "./controllers/auth-controller";
 import {SecurityController} from "./controllers/security-controller";
+import {DeleteController} from "./controllers/delete-controller";
 
 const jwtService = new JwtService()
 
@@ -51,10 +52,8 @@ const securityService = new SecurityService(jwtService,tokenInDbRepository)
 
 const authService = new AuthService(userRepository,jwtService,emailManager,tokenInDbRepository)
 
-
 export const blogController = new BlogController(blogQueryRepo,
     jwtService, blogService, postQueryRepo, postService)
-
 
 export const postController = new PostController(postQueryRepo,commentsQueryRepo,postService,commentService,jwtService)
 
@@ -65,3 +64,5 @@ export const userController = new UserController(userQueryRepo,userService)
 export const authController = new AuthController(jwtService,authService,securityService,userRepository)
 
 export const securityController = new SecurityController (jwtService,securityService)
+
+export const deleteController = new DeleteController()

@@ -4,9 +4,7 @@ import {deviceIdValidation} from "../validations/device-validations";
 import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-errors-middleware";
 import {securityController} from "../composition-root";
 
-
 export const securityRoutes = Router({})
-
 
 securityRoutes.get("/devices", checkRefreshTokenMiddleware, securityController.getDevices.bind(securityController))
 
