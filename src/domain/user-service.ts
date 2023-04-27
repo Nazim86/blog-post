@@ -10,9 +10,8 @@ import {UserRepository} from "../repositories/user-in-db-repository";
 
 export class UserService{
 
-    private userRepository: UserRepository
-    constructor() {
-        this.userRepository = new UserRepository()
+
+    constructor(protected userRepository: UserRepository) {
     }
 
     async createNewUser(login: string, password: string, email: string): Promise<UserViewType> {
@@ -35,29 +34,6 @@ export class UserService{
 
         const newUser:UserAccountDbType = new UserAccountDbType(new ObjectId(),
             accountData,emailConfirmationType)
-
-        // const newUser:UserAccountDbType = {
-        //     _id: new ObjectId(),
-        //     accountData: {
-        //         login: login,
-        //         passwordHash,
-        //         email: email,
-        //         createdAt: new Date().toISOString(),
-        //         recoveryCode:uuid(),
-        //         recoveryCodeExpiration:add(new Date(), {
-        //             hours: 1,
-        //             minutes: 3
-        //         })
-        //     },
-        //     emailConfirmation: {
-        //         confirmationCode: uuid(),
-        //         emailExpiration: add(new Date(), {
-        //             hours: 1,
-        //             minutes: 3
-        //         }),
-        //         isConfirmed: true,
-        //     }
-        // }
 
         // return await userRepositoryOld.createNewUser(newUser) old version
 

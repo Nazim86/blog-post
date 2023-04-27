@@ -8,13 +8,11 @@ import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 
 export class CommentService {
-
-
+    
     constructor(protected commentsQueryRepo: CommentsQueryRepo,
                 protected postQueryRepo: PostsQueryRepo,
                 protected commentDbRepository: CommentDbRepository) {
     }
-
 
     async createPostComment(postId: string, content: string, userId: string, userLogin: string): Promise<CommentsViewType | null> {
 

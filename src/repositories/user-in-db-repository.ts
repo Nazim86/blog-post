@@ -4,6 +4,7 @@ import {ObjectId} from "mongodb";
 import {UserAccountDbType} from "./types/user-account-db-type";
 
 export class UserRepository {
+
     async createNewUser(newUser: UserAccountDbType): Promise<UserAccountDbType> {
 
         await UserAccountModel.create(newUser)

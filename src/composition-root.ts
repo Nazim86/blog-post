@@ -11,6 +11,11 @@ import {CommentsQueryRepo} from "./query-repositories/comments-query-repo";
 import {CommentDbRepository} from "./repositories/comment-db-repository";
 import {PostController} from "./controllers/post-controller";
 import {CommentController} from "./controllers/comment-controller";
+import {AuthService} from "./domain/auth-service";
+import {UserService} from "./domain/user-service";
+import {UserRepository} from "./repositories/user-in-db-repository";
+import {UserQueryRepo} from "./query-repositories/user-query-repo";
+import {UserController} from "./controllers/user-controller";
 
 const jwtService = new JwtService()
 
@@ -24,11 +29,14 @@ const blogQueryRepo = new BlogQueryRepo()
 const blogRepository = new BlogRepository()
 const blogService = new BlogService(blogRepository)
 
-
-
-
 const postRepository = new PostRepository()
 const postService = new PostService(postRepository)
+
+const userRepository = new UserRepository()
+const userQueryRepo = new UserQueryRepo()
+const userService = new UserService(userRepository)
+
+const authService = new AuthService()
 
 
 export const blogController = new BlogController(blogQueryRepo,
@@ -38,3 +46,5 @@ export const blogController = new BlogController(blogQueryRepo,
 export const postController = new PostController(postQueryRepo,commentsQueryRepo,postService,commentService,jwtService)
 
 export const commentController = new CommentController(commentService,commentsQueryRepo,jwtService)
+
+export const userController = new UserController(userQueryRepo,userService)
