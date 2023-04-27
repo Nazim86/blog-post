@@ -10,14 +10,14 @@ import {UserRepository} from "../repositories/user-in-db-repository";
 export class PostsService{
 
     private blogRepository:BlogRepository
-    private postRepository:PostRepository
+    // private postRepository:PostRepository
     private postQueryRepo: PostsQueryRepo
     private userRepository: UserRepository
 
 
-    constructor() {
+    constructor(protected postRepository:PostRepository) {
         this.blogRepository = new BlogRepository()
-        this.postRepository = new PostRepository()
+        // this.postRepository = new PostRepository()
         this.postQueryRepo = new PostsQueryRepo()
         this.userRepository = new UserRepository()
 

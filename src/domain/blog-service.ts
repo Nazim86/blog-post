@@ -6,9 +6,9 @@ import {BlogRepository} from "../repositories/blog-in-db-repository";
 
 export class BlogService {
 
-    private blogRepository: BlogRepository
-    constructor() {
-        this.blogRepository = new BlogRepository()
+    // private blogRepository: BlogRepository
+    constructor(protected blogRepository:BlogRepository) {
+        // this.blogRepository = new BlogRepository()
     }
 
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogsViewType> {
