@@ -21,6 +21,7 @@ import {EmailAdapter} from "./adapters/email-adapter";
 import {TokenInDbRepository} from "./repositories/token-in-db-repository";
 import {SecurityService} from "./domain/security-service";
 import {AuthController} from "./controllers/auth-controller";
+import {SecurityController} from "./controllers/security-controller";
 
 const jwtService = new JwtService()
 
@@ -62,3 +63,5 @@ export const commentController = new CommentController(commentService,commentsQu
 export const userController = new UserController(userQueryRepo,userService)
 
 export const authController = new AuthController(jwtService,authService,securityService,userRepository)
+
+export const securityController = new SecurityController (jwtService,securityService)
