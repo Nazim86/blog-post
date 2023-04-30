@@ -4,7 +4,9 @@ import {JwtService} from "../domain/jwt-service";
 import {Request, Response} from "express";
 import {settings} from "../settings";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentController {
 
 

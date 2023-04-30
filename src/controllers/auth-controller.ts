@@ -6,7 +6,9 @@ import {Request, Response} from "express";
 import {errorMessage} from "../error-handler/error-handler";
 import {settings} from "../settings";
 import {UserAccountViewType} from "../repositories/types/user-account-view-type";
+import {injectable} from "inversify";
 
+@injectable()
 export class AuthController {
 
 

@@ -2,8 +2,10 @@ import {TokenModel} from "../db/db";
 import {RefreshTokenMetaDbType} from "./types/refresh-token-meta-db-type";
 import {DeviceViewType} from "./types/device-view-type";
 import {deviceMapping} from "../mapping/device-mapping";
+import {injectable} from "inversify";
 
 
+@injectable()
 export class TokenInDbRepository {
 
     async insertRefreshTokenMetaData(refreshTokenMeta: RefreshTokenMetaDbType) {

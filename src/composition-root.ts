@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import {BlogQueryRepo} from "./query-repositories/blog-query-repo";
 import {JwtService} from "./domain/jwt-service";
 import {BlogService} from "./domain/blog-service";
@@ -23,48 +24,102 @@ import {SecurityService} from "./domain/security-service";
 import {AuthController} from "./controllers/auth-controller";
 import {SecurityController} from "./controllers/security-controller";
 import {DeleteController} from "./controllers/delete-controller";
+import {Container} from "inversify";
 
-const jwtService = new JwtService()
+// const jwtService = new JwtService()
+//
+// const commentsQueryRepo = new CommentsQueryRepo()
+// const commentRepository = new CommentDbRepository()
+// const postQueryRepo = new PostsQueryRepo()
+//
+// const commentService = new CommentService(commentsQueryRepo,postQueryRepo,commentRepository)
+//
+// const blogQueryRepo = new BlogQueryRepo()
+// const blogRepository = new BlogRepository()
+// const blogService = new BlogService(blogRepository)
+//
+// const postRepository = new PostRepository()
+// const postService = new PostService(postRepository)
+//
+// const userRepository = new UserRepository()
+// const userQueryRepo = new UserQueryRepo()
+// const userService = new UserService(userRepository)
+//
+// const tokenInDbRepository = new TokenInDbRepository()
+//
+// const emailAdapter = new EmailAdapter()
+// const emailManager = new EmailManager(emailAdapter)
+//
+// const securityService = new SecurityService(jwtService,tokenInDbRepository)
+//
+// export const authService = new AuthService(userRepository,jwtService,emailManager,tokenInDbRepository)
+//
+// export const blogController = new BlogController(blogQueryRepo,
+//     jwtService, blogService, postQueryRepo, postService)
+//
+// export const postController = new PostController(postQueryRepo,commentsQueryRepo,postService,commentService,jwtService)
+//
+// export const commentController = new CommentController(commentService,commentsQueryRepo,jwtService)
+//
+// export const userController = new UserController(userQueryRepo,userService)
+//
+// export const authController = new AuthController(jwtService,authService,securityService,userRepository)
+//
+// export const securityController = new SecurityController (jwtService,securityService)
+//
+// export const deleteController = new DeleteController()
 
-const commentsQueryRepo = new CommentsQueryRepo()
-const commentRepository = new CommentDbRepository()
-const postQueryRepo = new PostsQueryRepo()
 
-const commentService = new CommentService(commentsQueryRepo,postQueryRepo,commentRepository)
+export const container = new Container()
 
-const blogQueryRepo = new BlogQueryRepo()
-const blogRepository = new BlogRepository()
-const blogService = new BlogService(blogRepository)
+container.bind(BlogController).to(BlogController)
+container.bind(BlogService).toSelf()
+container.bind(BlogRepository).toSelf()
+container.bind(BlogQueryRepo).toSelf()
+container.bind(JwtService).toSelf()
+container.bind(PostController).toSelf()
+container.bind(PostService).toSelf()
+container.bind(PostsQueryRepo).toSelf()
+container.bind(PostRepository).toSelf()
+container.bind(AuthService).toSelf()
+container.bind(AuthController).toSelf()
+container.bind(TokenInDbRepository).toSelf()
+container.bind(UserController).toSelf()
+container.bind(UserService).toSelf()
+container.bind(UserRepository).toSelf()
+container.bind(UserQueryRepo).toSelf()
+container.bind(CommentController).toSelf()
+container.bind(CommentService).toSelf()
+container.bind(CommentDbRepository).toSelf()
+container.bind(CommentsQueryRepo).toSelf()
 
-const postRepository = new PostRepository()
-const postService = new PostService(postRepository)
+container.bind(EmailAdapter).toSelf()
+container.bind(EmailManager).toSelf()
+container.bind(DeleteController).toSelf()
+container.bind(SecurityController).toSelf()
+container.bind(SecurityService).toSelf()
 
-const userRepository = new UserRepository()
-const userQueryRepo = new UserQueryRepo()
-const userService = new UserService(userRepository)
 
-const tokenInDbRepository = new TokenInDbRepository()
 
-const emailAdapter = new EmailAdapter()
-const emailManager = new EmailManager(emailAdapter)
 
-const securityService = new SecurityService(jwtService,tokenInDbRepository)
 
-export const authService = new AuthService(userRepository,jwtService,emailManager,tokenInDbRepository)
 
-export const blogController = new BlogController(blogQueryRepo,
-    jwtService, blogService, postQueryRepo, postService)
 
-export const postController = new PostController(postQueryRepo,commentsQueryRepo,postService,commentService,jwtService)
 
-export const commentController = new CommentController(commentService,commentsQueryRepo,jwtService)
 
-export const userController = new UserController(userQueryRepo,userService)
 
-export const authController = new AuthController(jwtService,authService,securityService,userRepository)
 
-export const securityController = new SecurityController (jwtService,securityService)
 
-export const deleteController = new DeleteController()
+
+
+
+
+
+
+
+
+
+
+
 
 

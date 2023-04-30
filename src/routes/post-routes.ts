@@ -7,11 +7,14 @@ import {
     descriptionValidation, postCommentContentValidation,
     postNameValidation
 } from "../validations/post-validations";
-import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 import {likeValidation} from "../validations/like-validation";
-import {postController} from "../composition-root";
+import {container} from "../composition-root";
+import {PostController} from "../controllers/post-controller";
+import {checkUserByAccessTokenMiddleware} from "../middlewares/check-user-by-accessToken-middleware";
 
 export const postRoutes = Router({})
+
+const postController = container.resolve(PostController)
 
 
 const createPostValidation = [postNameValidation, descriptionValidation, contentValidation, blogIdValidation, inputValidationErrorsMiddleware] //

@@ -6,7 +6,9 @@ import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
 import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentService {
     
     constructor(protected commentsQueryRepo: CommentsQueryRepo,

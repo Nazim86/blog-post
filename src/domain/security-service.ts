@@ -5,8 +5,10 @@ import {Result} from "../error-handler/result-type";
 import {JwtService} from "./jwt-service";
 import {TokenInDbRepository} from "../repositories/token-in-db-repository";
 import {clearExpiredTokens} from "../db/db-clearing-expired-tokens";
+import {injectable} from "inversify";
 
 
+@injectable()
 export class SecurityService {
 
 

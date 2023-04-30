@@ -7,7 +7,10 @@ import {v4 as uuid} from "uuid";
 import add from "date-fns/add";
 import {EmailConfirmationType, UserAccountDbType, AccountDataType} from "../repositories/types/user-account-db-type";
 import {UserRepository} from "../repositories/user-in-db-repository";
+import {injectable} from "inversify";
 
+
+@injectable()
 export class UserService{
 
 

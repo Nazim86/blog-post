@@ -4,10 +4,14 @@ import {inputValidationErrorsMiddleware} from "../middlewares/input-validation-e
 import {checkCommentCredentialsMiddleware} from "../middlewares/check-comment-credentials-middleware";
 import {postCommentContentValidation} from "../validations/post-validations";
 import {likeValidation} from "../validations/like-validation";
-import {commentController} from "../composition-root";
+import {container} from "../composition-root";
+import {CommentController} from "../controllers/comment-controller";
+
 
 
 export const commentRoutes = Router({})
+
+const commentController = container.resolve(CommentController)
 
 commentRoutes.put('/:commentId', checkUserByAccessTokenMiddleware, checkCommentCredentialsMiddleware, postCommentContentValidation, inputValidationErrorsMiddleware,
     commentController.updateCommentByCommentId.bind(commentController))

@@ -10,7 +10,9 @@ import {UserRepository} from "../repositories/user-in-db-repository";
 import {JwtService} from "./jwt-service";
 import {EmailManager} from "../managers/email-manager";
 import {TokenInDbRepository} from "../repositories/token-in-db-repository";
+import {injectable} from "inversify";
 
+@injectable()
 export class AuthService {
 
 

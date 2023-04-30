@@ -1,8 +1,9 @@
 
 import {userMapping} from "../mapping/user-mapping";
 import {UserAccountModel} from "../db/db";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class UserQueryRepo {
 
     async getUsers(sortBy: string, sortDirection: string, pageNumber: number, pageSize: number, searchLoginTerm: string, searchEmailTerm: string) {

@@ -6,9 +6,13 @@ import {
     nameValidation, postForBlogValidations, queryValidations,
     websiteUrl
 } from "../validations/blog-validations";
-import {blogController} from "../composition-root";
+import {container} from "../composition-root";
+import {BlogController} from "../controllers/blog-controller";
 
 export const blogRoutes = Router({})
+
+
+const blogController = container.resolve(BlogController)
 
 const createPostValidations = [nameValidation, description, websiteUrl, inputValidationErrorsMiddleware]
 

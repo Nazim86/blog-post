@@ -3,7 +3,9 @@ import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {blogMapping} from "../mapping/blog-mapping";
 import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogQueryRepo {
 
     async getBlogById(id: string): Promise<BlogsViewType | boolean> {

@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer"
 import {emailMessageType} from "../repositories/types/email-message-type";
+import {injectable} from "inversify";
 
+@injectable()
 export class EmailAdapter {
     async sendConfirmationEmail(code: string, email: string, message: emailMessageType) {
 

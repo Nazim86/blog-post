@@ -36,6 +36,7 @@
     "http-status-codes": "^2.2.0",
     "imap": "^0.8.19",
     "imap-simple": "^5.1.0",
+    "inversify": "5.0.5",
     "jest": "^29.5.0",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
@@ -43,6 +44,7 @@
     "mongodb": "^5.0.1",
     "mongoose": "^7.0.3",
     "nodemailer": "^6.9.1",
+    "reflect-metadata": "^0.1.13",
     "supertest": "^6.3.3",
     "ts-jest": "^29.0.5",
     "uuid": "^9.0.0"

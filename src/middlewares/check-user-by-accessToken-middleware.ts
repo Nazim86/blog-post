@@ -1,20 +1,13 @@
 import {Request, Response, NextFunction} from "express";
 import {settings} from "../settings";
+import {container} from "../composition-root";
 import {JwtService} from "../domain/jwt-service";
 import {AuthService} from "../domain/auth-service";
-import {authService} from "../composition-root";
 
-export class CheckUserByAccessTokenMiddleware {
+const jwtService = container.resolve(JwtService)
+const authService = container.resolve(AuthService)
 
-    private jwtService: JwtService
-
-
-    constructor(   protected authService: AuthService) {
-        this.jwtService = new JwtService()
-        // this.authService = new AuthService()
-    }
-
-    async use(req: Request, res: Response, next: NextFunction) {
+export const  checkUserByAccessTokenMiddleware =  async (req: Request, res: Response, next: NextFunction)=> {
 
         if (!req.headers.authorization) {
             res.sendStatus(401)
@@ -23,7 +16,7 @@ export class CheckUserByAccessTokenMiddleware {
 
         const accessToken = req.headers.authorization.split(" ")[1]
 
-        const tokenMetaData = await this.jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
+        const tokenMetaData = await jwtService.getTokenMetaData(accessToken, settings.ACCESS_TOKEN_SECRET)
 
         if (!tokenMetaData || !tokenMetaData.userId) {
             return res.sendStatus(401);
@@ -32,14 +25,11 @@ export class CheckUserByAccessTokenMiddleware {
         const {userId} = tokenMetaData;
 
         req.context = {}
-        req.context.user = await this.authService.findUserById(userId)
+        req.context.user = await authService.findUserById(userId)
         return next()
     }
-}
 
-export const checkUserByAccessTokenMiddlewareClass =  new CheckUserByAccessTokenMiddleware(authService)
 
-export const checkUserByAccessTokenMiddleware = checkUserByAccessTokenMiddlewareClass.use.bind(checkUserByAccessTokenMiddlewareClass)
 
 
 

@@ -3,7 +3,9 @@ import {ObjectId, UpdateResult} from "mongodb";
 import {PostsViewType} from "./types/posts-view-type";
 import {PostsDbType} from "./types/posts-db-type";
 import {LikeEnum} from "./enums/like-enum";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostRepository {
 
     async createPost(newPost: PostsDbType): Promise<PostsViewType> {

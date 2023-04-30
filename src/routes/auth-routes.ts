@@ -9,13 +9,15 @@ import {
 import {
     checkUsersAccountsCredentialsMiddleware
 } from "../middlewares/check-user-account-credentials-middleware";
-
 import {checkRefreshTokenMiddleware} from "../middlewares/check-refreshToken-middleware";
 import {checkIpLimitMiddleware} from "../middlewares/check-ip-limit-middleware";
-import {authController} from "../composition-root";
+import {container} from "../composition-root";
+import {AuthController} from "../controllers/auth-controller";
 
 
 export const authRoutes = Router({});
+
+const authController = container.resolve(AuthController)
 
 
 authRoutes.post('/registration', checkIpLimitMiddleware, userInputValidations, checkUsersAccountsCredentialsMiddleware, inputValidationErrorsMiddleware,

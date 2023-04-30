@@ -9,7 +9,9 @@ import {getPaginationValues} from "../functions/pagination-values";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostController {
 
     constructor(

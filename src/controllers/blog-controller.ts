@@ -9,7 +9,9 @@ import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {settings} from "../settings";
 import {PostsViewType} from "../repositories/types/posts-view-type";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogController {
     constructor(protected blogQueryRepo: BlogQueryRepo,
                 protected jwtService: JwtService,

@@ -7,7 +7,9 @@ import {PostsViewType} from "../repositories/types/posts-view-type";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
 import {PostsQueryRepo} from "./posts-query-repo";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentsQueryRepo{
 
     private postQueryRepo: PostsQueryRepo

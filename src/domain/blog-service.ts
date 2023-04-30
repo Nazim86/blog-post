@@ -2,8 +2,10 @@ import {ObjectId} from "mongodb";
 import {BlogsViewType} from "../repositories/types/blogs-view-type";
 import {BlogsDbType} from "../repositories/types/blogs-db-type";
 import {BlogRepository} from "../repositories/blog-in-db-repository";
+import {injectable} from "inversify";
 
 
+@injectable()
 export class BlogService {
 
     // private blogRepository: BlogRepository

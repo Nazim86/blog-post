@@ -7,7 +7,9 @@ import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
 import {PostLikesDbType} from "../repositories/types/post-likes-db-type";
 import {newestLikesMapping} from "../mapping/post-likes-mapping";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsQueryRepo {
 
     async getPostById(postId: string, userId?: string|undefined): Promise<PostsViewType | boolean> {

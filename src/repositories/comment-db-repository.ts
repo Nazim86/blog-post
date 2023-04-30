@@ -3,7 +3,9 @@ import {CommentsViewType} from "./types/comments-view-type";
 import {CommentModel, LikeModel} from "../db/db";
 import {ObjectId, UpdateResult} from "mongodb";
 import {LikeEnum} from "./enums/like-enum";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentDbRepository {
 
     async createPostComment(postComment:CommentsDbType,userId:string, userLogin:string):Promise<CommentsViewType>{

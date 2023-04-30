@@ -2,22 +2,15 @@ import {Request, Response, NextFunction} from "express";
 import {settings} from "../settings";
 import {TokenModel} from "../db/db";
 import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-db-type";
-import {JwtService} from "../domain/jwt-service";
 import {AuthService} from "../domain/auth-service";
-import {authService} from "../composition-root";
+import {container} from "../composition-root";
+import {JwtService} from "../domain/jwt-service";
+
+const jwtService = container.resolve(JwtService)
+const authService = container.resolve(AuthService)
 
 
-class CheckRefreshTokenMiddleware{
-
-    private jwtService: JwtService
-
-
-    constructor(protected authService: AuthService) {
-        this.jwtService = new JwtService()
-    }
-
-
-    async use(req: Request, res: Response, next: NextFunction) {
+export const checkRefreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction)=> {
 
         const refreshToken = req.cookies.refreshToken
 
@@ -25,7 +18,7 @@ class CheckRefreshTokenMiddleware{
             return res.sendStatus(401)
         }
 
-        const refreshTokenMetaData: RefreshTokenMetaDbType = await this.jwtService.getTokenMetaData(refreshToken, settings.REFRESH_TOKEN_SECRET)
+        const refreshTokenMetaData: RefreshTokenMetaDbType = await jwtService.getTokenMetaData(refreshToken, settings.REFRESH_TOKEN_SECRET)
 
         if (!refreshTokenMetaData) {
             return res.sendStatus(401)
@@ -40,13 +33,7 @@ class CheckRefreshTokenMiddleware{
             return res.sendStatus(401)
         }
         req.context = {}
-        req.context.user = await this.authService.findUserById(userId)
+        req.context.user = await authService.findUserById(userId)
         return next()
     }
-}
-
-const checkRefreshTokenMiddlewareClass =  new CheckRefreshTokenMiddleware(authService)
-
-
-export const checkRefreshTokenMiddleware = checkRefreshTokenMiddlewareClass.use.bind(checkRefreshTokenMiddlewareClass)
 

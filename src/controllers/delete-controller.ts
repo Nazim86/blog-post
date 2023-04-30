@@ -1,6 +1,8 @@
 import {Request, Response} from "express";
 import {BlogModel, CommentModel, IpModel, LikeModel, PostModel, TokenModel, UserAccountModel} from "../db/db";
+import {injectable} from "inversify";
 
+@injectable()
 export class DeleteController {
 
     async deleteRoutes (req: Request, res: Response){

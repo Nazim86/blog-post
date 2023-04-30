@@ -2,8 +2,9 @@ import jwt from 'jsonwebtoken';
 import {ObjectId} from "mongodb";
 import {settings} from "../settings";
 import {randomUUID} from "crypto";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class JwtService {
 
     async createJWT(userId: ObjectId, secretKey: string, expirationTime: string, deviceId: string | null = null) {

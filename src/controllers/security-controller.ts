@@ -4,13 +4,13 @@ import {Request, Response} from "express";
 import {DeviceViewType} from "../repositories/types/device-view-type";
 import {ResultCode} from "../error-handler/result-code-enum";
 import {handleErrorResult} from "../error-handler/handle-error-result";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityController {
-
 
     constructor(protected jwtService: JwtService,
                 protected securityService: SecurityService) {
-
     }
 
     async getDevices(req: Request, res: Response) {

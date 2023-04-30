@@ -1,12 +1,14 @@
-import {ObjectId} from "mongodb";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {PostRepository} from "../repositories/post-in-db-repository";
 import {BlogRepository} from "../repositories/blog-in-db-repository";
 import {PostsDbType} from "../repositories/types/posts-db-type";
 import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
 import {UserRepository} from "../repositories/user-in-db-repository";
+import {injectable} from "inversify";
+import {ObjectId} from "mongodb";
 
 
+@injectable()
 export class PostService {
 
     private blogRepository:BlogRepository
