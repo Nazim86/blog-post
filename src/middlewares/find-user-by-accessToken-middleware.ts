@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from "express";
 import {settings} from "../settings";
-import {JwtService} from "../domain/jwt-service";
-import {AuthService} from "../domain/auth-service";
+import {JwtService} from "../application/jwt-service";
+import {AuthService} from "../application/auth-service";
 
 
 

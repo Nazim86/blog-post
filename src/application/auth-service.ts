@@ -1,16 +1,17 @@
-import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
 import {v4 as uuid} from 'uuid';
 import add from "date-fns/add"
-import {EmailConfirmationType, UserAccountDbType, AccountDataType} from "../repositories/types/user-account-db-type";
-import {UserAccountModel} from "../db/db";
-import {UserAccountViewType} from "../repositories/types/user-account-view-type";
+
 import {passwordRecoveryMessage, registrationMessage} from "../managers/email-messages-repo";
-import {UserRepository} from "../repositories/user-in-db-repository";
 import {JwtService} from "./jwt-service";
 import {EmailManager} from "../managers/email-manager";
-import {TokenInDbRepository} from "../repositories/token-in-db-repository";
+import {TokenInDbRepository} from "../infrastructure/repositories/token-in-db-repository";
 import {injectable} from "inversify";
+import {UserAccountDbMethodsType, UserModel} from "../domain/UsersEntity";
+import {HydratedDocument} from "mongoose";
+import {UserAccount} from "../infrastructure/repositories/types/user-account";
+import {UserAccountViewType} from "../infrastructure/repositories/types/user-account-view-type";
+import {UserRepository} from "../infrastructure/repositories/user-in-db-repository";
 
 @injectable()
 export class AuthService {
@@ -23,27 +24,31 @@ export class AuthService {
 
     }
 
-    async createNewUser(login: string, password: string, email: string): Promise<UserAccountDbType | null> {
+    async createNewUser(login: string, password: string, email: string): Promise<HydratedDocument<UserAccount, UserAccountDbMethodsType> | null> {
 
         const passwordHash = await bcrypt.hash(password, 10)
 
-        const emailConfirmationType = new EmailConfirmationType(
-            uuid(),
-            add(new Date(), {
-                hours: 1,
-                minutes: 3
-            }),
-            false)
+        // const emailConfirmationType = new EmailConfirmationType(
+        //     uuid(),
+        //     add(new Date(), {
+        //         hours: 1,
+        //         minutes: 3
+        //     }),
+        //     false)
+        //
+        // const accountData = new AccountDataType(login, passwordHash, email, new Date().toISOString(), uuid(), add(new Date(), {
+        //     hours: 1,
+        //     minutes: 3
+        // }))
 
-        const accountData = new AccountDataType(login, passwordHash, email, new Date().toISOString(), uuid(), add(new Date(), {
-            hours: 1,
-            minutes: 3
-        }))
+        // const userDTO: UserAccountDbType = new UserAccountDbType(new ObjectId(),
+        //     accountData, emailConfirmationType)
 
-        const newUser: UserAccountDbType = new UserAccountDbType(new ObjectId(),
-            accountData, emailConfirmationType)
 
-        const createUser = await this.userRepository.createNewUser(newUser)
+        const smartUserModel = UserModel.makeInstance(login,email,passwordHash)
+
+
+        const createUser = await this.userRepository.save(smartUserModel)
 
         try {
             await this.emailManager.sendConfirmationEmail(createUser.emailConfirmation.confirmationCode,
@@ -58,20 +63,29 @@ export class AuthService {
     }
 
     async registrationConfirmation(code: string): Promise<boolean> {
-
-        const user: UserAccountDbType | null = await this.userRepository.findUserByConfirmationCode(code)
-
+        console.log("CodeinAuthservice",code)
+        const user: HydratedDocument<UserAccount, UserAccountDbMethodsType> |null = await this.userRepository.findUserByConfirmationCode(code)
+        console.log("founduser",user)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
-        if (user.emailConfirmation.confirmationCode !== code) return false
-        if (user.emailConfirmation.emailExpiration < new Date()) return false
+        // if (user.emailConfirmation.confirmationCode !== code) return false
+        // if (user.emailConfirmation.emailExpiration < new Date()) return false
 
-        return await this.userRepository.updateConfirmation(user._id)
+        if (user.canBeConfirmed(code)){
+            user.confirm(code)
+            const result = await this.userRepository.save(user)
+            return !!result
+
+        }
+
+        return false
+
+        // return await this.userRepository.updateConfirmation(user._id)
     }
 
     async resendEmail(email: string): Promise<string | boolean> {
 
-        const user: UserAccountDbType | null = await this.userRepository.findUserByEmail(email)
+        const user: UserAccount | null = await this.userRepository.findUserByEmail(email)
 
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
@@ -79,8 +93,7 @@ export class AuthService {
 
         try {
             const newCode = uuid()
-            await UserAccountModel.updateMany({_id: user._id}, [{$set: {"emailConfirmation.confirmationCode": newCode}},
-                {$set: {"emailConfirmation.sentEmailsByDate": new Date()}}])
+            await UserModel.updateMany({_id: user._id}, {$set: {"emailConfirmation.confirmationCode": newCode}})
 
             await this.emailManager.sendConfirmationEmail(newCode, user.accountData.email, registrationMessage)
         } catch (e) {
@@ -88,18 +101,17 @@ export class AuthService {
         }
 
         return true
-
     }
 
     async sendingRecoveryCode(email: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await this.userRepository.findUserByEmail(email)
+        const user: UserAccount | null = await this.userRepository.findUserByEmail(email)
 
         if (user) {
 
             try {
                 const recoveryCode = uuid()
-                await UserAccountModel.updateOne({_id: user._id}, {
+                await UserModel.updateOne({_id: user._id}, {
                     $set:
                         {
                             "accountData.recoveryCode": recoveryCode,
@@ -120,7 +132,7 @@ export class AuthService {
 
     async setNewPasswordByRecoveryCode(newPassword: string, recoveryCode: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await this.userRepository.findUserByRecoveryCode(recoveryCode)
+        const user: UserAccount | null = await this.userRepository.findUserByRecoveryCode(recoveryCode)
 
         if (!user) return false
         // if (user.emailConfirmation.isConfirmed) return false
@@ -138,7 +150,7 @@ export class AuthService {
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await this.userRepository.findUserByLoginOrEmail(loginOrEmail)
+        const user: UserAccount | null = await this.userRepository.findUserByLoginOrEmail(loginOrEmail)
 
         if (!user) return false
 
@@ -147,11 +159,11 @@ export class AuthService {
         return bcrypt.compare(password, user.accountData.passwordHash)
     }
 
-    async findUserById(userId: string): Promise<UserAccountDbType | null> {
+    async findUserById(userId: string): Promise<UserAccount | null> {
         return await this.userRepository.findUserById(userId)
     }
 
-    async getCurrentUser(user: UserAccountDbType): Promise<UserAccountViewType> {
+    async getCurrentUser(user: UserAccount): Promise<UserAccountViewType> {
 
         return {
             email: user.accountData.email,

@@ -1,8 +1,8 @@
-import {NewestLikesType, PostsDbType} from "../repositories/types/posts-db-type";
-import {PostsViewType} from "../repositories/types/posts-view-type";
+import {NewestLikesType, PostsDbType} from "../infrastructure/repositories/types/posts-db-type";
+import {PostsViewType} from "../infrastructure/repositories/types/posts-view-type";
 import {PostLikeModel} from "../db/db";
-import {LikeEnum} from "../repositories/enums/like-enum";
-import {PostLikesDbType} from "../repositories/types/post-likes-db-type";
+import {LikeEnum} from "../infrastructure/repositories/enums/like-enum";
+import {PostLikesDbType} from "../infrastructure/repositories/types/post-likes-db-type";
 import {newestLikesMapping} from "./post-likes-mapping";
 
 export const postMapping = (array: PostsDbType[], userId: string | undefined):Promise<PostsViewType>[]=>{

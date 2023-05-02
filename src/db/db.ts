@@ -1,19 +1,16 @@
-import {MongoClient} from 'mongodb'
 import mongoose from "mongoose";
 
 
 import * as dotenv from 'dotenv'
-import {BlogSchema} from "../repositories/schemas/blog-schema";
-import {PostSchema} from "../repositories/schemas/post-schema";
-import {UserAccountSchema} from "../repositories/schemas/user-schema";
-import {CommentSchema} from "../repositories/schemas/comment-schema";
-import {TokenSchema} from "../repositories/schemas/token-schema";
-import {IpSchema} from "../repositories/schemas/ip-schema";
-import {LikeSchema} from "../repositories/schemas/like-schema";
-import {PostLikeSchema} from "../repositories/schemas/post-like-schema";
+import {BlogSchema} from "../infrastructure/repositories/schemas/blog-schema";
+import {PostSchema} from "../infrastructure/repositories/schemas/post-schema";
+import {CommentSchema} from "../infrastructure/repositories/schemas/comment-schema";
+import {TokenSchema} from "../infrastructure/repositories/schemas/token-schema";
+import {IpSchema} from "../infrastructure/repositories/schemas/ip-schema";
+import {LikeSchema} from "../infrastructure/repositories/schemas/like-schema";
+import {PostLikeSchema} from "../infrastructure/repositories/schemas/post-like-schema";
 
 
-// getting-started.js
 
 
 dotenv.config()
@@ -34,7 +31,7 @@ const dbName = 'blogPost'
 //mongoose models
 export const BlogModel = mongoose.model("blogs",BlogSchema)
 export const PostModel = mongoose.model('posts',PostSchema)
-export const UserAccountModel = mongoose.model('usersAccounts',UserAccountSchema)
+// export const UserAccountModel = mongoose.model<UserAccountDbType,UserModelType>('usersAccounts',UserAccountSchema)
 export const CommentModel = mongoose.model("comments", CommentSchema)
 export const LikeModel = mongoose.model("likes", LikeSchema)
 export const PostLikeModel = mongoose.model("postLikes", PostLikeSchema)

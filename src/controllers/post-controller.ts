@@ -1,14 +1,14 @@
-import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
-import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
-import {PostService} from "../domain/post-service";
-import {CommentService} from "../domain/comment-service";
-import {JwtService} from "../domain/jwt-service";
+import {PostsQueryRepo} from "../infrastructure/query-repositories/posts-query-repo";
+import {CommentsQueryRepo} from "../infrastructure/query-repositories/comments-query-repo";
+import {PostService} from "../application/post-service";
+import {CommentService} from "../application/comment-service";
+import {JwtService} from "../application/jwt-service";
 import {Request, Response} from "express";
 import {settings} from "../settings";
 import {getPaginationValues} from "../functions/pagination-values";
-import {QueryPaginationType} from "../repositories/types/query-pagination-type";
-import {PostsViewType} from "../repositories/types/posts-view-type";
-import {CommentsViewType} from "../repositories/types/comments-view-type";
+import {QueryPaginationType} from "../infrastructure/repositories/types/query-pagination-type";
+import {PostsViewType} from "../infrastructure/repositories/types/posts-view-type";
+import {CommentsViewType} from "../infrastructure/repositories/types/comments-view-type";
 import {injectable} from "inversify";
 
 @injectable()

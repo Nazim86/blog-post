@@ -1,12 +1,12 @@
-import { PostLikeModel, PostModel} from "../db/db";
-import {postMapping} from "../mapping/post-mapping";
+import { PostLikeModel, PostModel} from "../../db/db";
+import {postMapping} from "../../mapping/post-mapping";
 import {PostsViewType} from "../repositories/types/posts-view-type";
 import {NewestLikesType, PostsDbType} from "../repositories/types/posts-db-type";
 import {ObjectId} from "mongodb";
 import {QueryPaginationType} from "../repositories/types/query-pagination-type";
 import {LikeEnum} from "../repositories/enums/like-enum";
 import {PostLikesDbType} from "../repositories/types/post-likes-db-type";
-import {newestLikesMapping} from "../mapping/post-likes-mapping";
+import {newestLikesMapping} from "../../mapping/post-likes-mapping";
 import {injectable} from "inversify";
 
 @injectable()

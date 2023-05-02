@@ -1,9 +1,9 @@
-import {CommentService} from "../domain/comment-service";
-import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
-import {JwtService} from "../domain/jwt-service";
+import {CommentService} from "../application/comment-service";
+import {CommentsQueryRepo} from "../infrastructure/query-repositories/comments-query-repo";
+import {JwtService} from "../application/jwt-service";
 import {Request, Response} from "express";
 import {settings} from "../settings";
-import {CommentsViewType} from "../repositories/types/comments-view-type";
+import {CommentsViewType} from "../infrastructure/repositories/types/comments-view-type";
 import {injectable} from "inversify";
 
 @injectable()

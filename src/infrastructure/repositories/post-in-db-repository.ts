@@ -1,4 +1,4 @@
-import {PostLikeModel, PostModel} from "../db/db";
+import {PostLikeModel, PostModel} from "../../db/db";
 import {ObjectId, UpdateResult} from "mongodb";
 import {PostsViewType} from "./types/posts-view-type";
 import {PostsDbType} from "./types/posts-db-type";

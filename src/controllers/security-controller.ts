@@ -1,7 +1,7 @@
-import {JwtService} from "../domain/jwt-service";
-import {SecurityService} from "../domain/security-service";
+import {JwtService} from "../application/jwt-service";
+import {SecurityService} from "../application/security-service";
 import {Request, Response} from "express";
-import {DeviceViewType} from "../repositories/types/device-view-type";
+import {DeviceViewType} from "../infrastructure/repositories/types/device-view-type";
 import {ResultCode} from "../error-handler/result-code-enum";
 import {handleErrorResult} from "../error-handler/handle-error-result";
 import {injectable} from "inversify";

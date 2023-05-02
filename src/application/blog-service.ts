@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
-import {BlogsViewType} from "../repositories/types/blogs-view-type";
-import {BlogsDbType} from "../repositories/types/blogs-db-type";
-import {BlogRepository} from "../repositories/blog-in-db-repository";
+import {BlogsViewType} from "../infrastructure/repositories/types/blogs-view-type";
+import {BlogsDbType} from "../infrastructure/repositories/types/blogs-db-type";
+import {BlogRepository} from "../infrastructure/repositories/blog-in-db-repository";
 import {injectable} from "inversify";
 
 

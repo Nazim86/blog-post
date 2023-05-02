@@ -1,5 +1,5 @@
-import {BlogsDbType} from "../repositories/types/blogs-db-type";
-import {BlogsViewType} from "../repositories/types/blogs-view-type";
+import {BlogsDbType} from "../infrastructure/repositories/types/blogs-db-type";
+import {BlogsViewType} from "../infrastructure/repositories/types/blogs-view-type";
 
 export const blogMapping = (array: BlogsDbType[]):BlogsViewType[] => {
     return array.map((blog: BlogsDbType): BlogsViewType => {

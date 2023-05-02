@@ -1,11 +1,11 @@
-import {JwtService} from "../domain/jwt-service";
-import {AuthService} from "../domain/auth-service";
-import {SecurityService} from "../domain/security-service";
-import {UserRepository} from "../repositories/user-in-db-repository";
+import {JwtService} from "../application/jwt-service";
+import {AuthService} from "../application/auth-service";
+import {SecurityService} from "../application/security-service";
+import {UserRepository} from "../infrastructure/repositories/user-in-db-repository";
 import {Request, Response} from "express";
 import {errorMessage} from "../error-handler/error-handler";
 import {settings} from "../settings";
-import {UserAccountViewType} from "../repositories/types/user-account-view-type";
+import {UserAccountViewType} from "../infrastructure/repositories/types/user-account-view-type";
 import {injectable} from "inversify";
 
 @injectable()
@@ -45,6 +45,8 @@ export class AuthController {
     async confirmRegistration(req: Request, res: Response) {
 
         const confirmationCode = req.body.code
+
+        console.log("Request body in controller", req.body)
 
         const registrationConfirmation: boolean = await this.authService.registrationConfirmation(confirmationCode)
 

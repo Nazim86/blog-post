@@ -19,7 +19,7 @@ import {
     returnedCreatedPost, updatedPostData, updatedPostWithPagination
 } from "./data/posts-data";
 import {postFunctions} from "./functions/post-functions";
-import {PostsViewType} from "../../src/repositories/types/posts-view-type";
+import {PostsViewType} from "../../src/infrastructure/repositories/types/posts-view-type";
 import {notUpdate} from "./functions/post-should-not-functions";
 import {userFunctions} from "./functions/user-functions";
 import {
@@ -39,11 +39,12 @@ import {
     createdComment, likeData
 } from "./data/comments-data";
 import {currentUser, newUserData, newUserEmail} from "./data/auth-data";
-import {BlogsViewType} from "../../src/repositories/types/blogs-view-type";
+import {BlogsViewType} from "../../src/infrastructure/repositories/types/blogs-view-type";
 import {deviceData} from "./data/device-data";
 import mongoose from "mongoose";
 import {ObjectId} from "mongodb";
-import {IpModel, PostLikeModel, UserAccountModel} from "../../src/db/db";
+import {IpModel, PostLikeModel} from "../../src/db/db";
+import {UserModel} from "../../src/domain/UsersEntity";
 
 async function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -1114,7 +1115,7 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(400)
 
         //checking that user did not create
-        const users = await UserAccountModel.find({}).lean()
+        const users = await UserModel.find({}).lean()
         expect(users).toEqual([])
     });
 
@@ -1124,7 +1125,7 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(400)
 
         //checking that user did not create
-        const users = await UserAccountModel.find({}).lean()
+        const users = await UserModel.find({}).lean()
         expect(users).toEqual([])
     });
 
@@ -1134,7 +1135,7 @@ describe("auth testing", () => {
         expect(newUser.status).toBe(400)
 
         //checking that user did not create
-        const users = await UserAccountModel.find({}).lean()
+        const users = await UserModel.find({}).lean()
         expect(users).toEqual([])
     });
 
@@ -1207,7 +1208,7 @@ describe("auth testing", () => {
         expect(result.status).toBe(400)
 
         //checking user not confirmed
-        const user = await UserAccountModel.findOne({"accountData.email": newUserEmail})
+        const user = await UserModel.findOne({"accountData.email": newUserEmail})
         expect(user!.emailConfirmation.isConfirmed).toEqual(false)
 
     });
@@ -1225,14 +1226,17 @@ describe("auth testing", () => {
         // await delay(10000) //real test
         await IpModel.deleteMany({}) //imitation in order to run test faster
 
-        const userWithoutConfirm = await UserAccountModel.findOne({"accountData.email": newUserEmail})
+        const userWithoutConfirm = await UserModel.findOne({"accountData.email": newUserEmail})
 
+        console.log(userWithoutConfirm)
+
+        console.log("COnfirmationcode",userWithoutConfirm?.emailConfirmation.confirmationCode)
         const result = await authFunctions.registrationConfirmation({code: userWithoutConfirm?.emailConfirmation.confirmationCode})
 
         expect(result.status).toBe(204)
 
         //checking user confirmed
-        const user = await UserAccountModel.findOne({"accountData.email": newUserEmail})
+        const user = await UserModel.findOne({"accountData.email": newUserEmail})
         expect(user!.emailConfirmation.isConfirmed).toEqual(true)
     });
 
@@ -1457,7 +1461,7 @@ describe("auth testing", () => {
             })
 
             //confirming new user
-            const NewUserWithoutConfirm = await UserAccountModel.findOne({"accountData.email": "testing403@yandex.ru"})
+            const NewUserWithoutConfirm = await UserModel.findOne({"accountData.email": "testing403@yandex.ru"})
             await authFunctions.registrationConfirmation({code: NewUserWithoutConfirm?.emailConfirmation.confirmationCode})
 
             const refreshTokenOfCurrentUser = getRefreshToken.headers['set-cookie'][0].split(";")[0]
@@ -1582,7 +1586,7 @@ describe("auth testing", () => {
             //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
             const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
             const currentUser = await authFunctions.getCurrentUser(refreshToken)
-            const userAccountDb = await UserAccountModel.findOne({_id: new ObjectId(currentUser.body.userId)})
+            const userAccountDb = await UserModel.findOne({_id: new ObjectId(currentUser.body.userId)})
 
             const recoveryCode = userAccountDb!.accountData.recoveryCode
             const passwordAndRecoveryCode = {
@@ -1615,7 +1619,7 @@ describe("auth testing", () => {
             //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
             const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
             const currentUser = await authFunctions.getCurrentUser(refreshToken)
-            const userAccountDb = await UserAccountModel.findOne({_id: new ObjectId(currentUser.body.userId)})
+            const userAccountDb = await UserModel.findOne({_id: new ObjectId(currentUser.body.userId)})
 
             const recoveryCode = userAccountDb!.accountData.recoveryCode
             const passwordAndRecoveryCode = {
@@ -1637,7 +1641,7 @@ describe("auth testing", () => {
             //In order not to read email by imap (because sometimes it gives errors while reading) get user from usersCollection directly from db
             const refreshToken = getRefreshToken.headers['set-cookie'][0].split(";")[0]
             const currentUser = await authFunctions.getCurrentUser(refreshToken)
-            const userAccountDb = await UserAccountModel.findOne({_id: new ObjectId(currentUser.body.userId)})
+            const userAccountDb = await UserModel.findOne({_id: new ObjectId(currentUser.body.userId)})
 
             const recoveryCode = userAccountDb!.accountData.recoveryCode
             const passwordAndRecoveryCode = {

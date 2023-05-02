@@ -1,6 +1,6 @@
-import {CommentModel, LikeModel} from "../db/db";
+import {CommentModel, LikeModel} from "../../db/db";
 import {ObjectId} from "mongodb";
-import {commentMapping} from "../mapping/comment-mapping";
+import {commentMapping} from "../../mapping/comment-mapping";
 import {CommentsViewType} from "../repositories/types/comments-view-type";
 import {CommentsDbType} from "../repositories/types/comments-db-type";
 import {PostsViewType} from "../repositories/types/posts-view-type";

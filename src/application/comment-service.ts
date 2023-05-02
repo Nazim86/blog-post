@@ -1,11 +1,11 @@
-import {PostsViewType} from "../repositories/types/posts-view-type";
-import {CommentsDbType} from "../repositories/types/comments-db-type";
+import {PostsViewType} from "../infrastructure/repositories/types/posts-view-type";
+import {CommentsDbType} from "../infrastructure/repositories/types/comments-db-type";
 import {ObjectId} from "mongodb";
-import {CommentDbRepository} from "../repositories/comment-db-repository";
-import {CommentsViewType} from "../repositories/types/comments-view-type";
-import {LikeEnum} from "../repositories/enums/like-enum";
-import {CommentsQueryRepo} from "../query-repositories/comments-query-repo";
-import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
+import {CommentDbRepository} from "../infrastructure/repositories/comment-db-repository";
+import {CommentsViewType} from "../infrastructure/repositories/types/comments-view-type";
+import {LikeEnum} from "../infrastructure/repositories/enums/like-enum";
+import {CommentsQueryRepo} from "../infrastructure/query-repositories/comments-query-repo";
+import {PostsQueryRepo} from "../infrastructure/query-repositories/posts-query-repo";
 import {injectable} from "inversify";
 
 @injectable()

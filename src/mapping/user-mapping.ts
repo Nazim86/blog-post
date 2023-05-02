@@ -1,8 +1,8 @@
-import {UserViewType} from "../repositories/types/user-view-type";
-import {UserAccountDbType} from "../repositories/types/user-account-db-type";
+import {UserViewType} from "../infrastructure/repositories/types/user-view-type";
+import {UserAccount} from "../infrastructure/repositories/types/user-account";
 
-export const userMapping = (newUser:UserAccountDbType[]):UserViewType[]=>{
-    return newUser.map((user:UserAccountDbType):UserViewType=>{
+export const userMapping = (newUser:UserAccount[]):UserViewType[]=>{
+    return newUser.map((user:UserAccount):UserViewType=>{
 
         return{
             id:user._id.toString(),

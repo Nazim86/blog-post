@@ -1,9 +1,9 @@
-import {DeviceViewType} from "../repositories/types/device-view-type";
+import {DeviceViewType} from "../infrastructure/repositories/types/device-view-type";
 import {settings} from "../settings";
 import {ResultCode} from "../error-handler/result-code-enum";
 import {Result} from "../error-handler/result-type";
 import {JwtService} from "./jwt-service";
-import {TokenInDbRepository} from "../repositories/token-in-db-repository";
+import {TokenInDbRepository} from "../infrastructure/repositories/token-in-db-repository";
 import {clearExpiredTokens} from "../db/db-clearing-expired-tokens";
 import {injectable} from "inversify";
 

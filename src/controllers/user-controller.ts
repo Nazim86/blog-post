@@ -1,5 +1,5 @@
-import {UserQueryRepo} from "../query-repositories/user-query-repo";
-import {UserService} from "../domain/user-service";
+import {UserQueryRepo} from "../infrastructure/query-repositories/user-query-repo";
+import {UserService} from "../application/user-service";
 import {Request, Response} from "express";
 import {getPaginationValues} from "../functions/pagination-values";
 import {injectable} from "inversify";

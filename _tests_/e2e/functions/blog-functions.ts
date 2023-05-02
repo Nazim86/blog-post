@@ -1,7 +1,7 @@
 import request from "supertest";
 import {app} from "../../../src";
 
-import {BlogsViewType} from "../../../src/repositories/types/blogs-view-type";
+import {BlogsViewType} from "../../../src/infrastructure/repositories/types/blogs-view-type";
 export type TestResultType<T> = {
     body: T,
     status: number

@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
-import {BlogModel, CommentModel, IpModel, LikeModel, PostModel, TokenModel, UserAccountModel} from "../db/db";
+import {BlogModel, CommentModel, IpModel, LikeModel, PostModel, TokenModel} from "../db/db";
 import {injectable} from "inversify";
+import {UserModel} from "../domain/UsersEntity";
 
 @injectable()
 export class DeleteController {
@@ -9,7 +10,7 @@ export class DeleteController {
         await BlogModel.deleteMany({})
         await PostModel.deleteMany({})
         await CommentModel.deleteMany({})
-        await UserAccountModel.deleteMany({})
+        await UserModel.deleteMany({})
         await TokenModel.deleteMany({})
         await IpModel.deleteMany({})
         await LikeModel.deleteMany({})

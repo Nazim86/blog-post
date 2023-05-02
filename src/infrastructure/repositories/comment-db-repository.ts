@@ -1,6 +1,6 @@
 import {CommentsDbType} from "./types/comments-db-type";
 import {CommentsViewType} from "./types/comments-view-type";
-import {CommentModel, LikeModel} from "../db/db";
+import {CommentModel, LikeModel} from "../../db/db";
 import {ObjectId, UpdateResult} from "mongodb";
 import {LikeEnum} from "./enums/like-enum";
 import {injectable} from "inversify";

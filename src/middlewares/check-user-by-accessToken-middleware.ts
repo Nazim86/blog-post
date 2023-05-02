@@ -1,8 +1,8 @@
 import {Request, Response, NextFunction} from "express";
 import {settings} from "../settings";
 import {container} from "../composition-root";
-import {JwtService} from "../domain/jwt-service";
-import {AuthService} from "../domain/auth-service";
+import {JwtService} from "../application/jwt-service";
+import {AuthService} from "../application/auth-service";
 
 const jwtService = container.resolve(JwtService)
 const authService = container.resolve(AuthService)

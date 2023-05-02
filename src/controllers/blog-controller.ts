@@ -1,14 +1,14 @@
-import {BlogQueryRepo} from "../query-repositories/blog-query-repo";
-import {JwtService} from "../domain/jwt-service";
-import {BlogService} from "../domain/blog-service";
-import {PostsQueryRepo} from "../query-repositories/posts-query-repo";
-import {PostService} from "../domain/post-service";
+import {BlogQueryRepo} from "../infrastructure/query-repositories/blog-query-repo";
+import {JwtService} from "../application/jwt-service";
+import {BlogService} from "../application/blog-service";
+import {PostsQueryRepo} from "../infrastructure/query-repositories/posts-query-repo";
+import {PostService} from "../application/post-service";
 import {Request, Response} from "express";
 import {getPaginationValues} from "../functions/pagination-values";
-import {QueryPaginationType} from "../repositories/types/query-pagination-type";
-import {BlogsViewType} from "../repositories/types/blogs-view-type";
+import {QueryPaginationType} from "../infrastructure/repositories/types/query-pagination-type";
+import {BlogsViewType} from "../infrastructure/repositories/types/blogs-view-type";
 import {settings} from "../settings";
-import {PostsViewType} from "../repositories/types/posts-view-type";
+import {PostsViewType} from "../infrastructure/repositories/types/posts-view-type";
 import {injectable} from "inversify";
 
 @injectable()

@@ -1,7 +1,7 @@
-import {CommentsDbType} from "../repositories/types/comments-db-type";
-import {CommentsViewType} from "../repositories/types/comments-view-type";
+import {CommentsDbType} from "../infrastructure/repositories/types/comments-db-type";
+import {CommentsViewType} from "../infrastructure/repositories/types/comments-view-type";
 import {LikeModel} from "../db/db";
-import {LikeEnum} from "../repositories/enums/like-enum";
+import {LikeEnum} from "../infrastructure/repositories/enums/like-enum";
 
 export const commentMapping = (array: CommentsDbType[]):Promise<CommentsViewType>[] => {
     return array.map(async (postComment: CommentsDbType): Promise<CommentsViewType> => {

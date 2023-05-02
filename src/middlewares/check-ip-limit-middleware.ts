@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {IpDataType} from "../repositories/types/ip-type";
+import {IpDataType} from "../infrastructure/repositories/types/ip-type";
 import {IpModel} from "../db/db";
 
 

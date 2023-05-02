@@ -1,10 +1,10 @@
 import {Request, Response, NextFunction} from "express";
 import {settings} from "../settings";
 import {TokenModel} from "../db/db";
-import {RefreshTokenMetaDbType} from "../repositories/types/refresh-token-meta-db-type";
-import {AuthService} from "../domain/auth-service";
+import {RefreshTokenMetaDbType} from "../infrastructure/repositories/types/refresh-token-meta-db-type";
+import {AuthService} from "../application/auth-service";
 import {container} from "../composition-root";
-import {JwtService} from "../domain/jwt-service";
+import {JwtService} from "../application/jwt-service";
 
 const jwtService = container.resolve(JwtService)
 const authService = container.resolve(AuthService)

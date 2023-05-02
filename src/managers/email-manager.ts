@@ -1,5 +1,5 @@
-import {emailMessageType} from "../repositories/types/email-message-type";
-import {EmailAdapter} from "../adapters/email-adapter";
+import {emailMessageType} from "../infrastructure/repositories/types/email-message-type";
+import {EmailAdapter} from "../infrastructure/adapters/email-adapter";
 import {injectable} from "inversify";
 
 @injectable()

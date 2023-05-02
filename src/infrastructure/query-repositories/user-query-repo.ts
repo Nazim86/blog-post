@@ -1,7 +1,7 @@
 
-import {userMapping} from "../mapping/user-mapping";
-import {UserAccountModel} from "../db/db";
+import {userMapping} from "../../mapping/user-mapping";
 import {injectable} from "inversify";
+import {UserModel} from "../../domain/UsersEntity";
 
 @injectable()
 export class UserQueryRepo {
@@ -14,10 +14,10 @@ export class UserQueryRepo {
                     {"accountData.email": {$regex: searchEmailTerm ?? "", $options: "i"}}
                 ]
         };
-        const totalCount = await UserAccountModel.countDocuments(filter);
+        const totalCount = await UserModel.countDocuments(filter);
         const pagesCount = Math.ceil(totalCount / pageSize)
 
-        const getUsers = await UserAccountModel.find(filter)
+        const getUsers = await UserModel.find(filter)
             .sort({[sortBy]: sortDirection === 'asc' ? 1 : -1})
             .skip(skipSize)
             .limit(pageSize)

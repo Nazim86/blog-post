@@ -1,12 +1,12 @@
-import {userRepositoryOld} from "../repositories/user-in-db-repository-old";
+import {userRepositoryOld} from "../infrastructure/repositories/user-in-db-repository-old";
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt';
-import {UserViewType} from "../repositories/types/user-view-type";
-import {UserByIdType} from "../repositories/types/user-by-id-type";
+import {UserViewType} from "../infrastructure/repositories/types/user-view-type";
+import {UserByIdType} from "../infrastructure/repositories/types/user-by-id-type";
 import {v4 as uuid} from "uuid";
 import add from "date-fns/add";
-import {EmailConfirmationType, UserAccountDbType, AccountDataType} from "../repositories/types/user-account-db-type";
-import {UserRepository} from "../repositories/user-in-db-repository";
+import {EmailConfirmation, UserAccount, AccountData} from "../infrastructure/repositories/types/user-account";
+import {UserRepository} from "../infrastructure/repositories/user-in-db-repository";
 import {injectable} from "inversify";
 
 
@@ -22,7 +22,7 @@ export class UserService{
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this._generateHash(password, passwordSalt)
 
-        const emailConfirmationType = new EmailConfirmationType(
+        const emailConfirmationType = new EmailConfirmation(
             uuid(),
             add(new Date(), {
                 hours: 1,
@@ -30,12 +30,12 @@ export class UserService{
             }),
             true)
 
-        const accountData = new AccountDataType(login,passwordHash,email,new Date().toISOString(),uuid(),add(new Date(), {
+        const accountData = new AccountData(login,passwordHash,email,new Date().toISOString(),uuid(),add(new Date(), {
                         hours: 1,
                         minutes: 3
                     }))
 
-        const newUser:UserAccountDbType = new UserAccountDbType(new ObjectId(),
+        const newUser:UserAccount = new UserAccount(new ObjectId(),
             accountData,emailConfirmationType)
 
         // return await userRepositoryOld.createNewUser(newUser) old version
@@ -61,7 +61,7 @@ export class UserService{
 
     async checkCredentials(loginOrEmail: string, password: string): Promise<boolean> {
 
-        const user: UserAccountDbType | null = await this.userRepository.findUserByLoginOrEmail(loginOrEmail)
+        const user: UserAccount | null = await this.userRepository.findUserByLoginOrEmail(loginOrEmail)
 
         if (!user) return false
 
