@@ -65,7 +65,6 @@ UserAccountSchema.static('makeInstance', function  makeInstance (login:string, e
 
 UserAccountSchema.method('canBeConfirmed', function canBeConfirmed(code:string) {
     const that = this as UserAccount
-    console.log("canbeconfirmed",new Date(),that.emailConfirmation.emailExpiration)
     return that.emailConfirmation.confirmationCode === code &&
         that.emailConfirmation.emailExpiration > new Date()
 });

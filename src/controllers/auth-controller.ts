@@ -46,7 +46,6 @@ export class AuthController {
 
         const confirmationCode = req.body.code
 
-        console.log("Request body in controller", req.body)
 
         const registrationConfirmation: boolean = await this.authService.registrationConfirmation(confirmationCode)
 

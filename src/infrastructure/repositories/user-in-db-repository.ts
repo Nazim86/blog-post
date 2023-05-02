@@ -2,6 +2,7 @@ import {ObjectId} from "mongodb";
 import {HydratedUser, UserAccount} from "./types/user-account";
 import {injectable} from "inversify";
 import {UserModel} from "../../domain/UsersEntity";
+import add from "date-fns/add";
 
 @injectable()
 export class UserRepository {
@@ -14,11 +15,11 @@ export class UserRepository {
 
     }
 
-    async findUserByConfirmationCode(code: string): Promise<HydratedUser| null> {
+    async findUserByConfirmationCode(code: string): Promise<HydratedUser | null> {
 
-        const user:HydratedUser |null= await UserModel.findOne(
+        const user: HydratedUser | null = await UserModel.findOne(
             {"emailConfirmation.confirmationCode": code})
-return user
+        return user
     }
 
     async findUserByRecoveryCode(recoveryCode: string): Promise<UserAccount | null> {
@@ -33,7 +34,7 @@ return user
         return UserModel.findOne({"accountData.email": email})
     }
 
-    async save(model:HydratedUser) {
+    async save(model: HydratedUser) {
         return await model.save();
     }
 
@@ -43,18 +44,29 @@ return user
         return result.modifiedCount === 1
     }
 
-    // async setNewConfirmationCode(userId: ObjectId): Promise<boolean> {
-    //
-    //     const result = await UserAccountModel.updateOne({_id: userId}, {$set: {"emailConfirmation.isConfirmed": true}})
-    //     return result.modifiedCount === 1
-    // }
-
-
-    async updateUserAccountData(userId: ObjectId, passwordHash:string): Promise<boolean> {
+    async setNewConfirmationCode(userId: ObjectId, recoveryCode: string): Promise<boolean> {
 
         const result = await UserModel.updateOne({_id: userId}, {
             $set:
-                {"accountData.passwordHash": passwordHash}})
+                {
+                    "accountData.recoveryCode": recoveryCode,
+                    "accountData.recoveryCodeExpiration": add(new Date(), {
+                        hours: 1,
+                        minutes: 3
+                    })
+                }
+        })
+
+        return result.matchedCount === 1
+    }
+
+
+    async updateUserAccountData(userId: ObjectId, passwordHash: string): Promise<boolean> {
+
+        const result = await UserModel.updateOne({_id: userId}, {
+            $set:
+                {"accountData.passwordHash": passwordHash}
+        })
         return result.modifiedCount === 1
     }
 

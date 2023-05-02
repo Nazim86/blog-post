@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import {v4 as uuid} from 'uuid';
-import add from "date-fns/add"
 
 import {passwordRecoveryMessage, registrationMessage} from "../managers/email-messages-repo";
 import {JwtService} from "./jwt-service";
@@ -28,25 +27,7 @@ export class AuthService {
 
         const passwordHash = await bcrypt.hash(password, 10)
 
-        // const emailConfirmationType = new EmailConfirmationType(
-        //     uuid(),
-        //     add(new Date(), {
-        //         hours: 1,
-        //         minutes: 3
-        //     }),
-        //     false)
-        //
-        // const accountData = new AccountDataType(login, passwordHash, email, new Date().toISOString(), uuid(), add(new Date(), {
-        //     hours: 1,
-        //     minutes: 3
-        // }))
-
-        // const userDTO: UserAccountDbType = new UserAccountDbType(new ObjectId(),
-        //     accountData, emailConfirmationType)
-
-
-        const smartUserModel = UserModel.makeInstance(login,email,passwordHash)
-
+        const smartUserModel = UserModel.makeInstance(login, email, passwordHash)
 
         const createUser = await this.userRepository.save(smartUserModel)
 
@@ -63,24 +44,16 @@ export class AuthService {
     }
 
     async registrationConfirmation(code: string): Promise<boolean> {
-        console.log("CodeinAuthservice",code)
-        const user: HydratedDocument<UserAccount, UserAccountDbMethodsType> |null = await this.userRepository.findUserByConfirmationCode(code)
-        console.log("founduser",user)
+        const user: HydratedDocument<UserAccount, UserAccountDbMethodsType> | null = await this.userRepository.findUserByConfirmationCode(code)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
-        // if (user.emailConfirmation.confirmationCode !== code) return false
-        // if (user.emailConfirmation.emailExpiration < new Date()) return false
 
-        if (user.canBeConfirmed(code)){
+        if (user.canBeConfirmed(code)) {
             user.confirm(code)
             const result = await this.userRepository.save(user)
             return !!result
-
         }
-
         return false
-
-        // return await this.userRepository.updateConfirmation(user._id)
     }
 
     async resendEmail(email: string): Promise<string | boolean> {
@@ -111,17 +84,8 @@ export class AuthService {
 
             try {
                 const recoveryCode = uuid()
-                await UserModel.updateOne({_id: user._id}, {
-                    $set:
-                        {
-                            "accountData.recoveryCode": recoveryCode,
-                            "accountData.recoveryCodeExpiration": add(new Date(), {
-                                hours: 1,
-                                minutes: 3
-                            })
-                        }
-                })
 
+                await this.userRepository.setNewConfirmationCode(user._id, recoveryCode)
                 await this.emailManager.sendConfirmationEmail(recoveryCode, user.accountData.email, passwordRecoveryMessage)
             } catch (e) {
                 return true

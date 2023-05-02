@@ -1204,7 +1204,7 @@ describe("auth testing", () => {
 
     it('should NOT confirm registration with wrong accessToken and return 400', async () => {
 
-        const result = await authFunctions.registrationConfirmation({code: "userWithoutConfirm?.emailConfirmation.confirmationCode"})
+        const result = await authFunctions.registrationConfirmation({code: "fakecodefakecodefakecodefakecode"})
         expect(result.status).toBe(400)
 
         //checking user not confirmed
@@ -1216,7 +1216,7 @@ describe("auth testing", () => {
     it('should LIMIT confirm registration with more than 5 attempts in 10s and return 429', async () => {
         let result: any
         for (let i = 0; i <= 6; i++) {
-            result = await authFunctions.registrationConfirmation({code: "userWithoutConfirm?.emailConfirmation.confirmationCode"})
+            result = await authFunctions.registrationConfirmation({code: "fakecodefakecodefakecodefakecode"})
         }
         expect(result.status).toBe(429)
 
@@ -1228,9 +1228,6 @@ describe("auth testing", () => {
 
         const userWithoutConfirm = await UserModel.findOne({"accountData.email": newUserEmail})
 
-        console.log(userWithoutConfirm)
-
-        console.log("COnfirmationcode",userWithoutConfirm?.emailConfirmation.confirmationCode)
         const result = await authFunctions.registrationConfirmation({code: userWithoutConfirm?.emailConfirmation.confirmationCode})
 
         expect(result.status).toBe(204)
